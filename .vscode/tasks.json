@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "nim: run tests",
+          "command": "nimble",
+          "args": ["test"],
+          "options": {
+              "cwd": "${workspaceRoot}"
+          },
+          "type": "shell",
+          "group": {
+              "kind": "test",
+              "isDefault": true
+          }
+      },
+      {
+          "label": "nim: run",
+          "command": "nimble",
+          "args": ["run", "-o:bin/", "--verbosity:0", "--hints:off"],
+          "options": {
+              "cwd": "${workspaceRoot}"
+          },
+          "type": "shell",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          }
+      },
+      {
+          "label": "nim: run release",
+          "command": "nimble",
+          "args": ["run", "-o:bin/", "-d:release", "--hints:off"],
+          "options": {
+              "cwd": "${workspaceRoot}"
+          },
+          "type": "shell",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          }
+      }
+  ]
+}

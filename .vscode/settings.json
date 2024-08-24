@@ -1,0 +1,9 @@
+{
+  "[nim]": {
+      "editor.tabSize": 4
+  },
+  "nim.buildOnSave": false,
+  "nim.buildCommand": "c",
+  "nim.lintOnSave": true,
+  "nim.project": ["src/entry.nim"],
+}

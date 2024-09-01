@@ -25,29 +25,12 @@ proc main() {.async.} =
   await surreal.use(ns, db)
   echo "Switched to namespace '", ns, "' and database '", db, "'"
 
-  const signInMsg = """{
-    "id":-1,
-    "method": "signin",
-    "params": [
-        {
-            "user": "disjoin4880",
-            "pass": "Hangup5-Outhouse-Lucrative"
-        }
-    ]
-  }"""
-
-  var resp = await surreal.sendQuery(signInMsg)
-  echo "Received response: ", resp
-
-  const selectMsg = """{
-    "id":-1,
-    "method": "select",
-    "params": [ "item" ]
-  }"""
+  discard await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
+  echo "Signed in!"
 
   var futures: seq[Future[JsonNode]] = @[]
   for i in 0..<50:
-    futures.add(surreal.sendQuery(selectMsg))
+    futures.add(surreal.select("item"))
 
   let responses = await futures.all()
 

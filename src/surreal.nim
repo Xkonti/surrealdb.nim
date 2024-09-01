@@ -4,44 +4,8 @@
 import std/[asyncdispatch, asyncfutures, json, sequtils, strutils, tables]
 import ws
 
-var nextId = 0
+import ./surreal/[core, queries]
 
-proc getNextId(): int =
-  inc(nextId)
-  return nextId
-
-var queryFutures = newTable[int, Future[JsonNode]]()
-
-
-proc startListenLoop(ws: WebSocket) {.async.} =
-  echo "Starting listen loop"
-  while true:
-    var resp = await ws.receivePacket()
-    if resp[0] != Opcode.Text:
-      continue
-    let jsonObject = parseJson(resp[1])
-    let queryId: int = jsonObject["id"].getInt()
-    echo "Reqponse for query ID: ", queryId
-    if queryFutures.hasKey(queryId):
-      let future = queryFutures[queryId]
-      queryFutures.del(queryId)
-      future.complete(jsonObject)
-
-
-proc sendQuery(ws: WebSocket, query: string): Future[JsonNode] {.async.} =
-  let queryId = getNextId()
-  echo "Sending query with ID: ", queryId
-  let future: Future[JsonNode] = newFuture[JsonNode]("sendQuery #" & $queryId)
-
-  try:
-    let queryWithId = query.replace("\"id\":-1", "\"id\":" & $queryId)
-    await ws.send(queryWithId)
-    queryFutures[queryId] = future
-  except CatchableError as e:
-    echo "Error sending query: ", e.msg
-    future.fail(e)
-  finally:
-    return await future
 
 
 proc main() {.async.} =
@@ -50,32 +14,29 @@ proc main() {.async.} =
   # echo "connected!"
   let ws = await newWebSocket("ws://jabba.lan:14831/rpc")
   ws.setupPings(15)
+  let surreal = ws.newSurrealDB()
   echo "connected!"
 
   # Start loop that listens for responses from the database
-  asyncCheck startListenLoop(ws)
+  asyncCheck surreal.startListenLoop()
 
-  const useMsg = """{
-    "id":-1,
-    "method": "use",
-    "params": [ "test", "test" ]
-  }"""
-  
-  var resp = await ws.sendQuery(useMsg)
-  echo "Received response: ", resp
+  let ns = "test"
+  let db = "test"
+  await surreal.use(ns, db)
+  echo "Switched to namespace '", ns, "' and database '", db, "'"
 
   const signInMsg = """{
     "id":-1,
     "method": "signin",
     "params": [
         {
-            "user": "Username",
-            "pass": "SecretPassword"
+            "user": "disjoin4880",
+            "pass": "Hangup5-Outhouse-Lucrative"
         }
     ]
   }"""
 
-  resp = await ws.sendQuery(signInMsg)
+  var resp = await surreal.sendQuery(signInMsg)
   echo "Received response: ", resp
 
   const selectMsg = """{
@@ -86,7 +47,7 @@ proc main() {.async.} =
 
   var futures: seq[Future[JsonNode]] = @[]
   for i in 0..<50:
-    futures.add(ws.sendQuery(selectMsg))
+    futures.add(surreal.sendQuery(selectMsg))
 
   let responses = await futures.all()
 

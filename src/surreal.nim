@@ -9,33 +9,28 @@ import ./surreal/[core, queries]
 
 
 proc main() {.async.} =
-  # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),
-  #   path = "/rpc", protocols = @["cbor"])   protocol = "alpha"
-  # echo "connected!"
-  let ws = await newWebSocket("ws://jabba.lan:14831/rpc")
-  ws.setupPings(15)
-  let surreal = ws.newSurrealDB()
-  echo "connected!"
+    # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),
+    #   path = "/rpc", protocols = @["cbor"])   protocol = "alpha"
+    # echo "connected!"
 
-  # Start loop that listens for responses from the database
-  asyncCheck surreal.startListenLoop()
+    let surreal = await newSurrealDbConnection("ws://jabba.lan:14831/rpc")
 
-  let ns = "test"
-  let db = "test"
-  await surreal.use(ns, db)
-  echo "Switched to namespace '", ns, "' and database '", db, "'"
+    let ns = "test"
+    let db = "test"
+    await surreal.use(ns, db)
+    echo "Switched to namespace '", ns, "' and database '", db, "'"
 
-  discard await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
-  echo "Signed in!"
+    discard await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
+    echo "Signed in!"
 
-  var futures: seq[Future[JsonNode]] = @[]
-  for i in 0..<50:
-    futures.add(surreal.select("item"))
+    var futures: seq[Future[JsonNode]] = @[]
+    for i in 0..<500:
+        futures.add(surreal.select("item"))
 
-  let responses = await futures.all()
+    let responses = await futures.all()
 
-  echo "Received ", responses.len, " responses"
+    echo "Received ", responses.len, " responses"
 
-  ws.close()
+    surreal.disconnect()
 
 waitFor main()

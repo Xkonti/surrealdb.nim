@@ -11,3 +11,4 @@ bin           = @["surreal"]
 # Dependencies
 
 requires "nim >= 2.0.8"
+requires "ws"

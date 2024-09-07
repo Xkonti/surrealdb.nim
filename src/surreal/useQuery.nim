@@ -26,29 +26,17 @@ Only `null` is supported.
 proc use*(db: SurrealDB, namespace: string, database: string) {.async.} =
     # TODO: Make sure to properly escape the namespace and database names - possibly using JSON serialization
     discard await db.sendQuery(RpcMethod.Use, """[ "$1", "$2" ]""" % [ namespace, database ])
-    return
 
 ## Use the namespace and database specified by the given parameters.
 ## If the database is not specified, it will be unset.
-proc use*(db: SurrealDB, namespace: string, database: Option[string]) {.async.} =
-    # TODO: Make sure to properly escape the namespace and database names - possibly using JSON serialization
-    if database.isSome:
-        discard await db.sendQuery(RpcMethod.Use, """[ "$1", "$2" ]""" % [ namespace, database.get() ])
-    else:
-        discard await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
-    return
+proc use*(db: SurrealDB, namespace: string, database: NullType) {.async.} =
+    discard await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
 
 ## Use the namespace specified by the given parameter. This unsets the database.
 proc useNamespace*(db: SurrealDB, namespace: string) {.async.} =
     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
     discard await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
-    return
 
-## Use the database specified by the given parameter. This unsets the database.
-## If the namespace is not specified, it will be unset.
-proc useNamespace*(db: SurrealDB, namespace: Option[string]) {.async.} =
-    # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
-    if namespace.isSome:
-        discard await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace.get() ])
-    else:
-        discard await db.sendQuery(RpcMethod.Use, "[ null, null ]")
+## Unset the namespace. This will also unset the database.
+proc useNamespace*(db: SurrealDB, namespace: NullType) {.async.} =
+    discard await db.sendQuery(RpcMethod.Use, "[ null, null ]")

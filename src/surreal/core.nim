@@ -1,13 +1,30 @@
-import std/[asyncdispatch, json, tables, strutils, uri]
+import std/[asyncdispatch, json, macros, tables, strutils, uri]
 import ws
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
 type
+    NoneType* = distinct bool
+    NullType* = distinct bool
+
     SurrealDB* = ref object
         ws*: WebSocket
         queryFutures*: TableRef[int, Future[JsonNode]]
         isConnected*: bool
+
+macro Null*(): NullType =
+  result = newCall(bindSym"NullType", newLit(true))
+
+# For debugging purposes, you might want to add this:
+proc `$`*(n: NullType): string = 
+  "null"
+
+macro None*(): NoneType =
+  result = newCall(bindSym"NoneType", newLit(false))
+
+# For debugging purposes, you might want to add this:
+proc `$`*(n: NoneType): string = 
+  "none"
 
 
 proc startListenLoop(db: SurrealDB) {.async.} =
@@ -26,6 +43,9 @@ proc startListenLoop(db: SurrealDB) {.async.} =
             # echo "Removed future for query ID: ", queryId
             future.complete(jsonObject)
             # echo "Completed future for query ID: ", queryId
+
+            # TODO: Handle the case when the response is an error. This is the error format:
+            # {"error":{"code":-32000,"message":"There was a problem with the database: Specify a database to use"},"id":4}
         else:
             echo "No future found for query ID: ", queryId
 

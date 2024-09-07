@@ -2,9 +2,8 @@
 # uses this file as the main entry point of the application.
 
 import std/[asyncdispatch, asyncfutures, json, sequtils, strutils, tables]
-import ws
 
-import ./surreal/[core, queries]
+import ./surreal/[core, queries, useQuery]
 
 
 
@@ -24,12 +23,18 @@ proc main() {.async.} =
     echo "Signed in!"
 
     var futures: seq[Future[JsonNode]] = @[]
-    for i in 0..<500:
+    for i in 0..<20:
         futures.add(surreal.select("item"))
 
     let responses = await futures.all()
 
     echo "Received ", responses.len, " responses"
+
+    for response in responses:
+        let result = response["result"]
+        let itemsCount = result.getElems().len()
+        if itemsCount != 1000:
+            echo "Didn't receive 1000 items in one of the responses..."
 
     surreal.disconnect()
 

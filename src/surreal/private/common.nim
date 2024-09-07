@@ -4,6 +4,11 @@ import ../core
 import ws
 
 type
+    # SupportedTypes* = enum
+    #     SurrealNone,
+    #     SurrealNull,
+    #     SurrealString
+
     ## Names of RPC methods supported by SurrealDB
     RpcMethod* = enum
         Use = "use"
@@ -27,33 +32,49 @@ type
         Patch = "patch"
         Delete = "delete"
 
-    ## The common RPC request shape
-    # RpcRequest* = object
-    #     id*: int
-    #     `method`*: RpcMethod
-    #     params*: JsonNode[] | string
-    
-    ## The common RPC response shape
-    RpcResponse* = object
-        id*: int
-        result*: JsonNode
+# func getType*(x: NullType): SupportedTypes =
+#     return SurrealNull
 
-proc sendQuery*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[JsonNode] {.async.} =
+# func getType*(x: NoneType): SupportedTypes =
+#     return SurrealNone
+
+# func getType*(x: string): SupportedTypes =
+#     return SurrealString
+
+proc sendQuery*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
+    # Generate a new ID for the request - this is used to match the response with the request
     let queryId = getNextId()
-    let future: Future[JsonNode] = newFuture[JsonNode]("sendQuery '" & $queryMethod & "' #" & $queryId)
-    # echo "Create a future for query ID: ", queryId
-    let queryString = """{"id": $1, "method": "$2", "params": $3}""" % [$queryId, $queryMethod, $params]
+
+    
+    # Prep the request string
+    # Avoid JSON errors if provided empty string
+    var paramsString = $params
+    if paramsString.len == 0:
+        paramsString = "\"\""
+    let queryString = """{"id": $1, "method": "$2", "params": $3}""" % [$queryId, $queryMethod, paramsString]
+
+    # Create and register a new future for the request
+    let future: FutureResponse = newFuture[SurrealResult[JsonNode]]("sendQuery '" & $queryMethod & "' #" & $queryId)
+    db.queryFutures[queryId] = future
+
+    # Attempt to send the request and return the result
     try:
-        db.queryFutures[queryId] = future
-        # echo "Added future for query ID: ", queryId
         await db.ws.send(queryString)
-        # echo "Sent query ID: ", queryId
+        return await future
+
+    # 👇 This is pure confusion 👇
+    # If there was an error when sending the request, fail the future
+    # There's a chance that the future itself failed when being awaited, but it's very unlikely
     except CatchableError as e:
-        echo "Error sending query #", queryId, ": ", e.msg
-        future.fail(e)
-        # Make sure to remove the future from the table
-        # As it's not possible to get a response for a query that wasn't sent
-        db.queryFutures.del(queryId)
-    finally:
-        # echo "Awaiting the future for query ID: ", queryId
+        # Check if the future failed already
+        if not future.failed:
+            future.fail(e)
+            echo "Error sending query #", queryId, ": ", e.msg
+            # Make sure to remove the future from the table ASAP
+            # As it's not possible to get a response for a query that wasn't sent
+            db.queryFutures.del(queryId)
+            future.fail(e)
+            return await future
+
+        echo "Failed to await future for query #", queryId, ": ", e.msg
         return await future

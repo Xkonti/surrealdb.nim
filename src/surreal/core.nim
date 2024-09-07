@@ -18,11 +18,16 @@ proc startListenLoop(db: SurrealDB) {.async.} =
             continue
         let jsonObject = parseJson(resp[1])
         let queryId: int = jsonObject["id"].getInt()
-        echo "Reqponse for query ID: ", queryId
+        echo "Response for query ID: ", queryId
         if db.queryFutures.hasKey(queryId):
             let future = db.queryFutures[queryId]
+            # echo "Located future for query ID: ", queryId
             db.queryFutures.del(queryId)
+            # echo "Removed future for query ID: ", queryId
             future.complete(jsonObject)
+            # echo "Completed future for query ID: ", queryId
+        else:
+            echo "No future found for query ID: ", queryId
 
 
 proc newSurrealDbConnection*(url: string): Future[SurrealDB] {.async.} =

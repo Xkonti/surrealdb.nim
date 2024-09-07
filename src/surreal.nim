@@ -12,6 +12,7 @@ proc main() {.async.} =
     #   path = "/rpc", protocols = @["cbor"])   protocol = "alpha"
     # echo "connected!"
 
+    echo "Connecting to SurrealDB..."
     let surreal = await newSurrealDbConnection("ws://jabba.lan:14831/rpc")
 
     let ns = "test"

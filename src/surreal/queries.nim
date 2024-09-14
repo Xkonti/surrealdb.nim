@@ -4,7 +4,7 @@ import ./private/common
 import ./private/utils
 
 
-proc select*(db: SurrealDB, thing: string): Future[SurrealResult] {.async.} =
+proc select*(db: SurrealDB, thing: string): Future[SurrealResult[JsonNode]] {.async.} =
     # TODO: Adhere to the RPC docs
     let params = %* [ thing ]
     return await db.sendQuery(RpcMethod.Select, params)

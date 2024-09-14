@@ -1,5 +1,5 @@
 import std/[asyncdispatch, asyncfutures, json, strutils]
-import ./surreal/[core, useQuery, infoQuery, signinQuery]
+import ./surreal/[core, queries, useQuery, infoQuery, signinQuery]
 
 
 
@@ -26,7 +26,7 @@ proc main() {.async.} =
     let info = await surreal.info()
     echo "Info: ", info
 
-    # var futures: seq[Future[JsonNode]] = @[]
+    # var futures: seq[Future[SurrealResult[JsonNode]]] = @[]
     # for i in 0..<20:
     #     futures.add(surreal.select("item"))
 
@@ -35,8 +35,7 @@ proc main() {.async.} =
     # echo "Received ", responses.len, " responses"
 
     # for response in responses:
-    #     let result = response["result"]
-    #     let itemsCount = result.getElems().len()
+    #     let itemsCount = response.ok.getElems().len()
     #     if itemsCount != 1000:
     #         echo "Didn't receive 1000 items in one of the responses..."
 

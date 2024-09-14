@@ -1,7 +1,3 @@
-import std/[asyncdispatch, json]
-import ./core
-import ./private/common
-
 # TODO: Response always returns a token - even for system users
 
 # Sign in as a root user
@@ -46,14 +42,14 @@ proc signin*(
 proc signin*(
     db: SurrealDB,
     namespace: string, database: string, accessControl: string,
-    user: string, pass: string,
-    otherParams: varargs[JsonNode]
+    params: QueryParams
     ): Future[SurrealResult[string]] {.async.} =
-        var params = %* { "NS": namespace, "DB": database, "AC": accessControl, "user": user, "pass": pass }
-        for param in otherParams:
-            params.add(param)
-        params = %* [ params ]
-        let response = await db.sendQuery(RpcMethod.Signin, params)
+        var params = params
+        params["NS"] = namespace
+        params["DB"] = database
+        params["AC"] = accessControl
+        echo "Params: ", params
+        let response = await db.sendQuery(RpcMethod.Signin, %* [ params ])
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:

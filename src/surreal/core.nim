@@ -3,66 +3,18 @@ import ws
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
+include private/core_noneTypes
+include private/core_surql
+include private/core_queryParams
+include private/core_result
+include private/core_surrealResult
+
 type
-    NoneType* = distinct bool
-    NullType* = distinct bool
-
-    Result*[T, E] = object
-        case isOk*: bool
-        of true:
-            ok*: T
-        of false:
-            error*: E
-
-    SurrealError* = object
-        code*: int
-        message*: string
-
-    SurrealResult*[T] = Result[T, SurrealError]
-    FutureResponse* = Future[SurrealResult[JsonNode]]
-
     SurrealDB* = ref object
         ws*: WebSocket
         # TODO: Add a timeout for each future in case the response is not received / can't be linked to the request
         queryFutures*: TableRef[int, FutureResponse]
         isConnected*: bool
-
-
-macro Null*(): NullType =
-  result = newCall(bindSym"NullType", newLit(true))
-
-# For debugging purposes, you might want to add this:
-proc `$`*(n: NullType): string = 
-  "null"
-
-macro None*(): NoneType =
-  result = newCall(bindSym"NoneType", newLit(false))
-
-# For debugging purposes, you might want to add this:
-proc `$`*(n: NoneType): string = 
-  "none"
-
-proc ok*[T, E](value: T): Result[T, E] =
-  Result[T, E](isOk: true, ok: value)
-
-proc err*[T, E](value: E): Result[T, E] =
-  Result[T, E](isOk: false, error: value)
-
-proc surrealError(code: int, message: string): SurrealResult[JsonNode] =
-    err[JsonNode, SurrealError](SurrealError(code: code, message: message))
-
-proc surrealResponseJson*(value: JsonNode): SurrealResult[JsonNode] =
-    ok[JsonNode, SurrealError](value)
-
-proc surrealResponse*[T](value: T): SurrealResult[T] =
-    ok[T, SurrealError](value)
-
-proc asError*[TInput, TOutput](response: SurrealResult[TInput]): SurrealResult[TOutput] =
-    if response.isOk:
-        raise newException(ValueError, "Cannot convert a successful response to an error")
-    
-    err[TOutput, SurrealError](response.error)
-
 
 ## Initializes a loop that listens for WebSocket messagges.
 ## It matches received messages with the futures for sent queries and

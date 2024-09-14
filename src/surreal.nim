@@ -1,5 +1,5 @@
-import std/[asyncdispatch, asyncfutures, json, strutils]
-import ./surreal/[core, queries, useQuery, infoQuery, signinQuery]
+import std/[asyncdispatch, asyncfutures, json, strutils, tables]
+import ./surreal/[core, queries]
 
 
 
@@ -17,14 +17,27 @@ proc main() {.async.} =
     echo "Switched to namespace '", ns, "' and database '", db, "'"
 
     let signinResponse = await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
+    
     if signinResponse.isOk:
         echo "Signed in with token: ", signinResponse.ok
     else:
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    let info = await surreal.info()
-    echo "Info: ", info
+    
+    let letResponse1 = await surreal.let("my_variable", surql"array::fill([ 1, 2, 3, 4, 5 ], 10)")
+    if not letResponse1.isOk:
+        echo "Let error: ", letResponse1.error
+        quit(1)
+    
+    let letCheckResponse = await surreal.query(surql"RETURN $my_variable")
+    if letCheckResponse.isOk:
+        echo "Let check response: ", letCheckResponse.ok
+    else:
+        echo "Let check error: ", letCheckResponse.error
+        quit(1)
+
+
 
     # var futures: seq[Future[SurrealResult[JsonNode]]] = @[]
     # for i in 0..<20:

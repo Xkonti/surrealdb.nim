@@ -15,3 +15,4 @@ include ./private/query_unset
 # TODO: ./private/query_kill
 include ./private/query_query
 include ./private/query_select
+include ./private/query_create

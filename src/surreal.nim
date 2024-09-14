@@ -24,17 +24,18 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    
-    let letResponse1 = await surreal.let("my_variable", surql"array::fill([ 1, 2, 3, 4, 5 ], 10)")
-    if not letResponse1.isOk:
-        echo "Let error: ", letResponse1.error
+    let createResponse = await surreal.create("testitem:12345", {"name": "Ben", "state": "sleepy"})
+    if createResponse.isOk:
+        echo "Create response: ", createResponse.ok
+    else:
+        echo "Create error: ", createResponse.error
         quit(1)
     
-    let letCheckResponse = await surreal.query(surql"RETURN $my_variable")
-    if letCheckResponse.isOk:
-        echo "Let check response: ", letCheckResponse.ok
+    let selectResponse = await surreal.select(surql"testitem:12345")
+    if selectResponse.isOk:
+        echo "Select response: ", selectResponse.ok
     else:
-        echo "Let check error: ", letCheckResponse.error
+        echo "Select error: ", selectResponse.error
         quit(1)
 
 

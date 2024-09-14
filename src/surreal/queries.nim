@@ -10,7 +10,9 @@ include ./private/query_signin
 include ./private/query_authenticate
 include ./private/query_invalidate
 include ./private/query_let
-
+include ./private/query_unset
+# TODO: ./private/query_live
+# TODO: ./private/query_kill
 include ./private/query_query
 
 proc select*(db: SurrealDB, thing: string): Future[SurrealResult[JsonNode]] {.async.} =

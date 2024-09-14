@@ -8,22 +8,22 @@ SurrealDB driver for Nim.
 This is a list of methods to create that take `JsonNode` or strings as inputs and return `JsonNode` as output. No _smart_ deserialization etc.
 
 - [x] `use` method
-- [ ] `info` method
-- [ ] `signup` method
-- [ ] `signin` method
-- [ ] `authenticate` method
-- [ ] `invalidate` method
-- [ ] `let` method
-- [ ] `unset` method
+- [x] `info` method
+- [x] `signup` method
+- [x] `signin` method
+- [x] `authenticate` method
+- [x] `invalidate` method
+- [x] `let` method
+- [x] `unset` method
 - [ ] `live` method
 - [ ] `kill` method
-- [ ] `query` method
-- [ ] `select` method
-- [ ] `create` method
-- [ ] `insert` method
-- [ ] `update` method
-- [ ] `upsert` method
-- [ ] `relate` method
+- [x] `query` method
+- [x] `select` method
+- [x] `create` method
+- [x] `insert` method
+- [x] `update` method
+- [x] `upsert` method
+- [x] `relate` method
 - [ ] `merge` method
 - [ ] `patch` method
 - [ ] `delete` method
@@ -37,3 +37,10 @@ This is a list of methods to create that take `JsonNode` or strings as inputs an
 ## In the future
 
 - [ ] Switch to RPC CBOR to increase performance and support `none` values
+
+## RPC documentation inconsistencies to report:
+
+### Relate query
+
+- The order is not in, out, thing. It's in, thing, out
+- The RPC allows to additional data to be passed in the query as the fourth argument

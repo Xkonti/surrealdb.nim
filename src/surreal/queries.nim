@@ -1,4 +1,4 @@
-import std/[asyncdispatch, asyncfutures, json, strutils, tables]
+import std/[asyncdispatch, asyncfutures, json, sequtils, strutils, tables]
 import ./core
 import ./private/common
 import ./private/utils
@@ -16,3 +16,4 @@ include ./private/query_unset
 include ./private/query_query
 include ./private/query_select
 include ./private/query_create
+include ./private/query_insert

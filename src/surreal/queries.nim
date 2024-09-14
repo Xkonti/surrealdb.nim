@@ -17,3 +17,4 @@ include ./private/query_query
 include ./private/query_select
 include ./private/query_create
 include ./private/query_insert
+include ./private/query_update

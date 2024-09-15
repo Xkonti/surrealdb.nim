@@ -21,3 +21,5 @@ include ./private/query_update
 include ./private/query_upsert
 include ./private/query_relate
 include ./private/query_merge
+# TODO: ./private/query_patch
+include ./private/query_delete

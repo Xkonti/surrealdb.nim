@@ -5,4 +5,4 @@ include shared_imports
 
 # Deletes either a specified record or all records in the specified table
 proc delete*(db: SurrealDB, thing: string): Future[SurrealResult[JsonNode]] {.async.} =
-    return await db.sendQuery(RpcMethod.Delete, %* [ thing ])
+    return await db.sendRpc(RpcMethod.Delete, %* [ thing ])

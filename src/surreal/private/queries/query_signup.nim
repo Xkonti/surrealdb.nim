@@ -11,7 +11,7 @@ proc signup*(
         params["DB"] = database
         params["AC"] = accessControl
         echo "Params: ", params
-        let response = await db.sendQuery(RpcMethod.Signup, %* [ params ])
+        let response = await db.sendRpc(RpcMethod.Signup, %* [ params ])
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:

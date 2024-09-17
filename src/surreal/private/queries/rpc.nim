@@ -1,25 +1,10 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import types/[rpcMethod, surrealResult]
-import utils
-import core
+import ../types/[rpcMethod, surrealResult]
+import ../utils
+import ../core
 import ws
 
-# type
-    # SupportedTypes* = enum
-    #     SurrealNone,
-    #     SurrealNull,
-    #     SurrealString
-
-# func getType*(x: NullType): SupportedTypes =
-#     return SurrealNull
-
-# func getType*(x: NoneType): SupportedTypes =
-#     return SurrealNone
-
-# func getType*(x: string): SupportedTypes =
-#     return SurrealString
-
-proc sendQuery*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
+proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
     # Generate a new ID for the request - this is used to match the response with the request
     let queryId = getNextId()
 

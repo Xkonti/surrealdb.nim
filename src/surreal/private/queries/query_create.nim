@@ -5,4 +5,4 @@ include shared_imports
 
 # Create a new record either with a random or specified ID
 proc create*(db: SurrealDB, thing: string, content: QueryParams): Future[SurrealResult[JsonNode]] {.async.} =
-    return await db.sendQuery(RpcMethod.Create, %* [ %* thing, %* content ])
+    return await db.sendRpc(RpcMethod.Create, %* [ %* thing, %* content ])

@@ -23,7 +23,7 @@ Only `null` is supported.
 ## Use the namespace and database specified by the given parameters
 proc use*(db: SurrealDB, namespace: string, database: string): Future[SurrealResult[NoneType]] {.async.} =
     # TODO: Make sure to properly escape the namespace and database names - possibly using JSON serialization
-    let response = await db.sendQuery(RpcMethod.Use, """[ "$1", "$2" ]""" % [ namespace, database ])
+    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", "$2" ]""" % [ namespace, database ])
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:
@@ -33,7 +33,7 @@ proc use*(db: SurrealDB, namespace: string, database: string): Future[SurrealRes
 ## If the database is not specified, it will be unset.
 proc use*(db: SurrealDB, namespace: string, database: NoneType): Future[SurrealResult[NoneType]] {.async.} =
     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
-    let response = await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
+    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:
@@ -42,7 +42,7 @@ proc use*(db: SurrealDB, namespace: string, database: NoneType): Future[SurrealR
 ## Use the namespace specified by the given parameter. This unsets the database.
 proc useNamespace*(db: SurrealDB, namespace: string): Future[SurrealResult[NoneType]] {.async.} =
     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
-    let response = await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
+    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:
@@ -50,7 +50,7 @@ proc useNamespace*(db: SurrealDB, namespace: string): Future[SurrealResult[NoneT
 
 ## Unset the namespace. This will also unset the database.
 proc useNamespace*(db: SurrealDB, namespace: NoneType): Future[SurrealResult[NoneType]] {.async.} =
-    let response = await db.sendQuery(RpcMethod.Use, "[ null, null ]")
+    let response = await db.sendRpc(RpcMethod.Use, "[ null, null ]")
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:

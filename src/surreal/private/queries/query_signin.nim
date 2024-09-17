@@ -8,7 +8,7 @@ proc signin*(
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         let params = %* [ { "user": user, "pass": pass } ]
-        let response = await db.sendQuery(RpcMethod.Signin, params)
+        let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:
@@ -21,7 +21,7 @@ proc signin*(
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         let params = %* [ { "NS": namespace, "user": user, "pass": pass } ]
-        let response = await db.sendQuery(RpcMethod.Signin, params)
+        let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:
@@ -34,7 +34,7 @@ proc signin*(
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         let params = %* [ { "NS": namespace, "DB": database, "user": user, "pass": pass } ]
-        let response = await db.sendQuery(RpcMethod.Signin, params)
+        let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:
@@ -51,7 +51,7 @@ proc signin*(
         params["DB"] = database
         params["AC"] = accessControl
         echo "Params: ", params
-        let response = await db.sendQuery(RpcMethod.Signin, %* [ params ])
+        let response = await db.sendRpc(RpcMethod.Signin, %* [ params ])
         if response.isOk:
             return surrealResponse[string](response.ok.getStr())
         else:

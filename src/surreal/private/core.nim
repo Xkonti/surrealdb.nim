@@ -1,11 +1,8 @@
 import std/[asyncdispatch, json, macros, tables, strutils, uri]
 import ws
-import types/[none, null, queryParams]
+import types/[none, null, queryParams, result, surrealResult]
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
-
-include core_result
-include core_surrealResult
 
 type
     SurrealDB* = ref object

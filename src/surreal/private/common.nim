@@ -1,5 +1,5 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import types/rpcMethod
+import types/[rpcMethod, surrealResult]
 import utils
 import core
 import ws

@@ -1,6 +1,6 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
 import surreal/private/[queries]
-import surreal/private/types/[surql]
+import surreal/private/types/[record, tableName]
 import surreal/private/logic/[connection]
 
 proc main() {.async.} =
@@ -24,14 +24,14 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    let createResponse = await surreal.create("testitem:12345", {"name": "Ben", "state": "sleepy"})
+    let createResponse = await surreal.create(rc"testitem:12345", {"name": "Ben", "state": "sleepy"})
     if createResponse.isOk:
         echo "Create response: ", createResponse.ok
     else:
         echo "Create error: ", createResponse.error
         quit(1)
 
-    let selectResponse = await surreal.select(surql"testitem:12345")
+    let selectResponse = await surreal.select(rc"testitem:12345")
     if selectResponse.isOk:
         echo "Select response: ", selectResponse.ok
     else:

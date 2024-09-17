@@ -5,6 +5,7 @@ import ./private/utils
 
 include ./private/query_use
 include ./private/query_info
+include ./private/query_version
 include ./private/query_signup
 include ./private/query_signin
 include ./private/query_authenticate
@@ -24,3 +25,5 @@ include ./private/query_merge
 # TODO: ./private/query_patch
 include ./private/query_delete
 include ./private/query_run
+# TODO: ./private/query_qraphql
+# TODO: ./private/query_query_raw

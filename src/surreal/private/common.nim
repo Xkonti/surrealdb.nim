@@ -13,6 +13,7 @@ type
     RpcMethod* = enum
         Use = "use"
         Info = "info"
+        Version = "version"
         Signup = "signup"
         Signin = "signin"
         Authenticate = "authenticate"
@@ -22,6 +23,7 @@ type
         Live = "live"
         Kill = "kill"
         Query = "query"
+        Run = "run"
         Select = "select"
         Create = "create"
         Insert = "insert"
@@ -31,7 +33,6 @@ type
         Merge = "merge"
         Patch = "patch"
         Delete = "delete"
-        Run = "run"
 
 # func getType*(x: NullType): SupportedTypes =
 #     return SurrealNull

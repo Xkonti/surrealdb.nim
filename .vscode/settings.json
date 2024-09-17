@@ -1,6 +1,9 @@
 {
   "[nim]": {
-      "editor.tabSize": 4
+      "editor.tabSize": 4,
+      "editor.detectIndentation": false,
+      "files.trimFinalNewlines": true,
+      "files.trimTrailingWhitespace": true,
   },
   "nim.buildOnSave": false,
   "nim.buildCommand": "c",

@@ -1,53 +1,13 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import ./utils
-import ../core
+import ../types/[rpcMethod, surrealdb, surrealResult]
+import ../utils
 import ws
 
-type
-    # SupportedTypes* = enum
-    #     SurrealNone,
-    #     SurrealNull,
-    #     SurrealString
-
-    ## Names of RPC methods supported by SurrealDB
-    RpcMethod* = enum
-        Use = "use"
-        Info = "info"
-        Version = "version"
-        Signup = "signup"
-        Signin = "signin"
-        Authenticate = "authenticate"
-        Invalidate = "invalidate"
-        Let = "let"
-        Unset = "unset"
-        Live = "live"
-        Kill = "kill"
-        Query = "query"
-        Run = "run"
-        Select = "select"
-        Create = "create"
-        Insert = "insert"
-        Update = "update"
-        Upsert = "upsert"
-        Relate = "relate"
-        Merge = "merge"
-        Patch = "patch"
-        Delete = "delete"
-
-# func getType*(x: NullType): SupportedTypes =
-#     return SurrealNull
-
-# func getType*(x: NoneType): SupportedTypes =
-#     return SurrealNone
-
-# func getType*(x: string): SupportedTypes =
-#     return SurrealString
-
-proc sendQuery*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
+proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
     # Generate a new ID for the request - this is used to match the response with the request
     let queryId = getNextId()
 
-    
+
     # Prep the request string
     # Avoid JSON errors if provided empty string
     var paramsString = $params

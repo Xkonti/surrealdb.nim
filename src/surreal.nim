@@ -1,7 +1,7 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import ./surreal/[core, queries]
-
-
+import surreal/private/[queries]
+import surreal/private/types/[surql]
+import surreal/private/logic/[connection]
 
 proc main() {.async.} =
     # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),
@@ -17,7 +17,7 @@ proc main() {.async.} =
     echo "Switched to namespace '", ns, "' and database '", db, "'"
 
     let signinResponse = await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
-    
+
     if signinResponse.isOk:
         echo "Signed in with token: ", signinResponse.ok
     else:
@@ -30,7 +30,7 @@ proc main() {.async.} =
     else:
         echo "Create error: ", createResponse.error
         quit(1)
-    
+
     let selectResponse = await surreal.select(surql"testitem:12345")
     if selectResponse.isOk:
         echo "Select response: ", selectResponse.ok

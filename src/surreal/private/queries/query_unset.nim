@@ -1,6 +1,9 @@
-# Remove the provided viariable from the current connection
+include shared_imports
+import ../types/none
+
 proc unset*(db: SurrealDB, name: string): Future[SurrealResult[NoneType]] {.async.} =
-    let response = await db.sendQuery(RpcMethod.Unset, %* [ name ])
+    ## Remove the provided viariable from the current connection
+    let response = await db.sendRpc(RpcMethod.Unset, %* [ name ])
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:

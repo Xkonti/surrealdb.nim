@@ -1,6 +1,9 @@
-# Authenticate as with the given token.
+include shared_imports
+import ../types/none
+
 proc authenticate*(db: SurrealDB, token: string): Future[SurrealResult[NoneType]] {.async.} =
-    let response = await db.sendQuery(RpcMethod.Authenticate, %* [ token ])
+    ## Authenticate with the given token.
+    let response = await db.sendRpc(RpcMethod.Authenticate, %* [ token ])
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:

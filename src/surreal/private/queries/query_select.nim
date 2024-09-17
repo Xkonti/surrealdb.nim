@@ -1,3 +1,5 @@
+include shared_imports
+
 # Select all records in the provied table or the specified record
 proc select*(db: SurrealDB, table: string): Future[SurrealResult[JsonNode]] {.async.} =
     return await db.sendQuery(RpcMethod.Select, %* [ table ])

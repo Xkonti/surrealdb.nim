@@ -1,3 +1,5 @@
+include shared_imports
+
 # TODO: Replace QueryParams with some proper type for passing contents
 # TODO: Add variant that takes RecordId as a `thing`
 

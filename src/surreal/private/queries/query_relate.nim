@@ -1,3 +1,5 @@
+include shared_imports
+
 # TODO: Replace in and out with proper RecordID type
 # TODO: Replace relation with proper string type
 # TODO: Allow passing multiple records to in and out

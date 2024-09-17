@@ -1,3 +1,6 @@
+include shared_imports
+import std/[sequtils]
+
 # TODO: Replace QueryParams with some proper type for passing contents
 
 # Insert a new record into the specified table

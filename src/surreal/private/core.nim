@@ -3,11 +3,11 @@ import ws
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
-include private/core_noneTypes
-include private/core_surql
-include private/core_queryParams
-include private/core_result
-include private/core_surrealResult
+include core_noneTypes
+include core_surql
+include core_queryParams
+include core_result
+include core_surrealResult
 
 type
     SurrealDB* = ref object

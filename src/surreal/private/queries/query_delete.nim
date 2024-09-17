@@ -1,3 +1,5 @@
+include shared_imports
+
 # TODO: Add variant that takes RecordId as a `thing`
 # TODO: Add variant that takes a table string as a `thing`
 

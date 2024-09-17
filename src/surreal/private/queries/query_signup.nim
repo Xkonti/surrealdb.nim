@@ -1,3 +1,5 @@
+include shared_imports
+
 # Sign up as a record user
 proc signup*(
     db: SurrealDB,

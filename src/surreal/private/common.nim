@@ -1,6 +1,6 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import ./utils
-import ../core
+import utils
+import core
 import ws
 
 type

@@ -1,3 +1,5 @@
+include shared_imports
+
 # Run a SurrealQL function
 proc runFunction*(db: SurrealDB, name: string, params: QueryParams): Future[SurrealResult[JsonNode]] {.async.} =
     return await db.sendQuery(RpcMethod.Run, %* [ %* name, newJNull(), %* params ])

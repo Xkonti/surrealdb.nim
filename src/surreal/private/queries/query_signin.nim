@@ -1,3 +1,5 @@
+include shared_imports
+
 # TODO: Response always returns a token - even for system users
 
 # Sign in as a root user

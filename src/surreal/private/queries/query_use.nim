@@ -1,4 +1,5 @@
 include shared_imports
+import ../types/none
 
 #[
 
@@ -30,7 +31,7 @@ proc use*(db: SurrealDB, namespace: string, database: string): Future[SurrealRes
 
 ## Use the namespace and database specified by the given parameters.
 ## If the database is not specified, it will be unset.
-proc use*(db: SurrealDB, namespace: string, database: NullType): Future[SurrealResult[NoneType]] {.async.} =
+proc use*(db: SurrealDB, namespace: string, database: NoneType): Future[SurrealResult[NoneType]] {.async.} =
     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
     let response = await db.sendQuery(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
     if response.isOk:
@@ -48,7 +49,7 @@ proc useNamespace*(db: SurrealDB, namespace: string): Future[SurrealResult[NoneT
         return err[NoneType, SurrealError](response.error)
 
 ## Unset the namespace. This will also unset the database.
-proc useNamespace*(db: SurrealDB, namespace: NullType): Future[SurrealResult[NoneType]] {.async.} =
+proc useNamespace*(db: SurrealDB, namespace: NoneType): Future[SurrealResult[NoneType]] {.async.} =
     let response = await db.sendQuery(RpcMethod.Use, "[ null, null ]")
     if response.isOk:
         return surrealResponse[NoneType](None)

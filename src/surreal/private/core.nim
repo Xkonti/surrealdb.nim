@@ -1,9 +1,9 @@
 import std/[asyncdispatch, json, macros, tables, strutils, uri]
 import ws
+import types/[none, null]
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
-include core_noneTypes
 include core_surql
 include core_queryParams
 include core_result
@@ -49,7 +49,7 @@ proc startListenLoop(db: SurrealDB) {.async.} =
         # Remove the future from the table - consider it handled
         let future = db.queryFutures[queryId]
         db.queryFutures.del(queryId)
-        
+
         # If it's an error message, complete the future with the error
         if jsonObject.hasKey("error"):
             future.complete(surrealError(
@@ -58,7 +58,7 @@ proc startListenLoop(db: SurrealDB) {.async.} =
         # Otherwise, complete the future with the response content
         else:
             future.complete(surrealResponseJson(jsonObject["result"]))
-        
+
 
 
 proc newSurrealDbConnection*(url: string): Future[SurrealDB] {.async.} =

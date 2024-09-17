@@ -1,4 +1,5 @@
 include shared_imports
+import ../types/none
 
 # Authenticate as with the given token.
 proc authenticate*(db: SurrealDB, token: string): Future[SurrealResult[NoneType]] {.async.} =

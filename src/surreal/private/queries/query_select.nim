@@ -1,4 +1,5 @@
 include shared_imports
+import ../types/surql
 
 # Select all records in the provied table or the specified record
 proc select*(db: SurrealDB, table: string): Future[SurrealResult[JsonNode]] {.async.} =

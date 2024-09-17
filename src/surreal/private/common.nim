@@ -23,7 +23,7 @@ proc sendQuery*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode
     # Generate a new ID for the request - this is used to match the response with the request
     let queryId = getNextId()
 
-    
+
     # Prep the request string
     # Avoid JSON errors if provided empty string
     var paramsString = $params

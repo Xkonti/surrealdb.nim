@@ -4,7 +4,6 @@ import types/[none, null]
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
-include core_surql
 include core_queryParams
 include core_result
 include core_surrealResult

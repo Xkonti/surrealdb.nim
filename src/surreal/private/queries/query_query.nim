@@ -1,4 +1,5 @@
 include shared_imports
+import ../types/surql
 
 # Send a custom query to SurrealDB
 proc query*(db: SurrealDB, surql: SurQL): Future[SurrealResult[JsonNode]] {.async.} =

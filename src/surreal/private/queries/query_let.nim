@@ -1,5 +1,5 @@
 include shared_imports
-import ../types/none
+import ../types/[none, surql]
 
 # Set a variable for the current connection
 proc `let`*(db: SurrealDB, name: string, value: SurQL): Future[SurrealResult[NoneType]] {.async.} =

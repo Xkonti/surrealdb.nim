@@ -1,0 +1,26 @@
+type
+    RpcMethod* = enum
+        ## Names of RPC methods supported by SurrealDB
+        
+        Use = "use"
+        Info = "info"
+        Version = "version"
+        Signup = "signup"
+        Signin = "signin"
+        Authenticate = "authenticate"
+        Invalidate = "invalidate"
+        Let = "let"
+        Unset = "unset"
+        Live = "live"
+        Kill = "kill"
+        Query = "query"
+        Run = "run"
+        Select = "select"
+        Create = "create"
+        Insert = "insert"
+        Update = "update"
+        Upsert = "upsert"
+        Relate = "relate"
+        Merge = "merge"
+        Patch = "patch"
+        Delete = "delete"

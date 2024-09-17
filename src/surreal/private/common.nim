@@ -1,38 +1,14 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
+import types/rpcMethod
 import utils
 import core
 import ws
 
-type
+# type
     # SupportedTypes* = enum
     #     SurrealNone,
     #     SurrealNull,
     #     SurrealString
-
-    ## Names of RPC methods supported by SurrealDB
-    RpcMethod* = enum
-        Use = "use"
-        Info = "info"
-        Version = "version"
-        Signup = "signup"
-        Signin = "signin"
-        Authenticate = "authenticate"
-        Invalidate = "invalidate"
-        Let = "let"
-        Unset = "unset"
-        Live = "live"
-        Kill = "kill"
-        Query = "query"
-        Run = "run"
-        Select = "select"
-        Create = "create"
-        Insert = "insert"
-        Update = "update"
-        Upsert = "upsert"
-        Relate = "relate"
-        Merge = "merge"
-        Patch = "patch"
-        Delete = "delete"
 
 # func getType*(x: NullType): SupportedTypes =
 #     return SurrealNull

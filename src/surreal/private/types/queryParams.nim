@@ -3,10 +3,12 @@ import std/[json, strutils, tables]
 
 type
     QueryParam* = tuple
+        ## A single query parameter consisting of a key and a value.
         key: string
         value: string
 
     QueryParams* = object
+        ## A collection of query parameters.
         table: Table[string, string]
 
 
@@ -38,13 +40,16 @@ proc `%*`*(params: QueryParams): JsonNode =
     return %* params.table
 
 iterator items*(params: QueryParams): QueryParam =
+    ## Iterates over all query parameters (key-value pairs).
     for pair in params.table.pairs:
         yield (pair[0], pair[1])
 
 iterator values*(params: QueryParams): string =
+    ## Iterates over all values of the query parameters.
     for pair in params.table.pairs:
         yield pair[1]
 
 iterator keys*(params: QueryParams): string =
+    ## Iterates over all keys of the query parameters.
     for pair in params.table.pairs:
         yield pair[0]

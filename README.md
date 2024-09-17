@@ -9,6 +9,7 @@ This is a list of methods to create that take `JsonNode` or strings as inputs an
 
 - [x] `use` method
 - [x] `info` method
+- [x] `version` method
 - [x] `signup` method
 - [x] `signin` method
 - [x] `authenticate` method
@@ -24,9 +25,12 @@ This is a list of methods to create that take `JsonNode` or strings as inputs an
 - [x] `update` method
 - [x] `upsert` method
 - [x] `relate` method
-- [ ] `merge` method
+- [x] `merge` method
 - [ ] `patch` method
-- [ ] `delete` method
+- [x] `delete` method
+- [x] `run` method
+- [ ] `qraphql` method
+- [ ] `queryRaw` method
 
 ## Nim-specific integration
 
@@ -37,10 +41,3 @@ This is a list of methods to create that take `JsonNode` or strings as inputs an
 ## In the future
 
 - [ ] Switch to RPC CBOR to increase performance and support `none` values
-
-## RPC documentation inconsistencies to report:
-
-### Relate query
-
-- The order is not in, out, thing. It's in, thing, out
-- The RPC allows to additional data to be passed in the query as the fourth argument

@@ -23,3 +23,4 @@ include ./private/query_relate
 include ./private/query_merge
 # TODO: ./private/query_patch
 include ./private/query_delete
+include ./private/query_run

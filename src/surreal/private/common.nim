@@ -31,6 +31,7 @@ type
         Merge = "merge"
         Patch = "patch"
         Delete = "delete"
+        Run = "run"
 
 # func getType*(x: NullType): SupportedTypes =
 #     return SurrealNull

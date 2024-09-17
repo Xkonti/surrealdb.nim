@@ -1,5 +1,7 @@
 var nextId = 0
 
 proc getNextId*(): int =
-  inc(nextId)
-  return nextId
+    ## Generates a new ID for a request.
+
+    inc(nextId)
+    return nextId

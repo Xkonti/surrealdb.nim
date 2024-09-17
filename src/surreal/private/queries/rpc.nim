@@ -1,7 +1,6 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import ../types/[rpcMethod, surrealResult]
+import ../types/[rpcMethod, surrealdb, surrealResult]
 import ../utils
-import ../core
 import ws
 
 proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =

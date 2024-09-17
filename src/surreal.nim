@@ -1,6 +1,7 @@
 import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import surreal/private/[core, queries]
+import surreal/private/[queries]
 import surreal/private/types/[surql]
+import surreal/private/logic/[connection]
 
 proc main() {.async.} =
     # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),

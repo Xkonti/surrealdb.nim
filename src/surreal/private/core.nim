@@ -1,10 +1,9 @@
 import std/[asyncdispatch, json, macros, tables, strutils, uri]
 import ws
-import types/[none, null]
+import types/[none, null, queryParams]
 
 var queryFutures* = newTable[int, Future[JsonNode]]()
 
-include core_queryParams
 include core_result
 include core_surrealResult
 

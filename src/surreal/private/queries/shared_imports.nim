@@ -1,4 +1,4 @@
 import std/[asyncdispatch, asyncfutures, json, strutils]
-import ../types/rpcMethod
+import ../types/[rpcMethod, queryParams]
 import ../core
 import ../common

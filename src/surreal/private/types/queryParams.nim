@@ -1,3 +1,6 @@
+import std/[json, strutils, tables]
+
+
 type
     QueryParam* = tuple
         key: string

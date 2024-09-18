@@ -1,12 +1,9 @@
-import std/[macros]
-
 type
-    NoneType* = distinct bool
+    NoneType* = object
         ## Type representing the SurrealDB `NONE` value
 
-macro None*(): NoneType =
-    ## Creates a new `NoneType` object.
-    result = newCall(bindSym"NoneType", newLit(false))
+const None* : NoneType = NoneType()
+    ## A Surreal NONE value
 
 proc `$`*(n: NoneType): string =
     ## Returns the string representation of the `NoneType` object.

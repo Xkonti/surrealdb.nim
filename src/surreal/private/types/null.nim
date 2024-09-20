@@ -1,14 +1,10 @@
-import std/[macros]
-
 type
-    NullType* = distinct bool
+    NullType* = object
         ## Type representing the SurrealDB `NULL` value
 
+const Null* : NullType = NullType()
+    ## A Surreal NULL value
 
-macro Null*(): NullType =
-    ## Creates a new `NullType` object.
-    result = newCall(bindSym"NullType", newLit(true))
-
-proc `$`*(n: NullType): string =
-    ## Returns the string representation of the `NullType` object.
+proc `$`*(n: Null): string =
+    ## Returns the string representation of the `Null` object.
     "null"

@@ -1,5 +1,5 @@
 import std/unittest
-import ../src/surreal/private/cbor/[decoder, reader, types]
+import ../src/surreal/private/cbor/[constants, decoder, reader, types]
 import ../src/surreal/private/types/[surrealTypes, surrealValue]
 
 suite "CBOR:Reader:Head":
@@ -47,7 +47,7 @@ suite "CBOR:Reader:Head":
             0b111_11111'u8
             ])
         let head = reader.readHead()
-        let isBreak = reader.isBreak(head)
+        let isBreak = head.isBreak
         check(isBreak == true)
 
     test "isBreak should return false for not break":
@@ -55,7 +55,7 @@ suite "CBOR:Reader:Head":
             0b110_11011'u8
             ])
         let head = reader.readHead()
-        let isBreak = reader.isBreak(head)
+        let isBreak = head.isBreak
         check(isBreak == false)
 
     test "decode positive integer #1":
@@ -162,3 +162,108 @@ suite "CBOR:Reader:Head":
         for i in 0..<500:
             let value = i mod 256
             check(decoded.bytesVal[i] == value.uint8)
+
+    test "decode text string #1":
+        const data = @[
+            0b011_00010'u8,
+            0b0011_1111'u8, # Character '?'
+            0b0010_0001'u8, # Character '!'
+        ]
+        let decoded = decode(data) # Casts: cast[string](value)
+        check(decoded.kind == SurrealString) # True
+        check(decoded.stringVal.len == 2) # True
+        check(decoded.stringVal[0] == '?') # True
+        check(decoded.stringVal[1] == '!') # True
+        check($decoded == "?!") # False. It evaluates to "?!�"
+
+    test "decode text string #2":
+        var data = @[
+            0b011_11001'u8,
+            0b0000_0001'u8,
+            0b1111_0100'u8
+        ]
+        let text: string = "Ginger: You know what the greatest tragedy is in the whole world?... It's all the people who never find out what it is they really want to do or what it is they're really good at. It's all the sons who become blacksmiths because their fathers were blacksmiths. It's all the people who could be really fantastic flute players who grow old and die without ever seeing a musical instrument, so they become bad plowmen instead. It's all the people with talents who never even find out. Maybe they are never even born in a time when it's even possible to find out. It's all the people who never get to know what it is that they can really be. It's all the wasted chances. -- Terry Pratchett, Moving Pictures"
+
+        for c in text:
+            data.add(c.uint8)
+
+        # data.add(cast[seq[uint8]](text))
+
+        let decoded = decode(data)
+        check(decoded.kind == SurrealString)
+        check(decoded.stringVal == text)
+        check($decoded == text)
+
+    test "decode finite array #1":
+        const data = @[
+            0b100_00010'u8, # Array of 2 elements
+            0b000_00001'u8, # Positive integer 1
+            0b001_11000'u8, # Negative integer represended by 1 byte
+            0b1111_1111'u8, # Integer -256
+        ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealArray)
+        check(decoded.arrayVal.len == 2)
+        check(decoded.arrayVal[0].kind == SurrealInteger)
+        check(decoded.arrayVal[0].intIsNegative == false)
+        check(decoded.arrayVal[0].intVal == 1)
+        check(decoded.arrayVal[1].kind == SurrealInteger)
+        check(decoded.arrayVal[1].intIsNegative == true)
+        check(decoded.arrayVal[1].intVal == 255) # SurrealValue stores negative integers as value - 1
+        check(decoded.arrayVal[1].toInt16 == -256'i16) # Should be really -256
+
+    test "decode indefinite array #1":
+        const data = @[
+            0b100_11111'u8, # Array of ? elements
+            0b000_00011'u8, # Positive integer 3
+            0b001_11000'u8, # Negative integer represended by 1 byte
+            0b1111_1111'u8, # Integer -256
+            0b000_00100'u8, # Positive integer 4
+            cborBreak, # Break
+        ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealArray)
+        check(decoded.arrayVal.len == 3)
+        check(decoded.arrayVal[0].kind == SurrealInteger)
+        check(decoded.arrayVal[0].intIsNegative == false)
+        check(decoded.arrayVal[0].intVal == 3)
+        check(decoded.arrayVal[1].kind == SurrealInteger)
+        check(decoded.arrayVal[1].intIsNegative == true)
+        check(decoded.arrayVal[1].intVal == 255) # SurrealValue stores negative integers as value - 1
+        check(decoded.arrayVal[1].toInt16 == -256'i16) # Should be really -256
+        check(decoded.arrayVal[2].kind == SurrealInteger)
+        check(decoded.arrayVal[2].intIsNegative == false)
+        check(decoded.arrayVal[2].intVal == 4)
+
+    test "decode nested indefinite array #1":
+        const data = @[
+            0b100_11111'u8, # Array of ? elements
+            0b000_00011'u8, # Positive integer 3
+            0b100_11111'u8, # Array of ? elements
+            0b000_00011'u8, # Positive integer 3
+            0b000_00011'u8, # Positive integer 3
+            0b000_00011'u8, # Positive integer 3
+            cborBreak, # Break
+            0b000_00100'u8, # Positive integer 4
+            cborBreak, # Break
+        ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealArray)
+        check(decoded.arrayVal.len == 3)
+        check(decoded.arrayVal[0].kind == SurrealInteger)
+        check(decoded.arrayVal[0].intIsNegative == false)
+        check(decoded.arrayVal[0].intVal == 3)
+        check(decoded.arrayVal[1].kind == SurrealArray)
+        check(decoded.arrayVal[1].arrayVal.len == 3)
+        check(decoded.arrayVal[1].arrayVal[0].kind == SurrealInteger)
+        check(decoded.arrayVal[1].arrayVal[0].intIsNegative == false)
+        check(decoded.arrayVal[1].arrayVal[0].intVal == 3)
+        check(decoded.arrayVal[1].arrayVal[1].kind == SurrealInteger)
+        check(decoded.arrayVal[1].arrayVal[1].intIsNegative == false)
+        check(decoded.arrayVal[1].arrayVal[1].intVal == 3)
+        check(decoded.arrayVal[1].arrayVal[2].kind == SurrealInteger)
+        check(decoded.arrayVal[1].arrayVal[2].intIsNegative == false)
+        check(decoded.arrayVal[1].arrayVal[2].intVal == 3)
+        check(decoded.arrayVal[2].kind == SurrealInteger)
+        check(decoded.arrayVal[2].intIsNegative == false)
+        check(decoded.arrayVal[2].intVal == 4)

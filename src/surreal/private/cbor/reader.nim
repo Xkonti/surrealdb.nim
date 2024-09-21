@@ -44,9 +44,13 @@ proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =
     let argument = firstByte.masked(0b00011111'u8).HeadArgument
     return (majorType, argument)
 
-proc isBreak*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArgument]): bool =
+proc isBreak*(head: tuple[major: HeadMajor, argument: HeadArgument]): bool =
     ## Checks if the head suggests a break of indefinite sequence.
     return head.major == 7 and head.argument == 31
+
+proc isIndefinite*(argument: HeadArgument): bool =
+    ## Checks if the argument suggests an indefinite sequence.
+    return argument == 31
 
 proc getFullArgument*(reader: CborReader, shortArgument: HeadArgument): uint64 =
     ## Gets the full argument from the short argument.

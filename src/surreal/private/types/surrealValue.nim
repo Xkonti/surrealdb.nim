@@ -1,3 +1,4 @@
+import std/[strutils]
 import surrealTypes
 
 type
@@ -9,8 +10,14 @@ type
             intIsNegative*: bool
         of SurrealBytes:
             bytesVal*: seq[uint8]
+        of SurrealString:
+            stringVal*: string
+        of SurrealArray:
+            arrayVal*: seq[SurrealValue]
 
 include values/[
     integerValue,
-    bytesValue
+    bytesValue,
+    stringValue,
+    arrayValue
     ]

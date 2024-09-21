@@ -3,6 +3,8 @@ type SurrealTypes* = enum
 
     SurrealInteger,
     SurrealBytes,
+    SurrealString,
+    SurrealArray,
 
     # SurrealNone,
     # SurrealNull,

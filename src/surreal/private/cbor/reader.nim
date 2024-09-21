@@ -33,6 +33,10 @@ proc readUInt64*(reader: CborReader): uint64 =
     bigEndian64(result.addr, reader.data[reader.pos].addr)
     inc reader.pos, 8
 
+proc readBytes*(reader: CborReader, numberOfBytes: uint64): seq[uint8] =
+    ## Reads the specified number of bytes from the CBOR data into a new sequence.
+    result = reader.data[reader.pos..<reader.pos+numberOfBytes].toSeq
+
 proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =
     ## Reads the head of the CBOR data: the Major type and the argument (or additional bytes if necessary).
     let firstByte = reader.readUInt8()

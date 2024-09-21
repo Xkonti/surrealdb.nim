@@ -7,5 +7,10 @@ type
         of SurrealInteger:
             intVal*: uint64
             intIsNegative*: bool
+        of SurrealBytes:
+            bytesVal*: seq[uint8]
 
-include values/[integerValue]
+include values/[
+    integerValue,
+    bytesValue
+    ]

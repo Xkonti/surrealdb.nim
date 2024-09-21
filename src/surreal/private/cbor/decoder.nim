@@ -16,8 +16,10 @@ proc decode*(reader: CborReader): SurrealValue =
         let value = reader.getFullArgument(headArgument)
         return value.toSurrealNegativeInt()
     of 2:
-        # TODO:Byte string
-        discard
+        # Byte string
+        let numberOfBytes = reader.getFullArgument(headArgument)
+        var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
+        return bytes.toSurrealBytes()
     of 3:
         # TODO:Text string
         discard

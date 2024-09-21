@@ -2,6 +2,7 @@ type SurrealTypes* = enum
     ## Supported Surreal types
 
     SurrealInteger,
+    SurrealBytes,
 
     # SurrealNone,
     # SurrealNull,

@@ -1,0 +1,1 @@
+const cborBreak*: uint8 = 0b111_11111'u8

@@ -14,7 +14,7 @@ proc decode*(reader: CborReader): SurrealValue =
     of 1:
         # Negative integer
         let value = reader.getFullArgument(headArgument)
-        return value.toSurrealNegativeInt()
+        return toSurrealNegativeIntRaw(value)
     of 2:
         # Byte string
         let numberOfBytes = reader.getFullArgument(headArgument)

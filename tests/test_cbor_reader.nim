@@ -94,13 +94,21 @@ suite "CBOR:Reader:Head":
         check(decoded.intVal == 6_942_069_420_694_206_942'u64)
         check(decoded.toUInt64 == 6_942_069_420_694_206_942'u64)
 
+    test "decode negative integer #0":
+        const data = @[0b001_00000'u8]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == true)
+        check(decoded.intVal == 0)
+        check(decoded.toInt8 == -1'i8)
+
     test "decode negative integer #1":
         const data = @[0b001_01011'u8]
         let decoded = decode(data)
         check(decoded.kind == SurrealInteger)
         check(decoded.intIsNegative == true)
         check(decoded.intVal == 11)
-        check(decoded.toInt8 == -11'i8)
+        check(decoded.toInt8 == -12'i8)
 
     test "decode negative integer #2":
         const data = @[
@@ -112,7 +120,7 @@ suite "CBOR:Reader:Head":
         check(decoded.kind == SurrealInteger)
         check(decoded.intIsNegative == true)
         check(decoded.intVal == 25000)
-        check(decoded.toInt32 == -25000'i32)
+        check(decoded.toInt32 == -25001'i32)
 
     test "decode negative integer #3":
         const data = @[
@@ -126,7 +134,7 @@ suite "CBOR:Reader:Head":
         check(decoded.kind == SurrealInteger)
         check(decoded.intIsNegative == true)
         check(decoded.intVal == 69420)
-        check(decoded.toInt64 == -69420'i64)
+        check(decoded.toInt64 == -69421'i64)
 
     test "decode byte string #1":
         const data = @[

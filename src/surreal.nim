@@ -3,7 +3,7 @@ import surreal/private/[queries]
 import surreal/private/types/[record, tableName]
 import surreal/private/logic/[connection]
 
-import surreal/private/cbor/[constants, gap, decoder]
+import surreal/private/cbor/[gap, decoder]
 
 proc main() {.async.} =
     # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),

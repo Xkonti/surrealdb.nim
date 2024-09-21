@@ -3,9 +3,9 @@ type
         ## A Gap represents a placeholder in partially encoded CBOR data.
         ## It can optionally hold a default value.
         ## A Gap has a default value if it was created with exactly one argument.
-        args: seq[T] = @[]
+        args: seq[T]
 
-    Fill*[T] = (gap: Gap[T], value: T)
+    Fill*[T] = tuple[gap: Gap[T], value: T]
         ## A Fill is used to provide a value for a Gap when finalizing partially encoded CBOR data.
 
 proc newGap*[T](args: varargs[T]): Gap[T] =

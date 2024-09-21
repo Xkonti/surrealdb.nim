@@ -103,3 +103,5 @@ proc toInt64*(value: SurrealValue): int64 =
     const minInt64Positive: uint64 = (int64.high - 1).uint64
     if value.intVal > (if value.intIsNegative: minInt64Positive else: maxInt64):
         raise newException(ValueError, "The stored value does not fit in an int64")
+
+    return (value.intVal.int64 * (if value.intIsNegative: -1 else: 1))

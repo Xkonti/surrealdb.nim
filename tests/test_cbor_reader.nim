@@ -1,6 +1,6 @@
 import std/unittest
 import ../src/surreal/private/cbor/[decoder, reader, types]
-import ../src/surreal/private/types/[surrealTypes]
+import ../src/surreal/private/types/[surrealTypes, surrealValue]
 
 suite "CBOR:Reader:Head":
 
@@ -59,10 +59,74 @@ suite "CBOR:Reader:Head":
         check(isBreak == false)
 
     test "decode positive integer #1":
-        discard
+        const data = @[0b000_01001'u8]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == false)
+        check(decoded.intVal == 9)
+        check(decoded.toInt16 == 9'i16)
+        check(decoded.toUInt8 == 9'u8)
+
+    test "decode positive integer #2":
+        const data = @[0b000_11000'u8, 0b0100_0101'u8]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == false)
+        check(decoded.intVal == 69)
+        check(decoded.toInt8 == 69'i8)
+        check(decoded.toUInt16 == 69'u16)
+
+    test "decode positive integer #3":
+        const data = @[
+            0b000_11011'u8,
+            0b0110_0000'u8,
+            0b0101_0111'u8,
+            0b0010_1111'u8,
+            0b0101_1011'u8,
+            0b1000_0010'u8,
+            0b1001_0100'u8,
+            0b0111_1001'u8,
+            0b1101_1110'u8
+            ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == false)
+        check(decoded.intVal == 6_942_069_420_694_206_942'u64)
+        check(decoded.toUInt64 == 6_942_069_420_694_206_942'u64)
 
     test "decode negative integer #1":
-        discard
+        const data = @[0b001_01011'u8]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == true)
+        check(decoded.intVal == 11)
+        check(decoded.toInt8 == -11'i8)
+
+    test "decode negative integer #2":
+        const data = @[
+            0b001_11001'u8,
+            0b0110_0001'u8,
+            0b1010_1000'u8
+            ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == true)
+        check(decoded.intVal == 25000)
+        check(decoded.toInt32 == -25000'i32)
+
+    test "decode negative integer #3":
+        const data = @[
+            0b001_11010'u8,
+            0b0000_0000'u8,
+            0b0000_0001'u8,
+            0b0000_1111'u8,
+            0b0010_1100'u8
+            ]
+        let decoded = decode(data)
+        check(decoded.kind == SurrealInteger)
+        check(decoded.intIsNegative == true)
+        check(decoded.intVal == 69420)
+        check(decoded.toInt64 == -69420'i64)
 
     test "decode byte string #1":
         const data = @[

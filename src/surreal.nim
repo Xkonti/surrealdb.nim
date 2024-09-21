@@ -3,6 +3,8 @@ import surreal/private/[queries]
 import surreal/private/types/[record, tableName]
 import surreal/private/logic/[connection]
 
+import surreal/private/cbor/[constants, gap, decoder]
+
 proc main() {.async.} =
     # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),
     #   path = "/rpc", protocols = @["cbor"])   protocol = "alpha"

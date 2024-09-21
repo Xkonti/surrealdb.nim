@@ -8,13 +8,13 @@ proc decode*(reader: CborReader): SurrealValue =
 
     case headMajor
     of 0:
-        # Unsigned integer
-        let fullArgument = reader.getFullArgument(headArgument)
-        return fullArgument.toSurrealInt()
+        # Positive integer
+        let value = reader.getFullArgument(headArgument)
+        return value.toSurrealInt()
     of 1:
         # Negative integer
-        let fullArgument = reader.getFullArgument(headArgument)
-        return fullArgument.toSurrealNegativeInt()
+        let value = reader.getFullArgument(headArgument)
+        return value.toSurrealNegativeInt()
     of 2:
         # TODO:Byte string
         discard

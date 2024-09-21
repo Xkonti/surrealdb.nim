@@ -1,4 +1,4 @@
-import std/[bitops, sequtils]
+import std/[bitops, endians, sequtils]
 import types
 
 type
@@ -20,31 +20,17 @@ proc readUInt8*(reader: CborReader): uint8 =
 
 proc readUInt16*(reader: CborReader): uint16 =
     ## Rreads two bytes from the CBOR data as a uint16.
-    result = bitand(
-        (reader.data[reader.pos].uint16 shl 8),
-        reader.data[reader.pos+1].uint16)
+    bigEndian16(result.addr, reader.data[reader.pos].addr)
     inc reader.pos, 2
 
 proc readUInt32*(reader: CborReader): uint32 =
     ## Reads four bytes from the CBOR data as a uint32.
-    result = bitand(
-        (reader.data[reader.pos].uint32 shl 24),
-        (reader.data[reader.pos+1].uint32 shl 16),
-        (reader.data[reader.pos+2].uint32 shl 8),
-        reader.data[reader.pos+3].uint32)
+    bigEndian32(result.addr, reader.data[reader.pos].addr)
     inc reader.pos, 4
 
 proc readUInt64*(reader: CborReader): uint64 =
     ## Reads eight bytes from the CBOR data as a uint64.
-    result = bitand(
-        (reader.data[reader.pos].uint64 shl 56),
-        (reader.data[reader.pos+1].uint64 shl 48),
-        (reader.data[reader.pos+2].uint64 shl 40),
-        (reader.data[reader.pos+3].uint64 shl 32),
-        (reader.data[reader.pos+4].uint64 shl 24),
-        (reader.data[reader.pos+5].uint64 shl 16),
-        (reader.data[reader.pos+6].uint64 shl 8),
-        reader.data[reader.pos+7].uint64)
+    bigEndian64(result.addr, reader.data[reader.pos].addr)
     inc reader.pos, 8
 
 proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =

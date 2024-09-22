@@ -179,15 +179,13 @@ suite "CBOR:Reader:Head":
     test "decode text string #2":
         var data = @[
             0b011_11001'u8,
-            0b0000_0001'u8,
-            0b1111_0100'u8
+            0b0000_0010'u8,
+            0b1011_1110'u8
         ]
         let text: string = "Ginger: You know what the greatest tragedy is in the whole world?... It's all the people who never find out what it is they really want to do or what it is they're really good at. It's all the sons who become blacksmiths because their fathers were blacksmiths. It's all the people who could be really fantastic flute players who grow old and die without ever seeing a musical instrument, so they become bad plowmen instead. It's all the people with talents who never even find out. Maybe they are never even born in a time when it's even possible to find out. It's all the people who never get to know what it is that they can really be. It's all the wasted chances. -- Terry Pratchett, Moving Pictures"
 
         for c in text:
             data.add(c.uint8)
-
-        # data.add(cast[seq[uint8]](text))
 
         let decoded = decode(data)
         check(decoded.kind == SurrealString)

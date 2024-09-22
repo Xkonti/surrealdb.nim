@@ -4,9 +4,7 @@ proc toSurrealString*(value: string): SurrealValue =
 
 proc toSurrealString*(value: seq[uint8]): SurrealValue =
     ## Converts a sequence of bytes to a SurrealString
-    var text = ""
-    text.setLen(value.len - 1)
-    text = cast[string](value)
+    var text = cast[string](value)
     return SurrealValue(kind: SurrealString, stringVal: text)
 
 proc `%%%`*(value: string): SurrealValue =

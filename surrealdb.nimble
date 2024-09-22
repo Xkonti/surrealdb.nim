@@ -5,10 +5,15 @@ author        = "Xkonti"
 description   = "SurrealDB driver for Nim"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["surreal"]
+bin           = @["surrealdb"]
 
 
 # Dependencies
 
 requires "nim >= 2.0.8"
 requires "ws"
+
+# Test dependencies
+
+requires "asynctest >= 0.5.2 & < 0.6.0"
+requires "dotenv >= 2.0.0"

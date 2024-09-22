@@ -39,6 +39,19 @@
               "kind": "build",
               "isDefault": true
           }
+      },
+      {
+          "label": "nim: test",
+          "command": "nimble",
+          "args": ["test", "-o:bin/", "--verbose", "--hints:off"],
+          "options": {
+              "cwd": "${workspaceRoot}"
+          },
+          "type": "shell",
+          "group": {
+              "kind": "test",
+              "isDefault": true
+          }
       }
   ]
 }

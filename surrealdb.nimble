@@ -17,3 +17,12 @@ requires "ws"
 
 requires "asynctest >= 0.5.2 & < 0.6.0"
 requires "dotenv >= 2.0.0"
+
+
+# Docs generation task
+task docs, "Write the package docs":
+  exec "nim doc --verbosity:0 --project --index:on " &
+    "--git.url:https://github.com/Xkonti/surrealdb.nim" &
+    "--git.commit:master " &
+    "-o:docs " &
+    "src/surrealdb" 

@@ -35,6 +35,8 @@ requires "surrealdb >= 0.1.0"
 ## ▶️ Usage example
 
 ```nim
+import surrealdb
+
 proc main() {.async.} =
     # Connect to SurrealDB
     let surreal = await newSurrealDbConnection(ws://localhost:1234/rpc)

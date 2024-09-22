@@ -2,7 +2,7 @@
 
 An unofficial SurrealDB driver for Nim.
 
-> !WARNING!
+> [!WARNING]
 > This is a very early version - things are barely tested and are subject to change.
 
 ## ⚒️ Current development status

@@ -10,7 +10,7 @@ bin           = @["surrealdb"]
 
 # Dependencies
 
-requires "nim >= 2.0.8"
+requires "nim >= 2.0.0"
 requires "ws"
 
 # Test dependencies

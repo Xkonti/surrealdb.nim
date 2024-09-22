@@ -41,17 +41,17 @@
           }
       },
       {
-        "label": "nim: run tests",
-        "command": "nimble",
-        "args": ["test", "-o:bin/", "--hints:off"],
-        "options": {
-            "cwd": "${workspaceRoot}"
-        },
-        "type": "shell",
-        "group": {
-            "kind": "test",
-            "isDefault": true
-        }
+          "label": "nim: run tests",
+          "command": "nimble",
+          "args": ["test", "-o:bin/", "--verbose", "--hints:off"],
+          "options": {
+              "cwd": "${workspaceRoot}"
+          },
+          "type": "shell",
+          "group": {
+              "kind": "test",
+              "isDefault": true
+          }
       }
   ]
 }

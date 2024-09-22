@@ -1,4 +1,8 @@
 nimcache/
 nimblecache/
 htmldocs/
+.env
 *.exe
+*.pdb
+*.ilk
+*.out

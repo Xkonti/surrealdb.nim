@@ -1,0 +1,55 @@
+name: generate-docs
+
+# Execute this workflow only for Pushes to your main branch, not for PRs
+on:
+  push:
+    branches:
+      - main
+
+# Provides the implicitly used and hidden GITHUB_TOKEN the necessary permissions to deploy github_pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Execute a job called "api-docs"
+jobs:
+  api-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup nim
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '2.0.8'
+      
+      - run: nimble install -Y
+      
+      - name: Build your docs
+        run: nimble docs
+      
+      - name: Copy files to _site directory
+        run: |
+          mkdir _site
+          cp -r docs/* _site
+      
+      - name: Upload  _site directory for deploy job
+        uses: actions/upload-pages-artifact@v2 # This will automatically upload an artifact from the '/_site' directory
+  
+  
+  # Deploy _site directory with permissions of GITHUB_TOKEN
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: api-docs
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

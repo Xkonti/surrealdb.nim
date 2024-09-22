@@ -5,7 +5,7 @@ import std/[asyncdispatch, json, os]
 import asynctest/asyncdispatch/unittest
 import dotenv
 
-import ../src/surrealdb
+import surrealdb
 
 template connectToSurrealDB(surreal: untyped, url: string): untyped =
     var surreal: SurrealDB

@@ -27,7 +27,6 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         return bytes.toSurrealString()
     of Array:
         # Array
-        # TODO: Handle indefinite length arrays
         var elements: seq[SurrealValue] = @[]
         let isIndefinite = headArgument.isIndefinite
         if isIndefinite:

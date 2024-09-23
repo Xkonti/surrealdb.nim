@@ -7,25 +7,25 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
     let (headMajor, headArgument) = head
 
     case headMajor
-    of 0:
+    of PosInt:
         # Positive integer
         let value = reader.getFullArgument(headArgument)
         return value.toSurrealInt()
-    of 1:
+    of NegInt:
         # Negative integer
         let value = reader.getFullArgument(headArgument)
         return toSurrealNegativeIntRaw(value)
-    of 2:
+    of Bytes:
         # Byte string
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealBytes()
-    of 3:
+    of String:
         # Text string
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealString()
-    of 4:
+    of Array:
         # Array
         # TODO: Handle indefinite length arrays
         var elements: seq[SurrealValue] = @[]
@@ -45,13 +45,13 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 elements.add(decode(reader, head))
 
         return elements.toSurrealArray()
-    of 5:
+    of Map:
         # TODO:Map
         discard
-    of 6:
+    of Tag:
         # TODO:Tag
         discard
-    of 7:
+    of Simple:
         # TODO: Simple value
         discard
 

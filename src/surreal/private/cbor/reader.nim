@@ -6,12 +6,20 @@ type
         ## A reader for raw CBOR data (byte array).
         data: seq[uint8]
             ## The raw CBOR data.
-        pos: uint
+        pos: uint64
             ## The current position to read from.
 
 proc newCborReader*(data: openArray[uint8]): CborReader =
     ## Creates a new CborReader instance.
     return CborReader(data: data.toSeq, pos: 0)
+
+proc getBytesLeft*(reader: CborReader): uint64 =
+    ## Returns the number of bytes left in the CBOR data.
+    return reader.data.len.uint64 - reader.pos
+
+proc isEnd*(reader: CborReader): bool =
+    ## Checks if the reader has reached the end of the CBOR data.
+    return reader.pos >= reader.data.len.uint64
 
 proc readUInt8*(reader: CborReader): uint8 =
     ## Reads a single byte from the CBOR data as a uint8.
@@ -36,6 +44,7 @@ proc readUInt64*(reader: CborReader): uint64 =
 proc readBytes*(reader: CborReader, numberOfBytes: uint64): seq[uint8] =
     ## Reads the specified number of bytes from the CBOR data into a new sequence.
     result = reader.data[reader.pos..<reader.pos+numberOfBytes].toSeq
+    reader.pos += numberOfBytes
 
 proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =
     ## Reads the head of the CBOR data: the Major type and the argument (or additional bytes if necessary).
@@ -44,20 +53,20 @@ proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =
     let argument = firstByte.masked(0b00011111'u8).HeadArgument
     return (majorType, argument)
 
-proc isBreak*(head: tuple[major: HeadMajor, argument: HeadArgument]): bool =
-    ## Checks if the head suggests a break of indefinite sequence.
-    return head.major == 7 and head.argument == 31
-
-proc isIndefinite*(argument: HeadArgument): bool =
-    ## Checks if the argument suggests an indefinite sequence.
-    return argument == 31
-
 proc getFullArgument*(reader: CborReader, shortArgument: HeadArgument): uint64 =
     ## Gets the full argument from the short argument.
     result = case shortArgument
-        of 0..23: shortArgument.uint64
-        of 24: reader.readUInt8().uint64
-        of 25: reader.readUInt16().uint64
-        of 26: reader.readUInt32().uint64
-        of 27: reader.readUInt64().uint64
+        of Zero..TwentyThree: shortArgument.uint64
+        of OneByte: reader.readUInt8().uint64
+        of TwoBytes: reader.readUInt16().uint64
+        of FourBytes: reader.readUInt32().uint64
+        of EightBytes: reader.readUInt64().uint64
         else: raise newException(ValueError, "Invalid argument: " & $shortArgument)
+
+proc isBreak*(head: tuple[major: HeadMajor, argument: HeadArgument]): bool =
+    ## Checks if the head suggests a break of indefinite sequence.
+    return head.major == Simple and head.argument == Indefinite
+
+proc isIndefinite*(argument: HeadArgument): bool =
+    ## Checks if the argument suggests an indefinite sequence.
+    return argument == Indefinite

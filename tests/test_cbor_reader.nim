@@ -1,46 +1,130 @@
 import std/unittest
-import ../src/surreal/private/cbor/[constants, decoder, reader, types]
-import ../src/surreal/private/types/[surrealTypes, surrealValue]
+import surreal/private/stew/sequtils2
+import surreal/private/cbor/[encoder, reader, types, writer]
 
-suite "CBOR:Reader:Head":
+suite "CBOR:Reader":
 
-    test "head should return correct major and argument #1":
-        let reader = newCborReader(@[
-            0b000_00001'u8
-            ])
+    test "Returns the number of bytes left":
+        const data = @[0b010_00010'u8, 0b0101_1010'u8]
+        let reader = newCborReader(data)
+        check(reader.getBytesLeft == 2)
+        discard reader.readBytes(1)
+        check(reader.getBytesLeft == 1)
+        discard reader.readBytes(1)
+        check(reader.getBytesLeft == 0)
 
-        let (major, argument) = reader.readHead()
-        check(major == 0)
-        check(argument == 1)
+    test "Checks if has reached the end":
+        const data = @[0b010_00010'u8, 0b0101_1010'u8]
+        let reader = newCborReader(data)
+        check(not reader.isEnd)
+        discard reader.readBytes(1)
+        check(not reader.isEnd)
+        discard reader.readBytes(1)
+        check(reader.isEnd)
 
-        let fullArgument = reader.getFullArgument(argument)
-        check(fullArgument == 1)
+    test "Properly reads uint8":
+        const data = @[
+            0'u8,
+            1'u8,
+            24'u8,
+            31'u8,
+            127'u8,
+            128'u8,
+            uint8.high.uint8 - 1'u8,
+            uint8.high.uint8,
+        ]
+        let reader = newCborReader(data)
+        for value in data:
+            check(reader.readUInt8 == value)
 
-    test "head should return correct major and argument #2":
-        let reader = newCborReader(@[
-            0b001_01001'u8
-            ])
+        check(reader.isEnd)
 
-        let (major, argument) = reader.readHead()
-        check(major == 1)
-        check(argument == 9)
+    test "Properly reads uint16":
+        const numbers: seq[uint16] = @[
+            0, 30, 250, uint8.high.uint16 - 1'u16, uint8.high.uint16,
+            500, 31002, uint16.high - 1, uint16.high
+        ]
+        var data: seq[uint8] = @[]
+        for number in numbers:
+            data.writeRawUInt(number)
 
-        let fullArgument = reader.getFullArgument(argument)
-        check(fullArgument == 9)
+        let reader = newCborReader(data)
+        for value in numbers:
+            check(reader.readUInt16 == value)
 
-    test "head should return correct major and argument #3":
-        let reader = newCborReader(@[
-            0b101_11001'u8,
-            0b0000_0001'u8,
-            0b1111_0100'u8
-            ])
+        check(reader.isEnd)
 
-        let (major, argument) = reader.readHead()
-        check(major == 5)
-        check(argument == 25)
+    test "Properly reads uint32":
+        const numbers: seq[uint32] = @[
+            0, 42, 211, uint8.high.uint32 - 1'u32, uint8.high.uint32,
+            500, 31002, uint16.high.uint32 - 1'u32, uint16.high.uint32,
+            2330254, uint32.high - 1, uint32.high
+        ]
+        var data: seq[uint8] = @[]
+        for number in numbers:
+            data.writeRawUInt(number)
 
-        let fullArgument = reader.getFullArgument(argument)
-        check(fullArgument == 500)
+        let reader = newCborReader(data)
+        for value in numbers:
+            check(reader.readUInt32 == value)
+
+        check(reader.isEnd)
+
+    test "Properly reads uint64":
+        const numbers: seq[uint64] = @[
+            0, 42, 211, uint8.high.uint64 - 1'u64, uint8.high.uint64,
+            500, 31002, uint16.high.uint64 - 1'u64, uint16.high.uint64,
+            2330254, uint32.high.uint64 - 1'u64, uint32.high.uint64,
+            uint32.high.uint64 + 1'u64, uint64.high - 1, uint64.high
+        ]
+        var data: seq[uint8] = @[]
+        for number in numbers:
+            data.writeRawUInt(number)
+
+        let reader = newCborReader(data)
+        for value in numbers:
+            check(reader.readUInt64 == value)
+
+        check(reader.isEnd)
+
+    test "Properly reads multiple bytes":
+        const group1: seq[uint8] = @[30, 108]
+        const group2: seq[uint8] = @[250, 0, 251, 55]
+        const group3: seq[uint8] = @[0, 0, 255, 100, 75]
+
+        var data: seq[uint8] = @[]
+        data.write(group1)
+        data.write(group2)
+        data.write(group3)
+
+        let reader = newCborReader(data)
+        check(reader.readBytes(group1.len) == group1)
+        check(reader.readBytes(group2.len) == group2)
+        check(reader.readBytes(group3.len) == group3)
+        check(reader.isEnd)
+
+    test "head should return correct major and argument":
+        for major in PosInt..Simple:
+            for argument in Zero..Indefinite:
+                let reader = newCborReader(@[encodeHeadByte(major, argument)])
+                let (major, argument) = reader.readHead()
+                check(major == major)
+                check(argument == argument)
+
+    test "head should contain correct full argument":
+        for major in PosInt..Simple:
+            for argument in Zero..TwentyThree:
+                let reader = newCborReader(@[encodeHeadByte(major, argument)])
+                let (major, argument) = reader.readHead()
+                let fullArgument = reader.getFullArgument(argument)
+                check(fullArgument == argument.uint64)
+
+            const numbers: seq[uint64] = @[0, 6, 23, 24, uint8.high, uint8.high + 1, uint16.high, uint16.high + 1, uint32.high, uint32.high + 1, uint64.high]
+            for number in numbers:
+                let reader = newCborReader(encodeHead(major, number.uint64))
+                let (major, argument) = reader.readHead()
+                let fullArgument = reader.getFullArgument(argument)
+                check(fullArgument == number)
 
     test "isBreak should return true for break":
         let reader = newCborReader(@[
@@ -58,210 +142,23 @@ suite "CBOR:Reader:Head":
         let isBreak = head.isBreak
         check(isBreak == false)
 
-    test "decode positive integer #1":
-        const data = @[0b000_01001'u8]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == false)
-        check(decoded.intVal == 9)
-        check(decoded.toInt16 == 9'i16)
-        check(decoded.toUInt8 == 9'u8)
+    test "isIndefinite should return true for indefinite":
+        # isIntefinite should only inspect the argument, so all major types should be fine
+        var data: seq[uint8] = @[]
+        for major in PosInt..Simple:
+            data.add(encodeHeadByte(major, Indefinite))
+        let reader = newCborReader(data)
+        for i in 0..<data.len:
+            let (_, argument) = reader.readHead()
+            check(argument.isIndefinite)
 
-    test "decode positive integer #2":
-        const data = @[0b000_11000'u8, 0b0100_0101'u8]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == false)
-        check(decoded.intVal == 69)
-        check(decoded.toInt8 == 69'i8)
-        check(decoded.toUInt16 == 69'u16)
 
-    test "decode positive integer #3":
-        const data = @[
-            0b000_11011'u8,
-            0b0110_0000'u8,
-            0b0101_0111'u8,
-            0b0010_1111'u8,
-            0b0101_1011'u8,
-            0b1000_0010'u8,
-            0b1001_0100'u8,
-            0b0111_1001'u8,
-            0b1101_1110'u8
-            ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == false)
-        check(decoded.intVal == 6_942_069_420_694_206_942'u64)
-        check(decoded.toUInt64 == 6_942_069_420_694_206_942'u64)
-
-    test "decode negative integer #0":
-        const data = @[0b001_00000'u8]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == true)
-        check(decoded.intVal == 0)
-        check(decoded.toInt8 == -1'i8)
-
-    test "decode negative integer #1":
-        const data = @[0b001_01011'u8]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == true)
-        check(decoded.intVal == 11)
-        check(decoded.toInt8 == -12'i8)
-
-    test "decode negative integer #2":
-        const data = @[
-            0b001_11001'u8,
-            0b0110_0001'u8,
-            0b1010_1000'u8
-            ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == true)
-        check(decoded.intVal == 25000)
-        check(decoded.toInt32 == -25001'i32)
-
-    test "decode negative integer #3":
-        const data = @[
-            0b001_11010'u8,
-            0b0000_0000'u8,
-            0b0000_0001'u8,
-            0b0000_1111'u8,
-            0b0010_1100'u8
-            ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealInteger)
-        check(decoded.intIsNegative == true)
-        check(decoded.intVal == 69420)
-        check(decoded.toInt64 == -69421'i64)
-
-    test "decode byte string #1":
-        const data = @[
-            0b010_00010'u8,
-            0b0101_1010'u8,
-            0b1010_0101'u8,
-        ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealBytes)
-        check(decoded.bytesVal[0] == data[1])
-        check(decoded.bytesVal[1] == data[2])
-
-    test "decode byte string #2":
-        var data = @[
-            0b010_11001'u8,
-            0b0000_0001'u8,
-            0b1111_0100'u8
-        ]
-        for i in 0..<500:
-            let value = i mod 256
-            data.add(value.uint8)
-
-        let decoded = decode(data)
-        check(decoded.kind == SurrealBytes)
-        for i in 0..<500:
-            let value = i mod 256
-            check(decoded.bytesVal[i] == value.uint8)
-
-    test "decode text string #1":
-        const data = @[
-            0b011_00010'u8,
-            0b0011_1111'u8, # Character '?'
-            0b0010_0001'u8, # Character '!'
-        ]
-        let decoded = decode(data) # Casts: cast[string](value)
-        check(decoded.kind == SurrealString) # True
-        check(decoded.stringVal.len == 2) # True
-        check(decoded.stringVal[0] == '?') # True
-        check(decoded.stringVal[1] == '!') # True
-        check($decoded == "?!") # False. It evaluates to "?!�"
-
-    test "decode text string #2":
-        var data = @[
-            0b011_11001'u8,
-            0b0000_0010'u8,
-            0b1011_1110'u8
-        ]
-        let text: string = "Ginger: You know what the greatest tragedy is in the whole world?... It's all the people who never find out what it is they really want to do or what it is they're really good at. It's all the sons who become blacksmiths because their fathers were blacksmiths. It's all the people who could be really fantastic flute players who grow old and die without ever seeing a musical instrument, so they become bad plowmen instead. It's all the people with talents who never even find out. Maybe they are never even born in a time when it's even possible to find out. It's all the people who never get to know what it is that they can really be. It's all the wasted chances. -- Terry Pratchett, Moving Pictures"
-
-        for c in text:
-            data.add(c.uint8)
-
-        let decoded = decode(data)
-        check(decoded.kind == SurrealString)
-        check(decoded.stringVal == text)
-        check($decoded == text)
-
-    test "decode finite array #1":
-        const data = @[
-            0b100_00010'u8, # Array of 2 elements
-            0b000_00001'u8, # Positive integer 1
-            0b001_11000'u8, # Negative integer represended by 1 byte
-            0b1111_1111'u8, # Integer -256
-        ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealArray)
-        check(decoded.arrayVal.len == 2)
-        check(decoded.arrayVal[0].kind == SurrealInteger)
-        check(decoded.arrayVal[0].intIsNegative == false)
-        check(decoded.arrayVal[0].intVal == 1)
-        check(decoded.arrayVal[1].kind == SurrealInteger)
-        check(decoded.arrayVal[1].intIsNegative == true)
-        check(decoded.arrayVal[1].intVal == 255) # SurrealValue stores negative integers as value - 1
-        check(decoded.arrayVal[1].toInt16 == -256'i16) # Should be really -256
-
-    test "decode indefinite array #1":
-        const data = @[
-            0b100_11111'u8, # Array of ? elements
-            0b000_00011'u8, # Positive integer 3
-            0b001_11000'u8, # Negative integer represended by 1 byte
-            0b1111_1111'u8, # Integer -256
-            0b000_00100'u8, # Positive integer 4
-            cborBreak, # Break
-        ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealArray)
-        check(decoded.arrayVal.len == 3)
-        check(decoded.arrayVal[0].kind == SurrealInteger)
-        check(decoded.arrayVal[0].intIsNegative == false)
-        check(decoded.arrayVal[0].intVal == 3)
-        check(decoded.arrayVal[1].kind == SurrealInteger)
-        check(decoded.arrayVal[1].intIsNegative == true)
-        check(decoded.arrayVal[1].intVal == 255) # SurrealValue stores negative integers as value - 1
-        check(decoded.arrayVal[1].toInt16 == -256'i16) # Should be really -256
-        check(decoded.arrayVal[2].kind == SurrealInteger)
-        check(decoded.arrayVal[2].intIsNegative == false)
-        check(decoded.arrayVal[2].intVal == 4)
-
-    test "decode nested indefinite array #1":
-        const data = @[
-            0b100_11111'u8, # Array of ? elements
-            0b000_00011'u8, # Positive integer 3
-            0b100_11111'u8, # Array of ? elements
-            0b000_00011'u8, # Positive integer 3
-            0b000_00011'u8, # Positive integer 3
-            0b000_00011'u8, # Positive integer 3
-            cborBreak, # Break
-            0b000_00100'u8, # Positive integer 4
-            cborBreak, # Break
-        ]
-        let decoded = decode(data)
-        check(decoded.kind == SurrealArray)
-        check(decoded.arrayVal.len == 3)
-        check(decoded.arrayVal[0].kind == SurrealInteger)
-        check(decoded.arrayVal[0].intIsNegative == false)
-        check(decoded.arrayVal[0].intVal == 3)
-        check(decoded.arrayVal[1].kind == SurrealArray)
-        check(decoded.arrayVal[1].arrayVal.len == 3)
-        check(decoded.arrayVal[1].arrayVal[0].kind == SurrealInteger)
-        check(decoded.arrayVal[1].arrayVal[0].intIsNegative == false)
-        check(decoded.arrayVal[1].arrayVal[0].intVal == 3)
-        check(decoded.arrayVal[1].arrayVal[1].kind == SurrealInteger)
-        check(decoded.arrayVal[1].arrayVal[1].intIsNegative == false)
-        check(decoded.arrayVal[1].arrayVal[1].intVal == 3)
-        check(decoded.arrayVal[1].arrayVal[2].kind == SurrealInteger)
-        check(decoded.arrayVal[1].arrayVal[2].intIsNegative == false)
-        check(decoded.arrayVal[1].arrayVal[2].intVal == 3)
-        check(decoded.arrayVal[2].kind == SurrealInteger)
-        check(decoded.arrayVal[2].intIsNegative == false)
-        check(decoded.arrayVal[2].intVal == 4)
+    test "isIndefinite should return false for not indefinite":
+        var data: seq[uint8] = @[]
+        for major in PosInt..Simple:
+            for argument in Zero..Reserved30:
+                data.add(encodeHeadByte(major, argument))
+        let reader = newCborReader(data)
+        for i in 0..<data.len:
+            let (_, argument) = reader.readHead()
+            check(not argument.isIndefinite)

@@ -18,7 +18,7 @@ You can follow the development of this library on:
 - [YouTube livestreams](https://www.youtube.com/playlist?list=PL5AVzKSngnt-vUzv1ykgY8mToNWsMYdcG)
 - [Twitch](https://www.twitch.tv/xkontitech)
 
-## Insstalllation
+## Installation
 
 You can install this library using Nimble:
 

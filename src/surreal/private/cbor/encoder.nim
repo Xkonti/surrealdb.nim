@@ -9,13 +9,13 @@ proc encodeHead*(major: HeadMajor, length: uint64): seq[uint8] =
     let head: uint8 = (major.uint8 shl 5)
     if length < 24:
         return @[head.uint8 or length.uint8]
-    elif length < uint8.high:
+    elif length <= uint8.high:
         return @[head.uint8 or 24, length.uint8]
-    elif length < uint16.high:
+    elif length <= uint16.high:
         var bytes = @[head.uint8 or 25]
         bytes.writeRawUInt(length.uint16)
         return bytes
-    elif length < uint32.high:
+    elif length <= uint32.high:
         var bytes = @[head.uint8 or 26]
         bytes.writeRawUInt(length.uint32)
         return bytes

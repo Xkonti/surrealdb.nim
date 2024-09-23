@@ -1,3 +1,5 @@
+# ==== From integers to SurrealValues ====
+
 proc toSurrealInt*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue =
     ## Converts an integer to a SurrealValue
     return SurrealValue(kind: SurrealInteger, intVal: value.uint64, intIsNegative: false)
@@ -24,6 +26,9 @@ proc `%%%`*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue =
 proc `%%%`*(value: int | int8 | int16 | int32 | int64): SurrealValue =
     ## Converts an integer to a SurrealValue
     return toSurrealInt(value)
+
+
+# ==== From SurrealValues to integers ====
 
 proc toUInt8*(value: SurrealValue): uint8 =
     ## Converts a SurrealValue to an uint8.
@@ -120,3 +125,20 @@ proc toInt64*(value: SurrealValue): int64 =
         return value.intVal.int64
 
 # TODO: Add support for larger integers - we need an equivalent of negative uint64
+
+
+# ==== Sign checking ====
+
+proc isPositive*(value: SurrealValue): bool =
+    ## Checks if the SurrealValue is positive.
+    case value.kind
+    of SurrealInteger:
+        return not value.intIsNegative
+    # of SurrealFloat:
+    #     return value.floatVal > 0
+    else:
+        raise newException(ValueError, "Cannot check the sign of a non-integer value")
+
+proc isNegative*(value: SurrealValue): bool =
+    ## Checks if the SurrealValue is negative.
+    return not isPositive(value)

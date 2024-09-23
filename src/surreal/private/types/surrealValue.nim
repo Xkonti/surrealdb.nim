@@ -6,8 +6,8 @@ type
         ## A SurrealDB-compatible value. This can be serialized to/from CBOR.
         case kind*: SurrealTypes
         of SurrealInteger:
-            intVal*: uint64
-            intIsNegative*: bool
+            intVal: uint64
+            intIsNegative: bool
         of SurrealBytes:
             bytesVal*: seq[uint8]
         of SurrealString:

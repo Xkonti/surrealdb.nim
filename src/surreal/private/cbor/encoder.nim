@@ -32,8 +32,8 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
     ## Encodes the SurrealValue to the CBOR writer.
     case value.kind
     of SurrealInteger:
-        let major = if value.intIsNegative: NegInt else: PosInt
-        writer.encodeHead(major, value.intVal.uint64)
+        let major = if value.isNegative: NegInt else: PosInt
+        writer.encodeHead(major, value.toUInt64())
     of SurrealBytes:
         writer.encodeHead(Bytes, value.bytesVal.len.uint64)
         writer.writeBytes(value.bytesVal)

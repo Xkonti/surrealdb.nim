@@ -1,5 +1,5 @@
 import std/unittest
-import surreal/private/cbor/[decoder, encoder, types]
+import surreal/private/cbor/[decoder, encoder, types, writer]
 import surreal/private/types/[surrealTypes, surrealValue]
 
 suite "CBOR:Decoder:Bytes":
@@ -17,12 +17,13 @@ suite "CBOR:Decoder:Bytes":
 
     test "decode byte string #2":
         const length = 500
-        var data = encodeHead(Bytes, length)
+        var writer = newCborWriter()
+        writer.encodeHead(Bytes, length)
         for i in 0..<length:
             let value = i mod 256
-            data.add(value.uint8)
+            writer.writeRawUInt(value.uint8)
 
-        let decoded = decode(data)
+        let decoded = decode(writer.getOutput())
         check(decoded.kind == SurrealBytes)
         for i in 0..<length:
             let value = i mod 256

@@ -16,13 +16,19 @@ template connectToSurrealDB(surreal: untyped, url: string): untyped =
         assert false, "Couldn't connect to SurrealDB"
     defer: surreal.disconnect()
 
+
 suite "basics":
+    var isTestingEnabled: bool
     var surrealUrl: string
     var rootPass: string
     var rootUser: string
 
     setup:
         load() # Load environment variables from .env file
+        isTestingEnabled = getEnv("TESTING_SURREAL_ENABLED") == "true"
+        if not isTestingEnabled:
+            echo "SurrealDB tests are disabled"
+            return
         surrealUrl = getEnv("TESTING_SURREAL_URL")
         rootUser = getEnv("TESTING_SURREAL_ROOT_USER")
         rootPass = getEnv("TESTING_SURREAL_ROOT_PASS")
@@ -30,10 +36,9 @@ suite "basics":
         assert rootUser.len > 0, "TESTING_SURREAL_ROOT_USER environment variable is not set"
         assert rootPass.len > 0, "TESTING_SURREAL_ROOT_PASS environment variable is not set"
 
-    test "Tests work":
-        assert true
-
     test "can connect to SurrealDB":
+        if not isTestingEnabled:
+            return
         try:
             let surreal = await newSurrealDbConnection(surrealUrl)
             assert surreal != nil, "Couldn't connect to SurrealDB"
@@ -43,6 +48,8 @@ suite "basics":
 
     # Having trouble making this run in tests
     # test "can use the database":
+    #     if not isTestingEnabled:
+    #        return
     #     var surreal: SurrealDB
     #     try:
     #         surreal = await newSurrealDbConnection(surrealUrl)

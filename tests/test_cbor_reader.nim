@@ -121,7 +121,9 @@ suite "CBOR:Reader":
 
             const numbers: seq[uint64] = @[0, 6, 23, 24, uint8.high, uint8.high + 1, uint16.high, uint16.high + 1, uint32.high, uint32.high + 1, uint64.high]
             for number in numbers:
-                let reader = newCborReader(encodeHead(major, number.uint64))
+                let writer = newCborWriter()
+                writer.encodeHead(major, number.uint64)
+                let reader = newCborReader(writer.getOutput())
                 let (major, argument) = reader.readHead()
                 let fullArgument = reader.getFullArgument(argument)
                 check(fullArgument == number)
@@ -144,21 +146,21 @@ suite "CBOR:Reader":
 
     test "isIndefinite should return true for indefinite":
         # isIntefinite should only inspect the argument, so all major types should be fine
-        var data: seq[uint8] = @[]
+        let writer = newCborWriter()
         for major in PosInt..Simple:
-            data.add(encodeHeadByte(major, Indefinite))
-        let reader = newCborReader(data)
-        for i in 0..<data.len:
+            writer.encodeHeadByte(major, Indefinite)
+        let reader = newCborReader(writer.getOutput())
+        for i in 0..<writer.len:
             let (_, argument) = reader.readHead()
             check(argument.isIndefinite)
 
 
     test "isIndefinite should return false for not indefinite":
-        var data: seq[uint8] = @[]
+        let writer = newCborWriter()
         for major in PosInt..Simple:
             for argument in Zero..Reserved30:
-                data.add(encodeHeadByte(major, argument))
-        let reader = newCborReader(data)
-        for i in 0..<data.len:
+                writer.encodeHeadByte(major, argument)
+        let reader = newCborReader(writer.getOutput())
+        for i in 0..<writer.len:
             let (_, argument) = reader.readHead()
             check(not argument.isIndefinite)

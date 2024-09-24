@@ -15,6 +15,22 @@ type
         of SurrealArray:
             arrayVal*: seq[SurrealValue]
 
+func `==`*(a, b: SurrealValue): bool =
+    ## Compares two SurrealValues for equality.
+    if a.kind != b.kind:
+        return false
+
+    case a.kind
+    of SurrealInteger:
+        return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
+    of SurrealBytes:
+        return a.bytesVal == b.bytesVal
+    of SurrealString:
+        return a.stringVal == b.stringVal
+    of SurrealArray:
+        return a.arrayVal == b.arrayVal
+
+
 include values/[
     integerValue,
     bytesValue,

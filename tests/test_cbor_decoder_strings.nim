@@ -1,5 +1,4 @@
 import std/unittest
-import surreal/private/stew/sequtils2
 import surreal/private/cbor/[decoder, encoder, types, writer]
 import surreal/private/types/[surrealTypes, surrealValue]
 

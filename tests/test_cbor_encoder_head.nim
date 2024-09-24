@@ -1,7 +1,6 @@
 import std/[sequtils, unittest]
 import surreal/private/stew/sequtils2
-import surreal/private/cbor/[constants, encoder, reader, types, writer]
-import surreal/private/utils
+import surreal/private/cbor/[constants, encoder, types, writer]
 
 suite "CBOR:Encoder:Head":
 

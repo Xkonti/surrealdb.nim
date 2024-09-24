@@ -5,7 +5,8 @@ proc toSurrealInt*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue
     return SurrealValue(kind: SurrealInteger, intVal: value.uint64, intIsNegative: false)
 
 proc toSurrealNegativeInt*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue =
-    ## Converts an integer to a negative SurrealValue - this will modify the value by removing 1 from it
+    ## Converts a positive integer to a negative SurrealValue
+    # The stored value is made smaller by 1 to be able to fit it properly
     return SurrealValue(kind: SurrealInteger, intVal: value.uint64 - 1, intIsNegative: true)
 
 proc toSurrealNegativeIntRaw*(value: uint64): SurrealValue =
@@ -16,7 +17,7 @@ proc toSurrealNegativeIntRaw*(value: uint64): SurrealValue =
 proc toSurrealInt*(value: int | int8 | int16 | int32 | int64): SurrealValue =
     ## Converts an integer to a SurrealValue
     if value < 0:
-        return SurrealValue(kind: SurrealInteger, intVal: (-value).uint64 - 1, intIsNegative: true)
+        return SurrealValue(kind: SurrealInteger, intVal: (-(value.int64 + 1'i64)).uint64, intIsNegative: true)
     return SurrealValue(kind: SurrealInteger, intVal: value.uint64, intIsNegative: false)
 
 proc `%%%`*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue =
@@ -75,7 +76,7 @@ proc toInt8*(value: SurrealValue): int8 =
 
     const maxInt8: uint64 = int8.high.uint64
     if value.intVal > maxInt8:
-        raise newException(ValueError, "The stored value does not fit in an int8")
+        raise newException(ValueError, "The stored value $1 does not fit in an int8" % $value.intVal)
 
     if value.intIsNegative:
         return ((value.intVal.int16 * -1) - 1).int8
@@ -89,7 +90,7 @@ proc toInt16*(value: SurrealValue): int16 =
 
     const maxInt16: uint64 = int16.high.uint64
     if value.intVal > maxInt16:
-        raise newException(ValueError, "The stored value does not fit in an int16")
+        raise newException(ValueError, "The stored value $1 does not fit in an int16" % $value.intVal)
 
     if value.intIsNegative:
         return ((value.intVal.int32 * -1) - 1).int16
@@ -103,7 +104,7 @@ proc toInt32*(value: SurrealValue): int32 =
 
     const maxInt32: uint64 = int32.high.uint64
     if value.intVal > maxInt32:
-        raise newException(ValueError, "The stored value does not fit in an int32")
+        raise newException(ValueError, "The stored value $1 does not fit in an int32" % $value.intVal)
 
     if value.intIsNegative:
         return ((value.intVal.int64 * -1) - 1).int32
@@ -117,7 +118,7 @@ proc toInt64*(value: SurrealValue): int64 =
 
     const maxInt64: uint64 = int64.high.uint64
     if value.intVal > maxInt64:
-        raise newException(ValueError, "The stored value does not fit in an int64")
+        raise newException(ValueError, "The stored value $1 does not fit in an int64" % $value.intVal)
 
     if value.intIsNegative:
         return ((value.intVal.int64 * -1) - 1).int64

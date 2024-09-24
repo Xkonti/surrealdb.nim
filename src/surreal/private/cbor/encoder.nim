@@ -27,13 +27,31 @@ proc encodeHead*(writer: CborWriter, major: HeadMajor, length: uint64)=
         writer.writeRawUInt(head.uint8 or 27)
         writer.writeRawUInt(length.uint64)
 
+proc encodePosInteger(writer: CborWriter, value: uint | uint8 | uint16 | uint32 | uint64) =
+    ## Encodes a positive integer to the CBOR writer.
+    encodeHead(writer, PosInt, value.uint64)
+
+proc encodeNegInteger(writer: CborWriter, value: uint | uint8 | uint16  | uint32  | uint64) =
+    ## Encodes a negative integer to the CBOR writer.
+    encodeHead(writer, NegInt, value.uint64)
+
+# proc encodeInteger*(writer: CborWriter, value: int | int8 | int16  | int32  | int64) =
+#     ## Encodes an integer to the CBOR writer.
+#     let isPositive = value >= 0
+#     let major = if isPositive: PosInt else: NegInt
+
+#     # Convert the value to a positive integer
+#     let posValue = if isPositive: value else: -(value + 1)
+#     encodeHead(writer, major, posValue.uint64)
 
 proc encode*(writer: CborWriter, value: SurrealValue) =
     ## Encodes the SurrealValue to the CBOR writer.
     case value.kind
     of SurrealInteger:
-        let major = if value.isNegative: NegInt else: PosInt
-        writer.encodeHead(major, value.toUInt64())
+        if value.isPositive:
+            writer.encodePosInteger(value.getRawInt())
+        else:
+            writer.encodeNegInteger(value.getRawInt())
     of SurrealBytes:
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)
@@ -41,5 +59,15 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         let bytes = value.toBytes()
         writer.encodeHead(String, bytes.len.uint64)
         writer.writeBytes(bytes)
+    of SurrealArray:
+        writer.encodeHead(Array, value.len.uint64)
+        for item in value.getSeq:
+            encode(writer, item)
     else:
         raise newException(ValueError, "Cannot encode a {0} value" % $value.kind)
+
+proc encode*(value: SurrealValue): CborWriter =
+    ## Encodes the SurrealValue to the CBOR writer.
+    let writer = newCborWriter()
+    encode(writer, value)
+    return writer

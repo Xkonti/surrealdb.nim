@@ -24,10 +24,6 @@ proc `%%%`*(value: int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 |
     ## Converts an integer to a SurrealValue
     return toSurrealInt(value)
 
-# proc `%%%`*(value: int | int8 | int16 | int32 | int64): SurrealValue =
-#     ## Converts an integer to a SurrealValue
-#     return toSurrealInt(value)
-
 
 # ==== From SurrealValues to integers ====
 
@@ -127,6 +123,13 @@ proc toInt64*(value: SurrealValue): int64 =
 
 # TODO: Add support for larger integers - we need an equivalent of negative uint64
 
+proc getRawInt*(value: SurrealValue): uint64 =
+    ## Returns the raw integer value stored in the SurrealValue.
+    case value.kind
+    of SurrealInteger:
+        return value.intVal
+    else:
+        raise newException(ValueError, "Cannot get the raw integer value from a $1 value" % $value.kind)
 
 # ==== Sign checking ====
 

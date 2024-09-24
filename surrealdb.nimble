@@ -34,13 +34,20 @@ task test_surreal, "Tests agains SurrealDB instance":
 task test, "General tests":
   for file in [
     # CBOR
+    "test_cbor_reader.nim",
+    "test_cbor_writer.nim",
+
     "test_cbor_decoder_arrays.nim",
     "test_cbor_decoder_bytes.nim",
     "test_cbor_decoder_integers.nim",
     "test_cbor_decoder_strings.nim",
+
     "test_cbor_encoder_head.nim",
-    "test_cbor_reader.nim",
-    "test_cbor_writer.nim",
+    "test_cbor_encoder_bytes.nim",
+    "test_cbor_encoder_integers.nim",
+    "test_cbor_encoder_strings.nim",
+
+    "test_cbor_encoding.nim",
 
     # SurrealValue
     "test_surrealvalue_array.nim",

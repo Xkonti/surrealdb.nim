@@ -25,4 +25,28 @@ task docs, "Write the package docs":
     "--git.url:https://github.com/Xkonti/surrealdb.nim" &
     "--git.commit:master " &
     "-o:docs " &
-    "src/surrealdb" 
+    "src/surrealdb"
+
+task test_surreal, "Tests agains SurrealDB instance":
+  for file in ["test_basics.nim"]:
+    exec "nim r --hints:off tests/" & file
+
+task test, "General tests":
+  for file in [
+    # CBOR
+    "test_cbor_decoder_arrays.nim",
+    "test_cbor_decoder_bytes.nim",
+    "test_cbor_decoder_integers.nim",
+    "test_cbor_decoder_strings.nim",
+    "test_cbor_encoder_head.nim",
+    "test_cbor_reader.nim",
+    "test_cbor_writer.nim",
+
+    # SurrealValue
+    "test_surrealvalue_array.nim",
+    "test_surrealvalue_bytes.nim",
+    "test_surrealvalue_integer.nim",
+    "test_surrealvalue_string.nim"
+  ]:
+    exec "nim r --hints:off tests/" & file
+  

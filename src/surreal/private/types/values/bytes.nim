@@ -18,7 +18,7 @@ proc `%%%`*(value: openArray[uint8]): SurrealValue =
     ## Converts a sequence of bytes to a SurrealValue
     return toSurrealBytes(value)
 
-proc bytes*(value: SurrealValue): seq[uint8] =
+proc getBytes*(value: SurrealValue): seq[uint8] =
     ## Converts bytes array from SurrealBytes
     case value.kind
     of SurrealBytes:

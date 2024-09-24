@@ -11,9 +11,9 @@ type
         of SurrealBytes:
             bytesVal: seq[uint8]
         of SurrealString:
-            stringVal*: string
+            stringVal: string
         of SurrealArray:
-            arrayVal*: seq[SurrealValue]
+            arrayVal: seq[SurrealValue]
 
 func `==`*(a, b: SurrealValue): bool =
     ## Compares two SurrealValues for equality.

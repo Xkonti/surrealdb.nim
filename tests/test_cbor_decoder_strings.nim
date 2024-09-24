@@ -12,9 +12,9 @@ suite "CBOR:Decoder:Strings":
         ]
         let decoded = decode(data)
         check(decoded.kind == SurrealString)
-        check(decoded.stringVal.len == 2)
-        check(decoded.stringVal[0] == '?')
-        check(decoded.stringVal[1] == '!')
+        check(decoded.len == 2)
+        check(decoded.getString[0] == '?')
+        check(decoded.getString[1] == '!')
         check($decoded == "?!")
 
     test "decode text string #2":
@@ -25,5 +25,5 @@ suite "CBOR:Decoder:Strings":
 
         let decoded = decode(writer.getOutput())
         check(decoded.kind == SurrealString)
-        check(decoded.stringVal == text)
+        check(decoded.getString == text)
         check($decoded == text)

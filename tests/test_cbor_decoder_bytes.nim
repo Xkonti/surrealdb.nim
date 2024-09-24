@@ -12,8 +12,8 @@ suite "CBOR:Decoder:Bytes":
         ]
         let decoded = decode(data)
         check(decoded.kind == SurrealBytes)
-        check(decoded.bytes[0] == data[1])
-        check(decoded.bytes[1] == data[2])
+        check(decoded.getBytes[0] == data[1])
+        check(decoded.getBytes[1] == data[2])
 
     test "decode byte string #2":
         const length = 500
@@ -27,4 +27,4 @@ suite "CBOR:Decoder:Bytes":
         check(decoded.kind == SurrealBytes)
         for i in 0..<length:
             let value = i mod 256
-            check(decoded.bytes[i] == value.uint8)
+            check(decoded.getBytes[i] == value.uint8)

@@ -35,8 +35,8 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         let major = if value.isNegative: NegInt else: PosInt
         writer.encodeHead(major, value.toUInt64())
     of SurrealBytes:
-        writer.encodeHead(Bytes, value.bytesVal.len.uint64)
-        writer.writeBytes(value.bytesVal)
+        writer.encodeHead(Bytes, value.bytes.len.uint64)
+        writer.writeBytes(value.bytes)
     of SurrealString:
         let bytes = value.toBytes()
         writer.encodeHead(String, bytes.len.uint64)

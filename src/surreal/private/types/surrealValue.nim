@@ -9,7 +9,7 @@ type
             intVal: uint64
             intIsNegative: bool
         of SurrealBytes:
-            bytesVal*: seq[uint8]
+            bytesVal: seq[uint8]
         of SurrealString:
             stringVal*: string
         of SurrealArray:

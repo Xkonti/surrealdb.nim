@@ -20,13 +20,13 @@ proc toSurrealInt*(value: int | int8 | int16 | int32 | int64): SurrealValue =
         return SurrealValue(kind: SurrealInteger, intVal: (-(value.int64 + 1'i64)).uint64, intIsNegative: true)
     return SurrealValue(kind: SurrealInteger, intVal: value.uint64, intIsNegative: false)
 
-proc `%%%`*(value: uint | uint8 | uint16 | uint32 | uint64): SurrealValue =
+proc `%%%`*(value: int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64): SurrealValue =
     ## Converts an integer to a SurrealValue
     return toSurrealInt(value)
 
-proc `%%%`*(value: int | int8 | int16 | int32 | int64): SurrealValue =
-    ## Converts an integer to a SurrealValue
-    return toSurrealInt(value)
+# proc `%%%`*(value: int | int8 | int16 | int32 | int64): SurrealValue =
+#     ## Converts an integer to a SurrealValue
+#     return toSurrealInt(value)
 
 
 # ==== From SurrealValues to integers ====

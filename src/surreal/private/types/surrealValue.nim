@@ -1,4 +1,4 @@
-import std/[strutils]
+import std/[sequtils, strutils]
 import surrealTypes
 
 type
@@ -32,8 +32,9 @@ func `==`*(a, b: SurrealValue): bool =
 
 
 include values/[
-    integerValue,
-    bytesValue,
-    stringValue,
-    arrayValue
+    integer,
+    bytes,
+    string,
+    array,
+    shared
     ]

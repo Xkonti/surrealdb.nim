@@ -43,6 +43,7 @@ task test, "General tests":
     "test_cbor_decoder_strings.nim",
 
     "test_cbor_encoder_head.nim",
+    "test_cbor_encoder_arrays.nim",
     "test_cbor_encoder_bytes.nim",
     "test_cbor_encoder_integers.nim",
     "test_cbor_encoder_strings.nim",

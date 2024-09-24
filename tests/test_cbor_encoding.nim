@@ -1,5 +1,5 @@
-import std/[sequtils, unittest]
-import surreal/private/cbor/[constants, decoder, encoder, types, writer]
+import std/[unittest]
+import surreal/private/cbor/[decoder, encoder, writer]
 import surreal/private/types/[surrealTypes, surrealValue]
 
 suite "CBOR:Encoding":
@@ -93,3 +93,44 @@ suite "CBOR:Encoding":
         check(surrealValue3.kind == SurrealString)
         check(surrealValue3.len == value3.len)
         check(surrealValue3.getString == value3)
+
+    test "Should encode and decode an array":
+        let value1: seq[SurrealValue] = @[]
+        let writer1 = encode(%%% value1)
+        let surrealValue1 = decode(writer1.getOutput())
+        check(surrealValue1.kind == SurrealArray)
+        check(surrealValue1.len == 0)
+        check(surrealValue1.getSeq == value1)
+
+        let value2: seq[SurrealValue] = @[%%% 8]
+        let writer2 = encode(%%% value2)
+        let surrealValue2 = decode(writer2.getOutput())
+        check(surrealValue2.kind == SurrealArray)
+        check(surrealValue2.len == 1)
+        check(surrealValue2.getSeq == value2)
+
+        let value3: seq[SurrealValue] = @[%%% 8, %%% "Hi!"]
+        let writer3 = encode(%%% value3)
+        let surrealValue3 = decode(writer3.getOutput())
+        check(surrealValue3.kind == SurrealArray)
+        check(surrealValue3.len == 2)
+        check(surrealValue3.getSeq == value3)
+
+        let value4: seq[SurrealValue] = @[%%% -3000, %%% @[3'u8, 5, 90], %%% 90_000_000]
+        let writer4 = encode(%%% value4)
+        let surrealValue4 = decode(writer4.getOutput())
+        check(surrealValue4.kind == SurrealArray)
+        check(surrealValue4.len == 3)
+        check(surrealValue4.getSeq == value4)
+
+        var value5: seq[SurrealValue] = @[]
+        for i in 0..2000:
+            value5.add(%%% i)
+        value5.add(%%% "Hello")
+        value5.add(%%% @[1'u8, 2, 3, 4, 5])
+        value5.add(%%% @[%%% "Hello", %%% 12, %%% @[1'u8, 2, 3, 4, 5], %%% @[%%% 1, %%% 2, %%% 3]])
+        let writer5 = encode(%%% value5)
+        let surrealValue5 = decode(writer5.getOutput())
+        check(surrealValue5.kind == SurrealArray)
+        check(surrealValue5.len == 2004)
+        check(surrealValue5.getSeq == value5)

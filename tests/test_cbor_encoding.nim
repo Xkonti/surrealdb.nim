@@ -128,23 +128,24 @@ suite "CBOR:Encoding":
         check(surrealValue3.len == 2)
         check(surrealValue3.getSeq == value3)
 
-        let value4: seq[SurrealValue] = @[%%% -3000, %%% @[3'u8, 5, 90], %%% 90_000_000]
+        let value4: seq[SurrealValue] = @[%%% -3000, %%% @[3'u8, 5, 90], %%% true, %%% 90_000_000]
         let writer4 = encode(%%% value4)
         let surrealValue4 = decode(writer4.getOutput())
         check(surrealValue4.kind == SurrealArray)
-        check(surrealValue4.len == 3)
+        check(surrealValue4.len == 4)
         check(surrealValue4.getSeq == value4)
 
         var value5: seq[SurrealValue] = @[]
         for i in 0..2000:
             value5.add(%%% i)
         value5.add(%%% "Hello")
+        value5.add(%%% false)
         value5.add(%%% @[1'u8, 2, 3, 4, 5])
         value5.add(%%% @[%%% "Hello", %%% 12, %%% @[1'u8, 2, 3, 4, 5], %%% @[%%% 1, %%% 2, %%% 3]])
         let writer5 = encode(%%% value5)
         let surrealValue5 = decode(writer5.getOutput())
         check(surrealValue5.kind == SurrealArray)
-        check(surrealValue5.len == 2004)
+        check(surrealValue5.len == 2005)
         check(surrealValue5.getSeq == value5)
 
     test "Should encode and decode an object":
@@ -163,6 +164,7 @@ suite "CBOR:Encoding":
             "id": %%% "comment:abc123",
             "author": %%% 10223547,
             "content": %%% "Happy thoughts",
+            "approved": %%% true,
             "likes": %%% {
                 "user:10223547": %%% 1,
                 "user:10223548": %%% 2,
@@ -173,5 +175,5 @@ suite "CBOR:Encoding":
         let writer2 = encode(value2)
         let surrealValue2 = decode(writer2.getOutput())
         check(surrealValue2.kind == SurrealObject)
-        check(surrealValue2.len == 5)
+        check(surrealValue2.len == 6)
         check(surrealValue2 == value2)

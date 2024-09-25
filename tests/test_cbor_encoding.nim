@@ -134,3 +134,32 @@ suite "CBOR:Encoding":
         check(surrealValue5.kind == SurrealArray)
         check(surrealValue5.len == 2004)
         check(surrealValue5.getSeq == value5)
+
+    test "Should encode and decode an object":
+        let value1 = %%% {
+            "id": %%% "post:first",
+            "author": %%% "user:10223547",
+            "roles": %%% @[%%% "admin", %%% "guest"]
+        }
+        let writer1 = encode(value1)
+        let surrealValue1 = decode(writer1.getOutput())
+        check(surrealValue1.kind == SurrealObject)
+        check(surrealValue1.len == 3)
+        check(surrealValue1 == value1)
+
+        let value2 = %%% {
+            "id": %%% "comment:abc123",
+            "author": %%% 10223547,
+            "content": %%% "Happy thoughts",
+            "likes": %%% {
+                "user:10223547": %%% 1,
+                "user:10223548": %%% 2,
+                "user:10223549": %%% 30
+            },
+            "secretFlags": %%% @[1'u8, 2, 4, 50]
+        }
+        let writer2 = encode(value2)
+        let surrealValue2 = decode(writer2.getOutput())
+        check(surrealValue2.kind == SurrealObject)
+        check(surrealValue2.len == 5)
+        check(surrealValue2 == value2)

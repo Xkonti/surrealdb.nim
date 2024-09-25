@@ -40,6 +40,7 @@ task test, "General tests":
     "test_cbor_decoder_arrays.nim",
     "test_cbor_decoder_bytes.nim",
     "test_cbor_decoder_integers.nim",
+    "test_cbor_decoder_objects.nim",
     "test_cbor_decoder_strings.nim",
 
     "test_cbor_encoder_head.nim",

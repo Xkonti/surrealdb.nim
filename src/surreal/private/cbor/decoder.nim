@@ -1,3 +1,4 @@
+import std/[tables]
 import ../types/[surrealValue]
 import reader, types
 
@@ -45,8 +46,30 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
 
         return elements.toSurrealArray()
     of Map:
-        # TODO:Map
-        discard
+        var map = initOrderedTable[string, SurrealValue]()
+        let isIndefinite = headArgument.isIndefinite
+        if isIndefinite:
+            # unknown number of elements
+            while true:
+                let keyHead = reader.readHead()
+                if keyHead.isBreak:
+                    break
+                 # TODO: Key can be extracted by something like `decodeString`
+                 #       that avoids wrapping the string in a SurrealValue
+                let key = decode(reader, keyHead)
+                let value = decode(reader, reader.readHead())
+                map[key.getString] = value
+        else:
+            # Known number of elements
+            let numberOfElements = reader.getFullArgument(headArgument)
+            for i in 0..<numberOfElements:
+                # TODO: Key can be extracted by something like `decodeString`
+                #       that avoids wrapping the string in a SurrealValue
+                let key = decode(reader, reader.readHead())
+                let value = decode(reader, reader.readHead())
+                map[key.getString] = value
+
+        return map.toSurrealObject()
     of Tag:
         # TODO:Tag
         discard

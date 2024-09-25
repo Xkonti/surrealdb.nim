@@ -27,6 +27,13 @@ proc encodeHead*(writer: CborWriter, major: HeadMajor, length: uint64)=
         writer.writeRawUInt(head.uint8 or 27)
         writer.writeRawUInt(length.uint64)
 
+proc encodeBool(writer: CborWriter, value: bool) =
+    ## Encodes a bool to the CBOR writer.
+    if value:
+        writer.writeRawUInt(0b111_10101'u8)
+    else:
+        writer.writeRawUInt(0b111_10100'u8)
+
 proc encodePosInteger(writer: CborWriter, value: uint | uint8 | uint16 | uint32 | uint64) =
     ## Encodes a positive integer to the CBOR writer.
     encodeHead(writer, PosInt, value.uint64)
@@ -50,7 +57,7 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         for item in value.getSeq:
             encode(writer, item)
     of SurrealBool:
-        writer.encodeHeadByte(Simple, if value.getBool: TwentyOne else: Twenty)
+        writer.encodeBool(value.getBool)
     of SurrealBytes:
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)

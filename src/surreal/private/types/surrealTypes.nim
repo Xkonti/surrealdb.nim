@@ -5,6 +5,7 @@ type SurrealTypes* = enum
     SurrealBytes,
     SurrealString,
     SurrealArray,
+    SurrealObject,
 
     # SurrealNone,
     # SurrealNull,

@@ -1,7 +1,9 @@
-import std/[sequtils, strutils]
+import std/[sequtils, strutils, tables]
 import surrealTypes
 
 type
+    SurrealObjectEntry* = tuple[key: string, value: SurrealValue]
+    SurrealObjectTable* = OrderedTable[string, SurrealValue]
     SurrealValue* = ref object
         ## A SurrealDB-compatible value. This can be serialized to/from CBOR.
         case kind*: SurrealTypes
@@ -14,6 +16,8 @@ type
             stringVal: string
         of SurrealArray:
             arrayVal: seq[SurrealValue]
+        of SurrealObject:
+            objectVal: SurrealObjectTable
 
 func `==`*(a, b: SurrealValue): bool =
     ## Compares two SurrealValues for equality.
@@ -29,6 +33,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.stringVal == b.stringVal
     of SurrealArray:
         return a.arrayVal == b.arrayVal
+    of SurrealObject:
+        return a.objectVal == b.objectVal
 
 
 include values/[
@@ -36,5 +42,6 @@ include values/[
     bytes,
     string,
     array,
+    map,
     shared
     ]

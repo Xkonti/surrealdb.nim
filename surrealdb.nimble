@@ -46,6 +46,7 @@ task test, "General tests":
     "test_cbor_encoder_arrays.nim",
     "test_cbor_encoder_bytes.nim",
     "test_cbor_encoder_integers.nim",
+    "test_cbor_encoder_objects.nim",
     "test_cbor_encoder_strings.nim",
 
     "test_cbor_encoding.nim",
@@ -54,6 +55,7 @@ task test, "General tests":
     "test_surrealvalue_array.nim",
     "test_surrealvalue_bytes.nim",
     "test_surrealvalue_integer.nim",
+    "test_surrealvalue_object.nim",
     "test_surrealvalue_string.nim"
   ]:
     exec "nim r --hints:off tests/" & file

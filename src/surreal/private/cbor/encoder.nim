@@ -1,4 +1,4 @@
-import std/[strutils]
+import std/[strutils, tables]
 import writer, types
 import ../types/[surrealValue, surrealTypes]
 
@@ -35,6 +35,13 @@ proc encodeNegInteger(writer: CborWriter, value: uint | uint8 | uint16  | uint32
     ## Encodes a negative integer to the CBOR writer.
     encodeHead(writer, NegInt, value.uint64)
 
+proc encodeString(writer: CborWriter, value: string) =
+    ## Encodes a string to the CBOR writer.
+    let bytes = cast[seq[uint8]](value)
+    writer.encodeHead(String, bytes.len.uint64)
+    writer.writeBytes(bytes)
+
+
 # proc encodeInteger*(writer: CborWriter, value: int | int8 | int16  | int32  | int64) =
 #     ## Encodes an integer to the CBOR writer.
 #     let isPositive = value >= 0
@@ -63,8 +70,13 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         writer.encodeHead(Array, value.len.uint64)
         for item in value.getSeq:
             encode(writer, item)
+    of SurrealObject:
+        writer.encodeHead(Map, value.len.uint64)
+        for pair in value.getTable.pairs:
+            writer.encodeString(pair[0])
+            encode(writer, pair[1])
     else:
-        raise newException(ValueError, "Cannot encode a {0} value" % $value.kind)
+        raise newException(ValueError, "Cannot encode a $1 value" % $value.kind)
 
 proc encode*(value: SurrealValue): CborWriter =
     ## Encodes the SurrealValue to the CBOR writer.

@@ -23,15 +23,3 @@ proc getString*(value: SurrealValue): string =
         return value.stringVal
     else:
         raise newException(ValueError, "Cannot extract the string value from a $1 value" % $value.kind)
-
-proc `$`*(value: SurrealValue): string =
-    ## Converts a SurrealValue to a sequence of bytes.
-    case value.kind
-    of SurrealInteger:
-        return $(value.toInt64)
-    of SurrealBytes:
-        return cast[string](value.bytesVal)
-    of SurrealString:
-        return value.stringVal
-    else:
-        raise newException(ValueError, "Cannot convert a {0} value to a string" % $value.kind)

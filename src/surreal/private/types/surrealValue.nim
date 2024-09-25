@@ -8,7 +8,13 @@ type
         SurrealBytes,
         SurrealInteger,
         SurrealObject,
-        SurrealString
+        SurrealString,
+
+        # TODO: There seem to be new Future and Range tags:
+        # https://github.com/surrealdb/surrealdb/pull/4862
+        # https://github.com/surrealdb/surrealdb.js/commit/278b17157c34987723ff8dca07cdeefeaa44c21e
+        # SurrealFuture
+        # SurrealRange
 
     SurrealObjectEntry* = tuple[key: string, value: SurrealValue]
         ## A single entry in a SurrealObject

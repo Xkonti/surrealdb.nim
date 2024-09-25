@@ -1,6 +1,6 @@
 import std/[unittest]
 import surreal/private/cbor/[decoder, encoder, writer]
-import surreal/private/types/[surrealTypes, surrealValue]
+import surreal/private/types/[surrealValue]
 
 suite "CBOR:Encoding":
 

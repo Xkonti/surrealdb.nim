@@ -1,7 +1,7 @@
 import std/[sequtils, unittest]
 import surreal/private/stew/sequtils2
 import surreal/private/cbor/[constants, encoder, types, writer]
-import surreal/private/types/[surrealTypes, surrealValue]
+import surreal/private/types/[surrealValue]
 
 suite "CBOR:Encoder:Integers":
 

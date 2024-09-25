@@ -1,6 +1,6 @@
 import std/[strutils, tables]
 import writer, types
-import ../types/[surrealValue, surrealTypes]
+import ../types/[surrealValue]
 
 proc encodeHeadByte*(major: HeadMajor, argument: HeadArgument): uint8 =
     ## Encodes the first byte of the head of the CBOR data.

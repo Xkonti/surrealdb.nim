@@ -1,5 +1,5 @@
 import std/[sequtils, unittest]
-import surreal/private/types/[surrealTypes, surrealValue]
+import surreal/private/types/[surrealValue]
 
 suite "SurrealValue:String":
 

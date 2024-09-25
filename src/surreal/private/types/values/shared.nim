@@ -25,12 +25,6 @@ proc toBytes*(value: SurrealValue): seq[uint8] =
 proc `$`*(value: SurrealValue): string =
     ## Converts a SurrealValue to a string representation - mostly for debugging purposes.
     case value.kind
-    of SurrealInteger:
-        return $(value.toInt64)
-    of SurrealBytes:
-        return cast[string](value.bytesVal)
-    of SurrealString:
-        return value.stringVal
     of SurrealArray:
         case value.arrayVal.len:
         of 0: return "[]"
@@ -40,6 +34,12 @@ proc `$`*(value: SurrealValue): string =
             for item in value.arrayVal:
                 text = text & ", " & $item
             return text & "]"
+    of SurrealBool:
+        return $value.boolVal
+    of SurrealBytes:
+        return cast[string](value.bytesVal)
+    of SurrealInteger:
+        return $(value.toInt64)
     of SurrealObject:
         case value.objectVal.len:
         of 0: return "{}"
@@ -51,5 +51,7 @@ proc `$`*(value: SurrealValue): string =
             for pair in value.objectVal.pairs:
                 text = text & ", " & pair[0] & ": " & $pair[1]
             return text & "}"
+    of SurrealString:
+        return value.stringVal
     else:
-        raise newException(ValueError, "Cannot convert a {0} value to a string" % $value.kind)
+        raise newException(ValueError, "Cannot convert a $1 value to a string" % $value.kind)

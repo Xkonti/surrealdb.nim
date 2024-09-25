@@ -1,5 +1,5 @@
 import std/[sequtils, unittest]
-import surreal/private/types/[surrealTypes, surrealValue]
+import surreal/private/types/[surrealValue]
 
 const upToUInt8: seq[uint8] = (0'u8..255'u8).toSeq
 const upToUint16: seq[uint16] = (0'u16..255'u16).toSeq &

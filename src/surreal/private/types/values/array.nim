@@ -24,7 +24,7 @@ proc getSeq*(value: SurrealValue): seq[SurrealValue] =
     of SurrealArray:
         return value.arrayVal
     else:
-        raise newException(ValueError, "Cannot convert a {0} value to a sequence of SurrealValues" % $value.kind)
+        raise newException(ValueError, "Cannot convert a $1 value to a sequence of SurrealValues" % $value.kind)
 
 
 proc add*(value: var SurrealValue, items: varargs[SurrealValue, `%%%`]) =
@@ -33,4 +33,4 @@ proc add*(value: var SurrealValue, items: varargs[SurrealValue, `%%%`]) =
     of SurrealArray:
         value.arrayVal.add(items)
     else:
-        raise newException(ValueError, "Cannot add values to a {0} value" % $value.kind)
+        raise newException(ValueError, "Cannot add values to a $1 value" % $value.kind)

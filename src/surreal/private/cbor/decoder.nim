@@ -18,11 +18,13 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         return toSurrealNegativeIntRaw(value)
     of Bytes:
         # Byte string
+        # TODO: Support indefinite length byte strings
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealBytes()
     of String:
         # Text string
+        # TODO: Support indefinite length text strings
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealString()

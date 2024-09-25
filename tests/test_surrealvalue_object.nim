@@ -1,5 +1,5 @@
-import std/[sequtils, unittest, tables]
-import surreal/private/types/[surrealTypes, surrealValue]
+import std/[unittest, tables]
+import surreal/private/types/[surrealValue]
 
 suite "SurrealValue:Object":
 

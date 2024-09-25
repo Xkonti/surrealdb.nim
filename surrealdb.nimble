@@ -54,6 +54,7 @@ task test, "General tests":
 
     # SurrealValue
     "test_surrealvalue_array.nim",
+    "test_surrealvalue_bool.nim",
     "test_surrealvalue_bytes.nim",
     "test_surrealvalue_integer.nim",
     "test_surrealvalue_object.nim",

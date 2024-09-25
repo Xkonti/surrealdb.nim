@@ -38,6 +38,7 @@ task test, "General tests":
     "test_cbor_writer.nim",
 
     "test_cbor_decoder_arrays.nim",
+    "test_cbor_decoder_bool.nim",
     "test_cbor_decoder_bytes.nim",
     "test_cbor_decoder_integers.nim",
     "test_cbor_decoder_objects.nim",
@@ -45,6 +46,7 @@ task test, "General tests":
 
     "test_cbor_encoder_head.nim",
     "test_cbor_encoder_arrays.nim",
+    "test_cbor_encoder_bool.nim",
     "test_cbor_encoder_bytes.nim",
     "test_cbor_encoder_integers.nim",
     "test_cbor_encoder_objects.nim",

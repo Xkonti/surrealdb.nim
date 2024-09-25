@@ -42,39 +42,32 @@ proc encodeString(writer: CborWriter, value: string) =
     writer.writeBytes(bytes)
 
 
-# proc encodeInteger*(writer: CborWriter, value: int | int8 | int16  | int32  | int64) =
-#     ## Encodes an integer to the CBOR writer.
-#     let isPositive = value >= 0
-#     let major = if isPositive: PosInt else: NegInt
-
-#     # Convert the value to a positive integer
-#     let posValue = if isPositive: value else: -(value + 1)
-#     encodeHead(writer, major, posValue.uint64)
-
 proc encode*(writer: CborWriter, value: SurrealValue) =
     ## Encodes the SurrealValue to the CBOR writer.
     case value.kind
+    of SurrealArray:
+        writer.encodeHead(Array, value.len.uint64)
+        for item in value.getSeq:
+            encode(writer, item)
+    of SurrealBool:
+        writer.encodeHeadByte(Simple, if value.getBool: TwentyOne else: Twenty)
+    of SurrealBytes:
+        writer.encodeHead(Bytes, value.getBytes.len.uint64)
+        writer.writeBytes(value.getBytes)
     of SurrealInteger:
         if value.isPositive:
             writer.encodePosInteger(value.getRawInt())
         else:
             writer.encodeNegInteger(value.getRawInt())
-    of SurrealBytes:
-        writer.encodeHead(Bytes, value.getBytes.len.uint64)
-        writer.writeBytes(value.getBytes)
-    of SurrealString:
-        let bytes = value.toBytes()
-        writer.encodeHead(String, bytes.len.uint64)
-        writer.writeBytes(bytes)
-    of SurrealArray:
-        writer.encodeHead(Array, value.len.uint64)
-        for item in value.getSeq:
-            encode(writer, item)
     of SurrealObject:
         writer.encodeHead(Map, value.len.uint64)
         for pair in value.getTable.pairs:
             writer.encodeString(pair[0])
             encode(writer, pair[1])
+    of SurrealString:
+        let bytes = value.toBytes()
+        writer.encodeHead(String, bytes.len.uint64)
+        writer.writeBytes(bytes)
     else:
         raise newException(ValueError, "Cannot encode a $1 value" % $value.kind)
 

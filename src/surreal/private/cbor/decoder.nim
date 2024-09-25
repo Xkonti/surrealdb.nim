@@ -74,12 +74,16 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         return map.toSurrealObject()
     of Tag:
         # TODO:Tag
-        discard
+        raise newException(ValueError, "Tag not implemented")
     of Simple:
-        # TODO: Simple value
-        discard
+        case headArgument:
+        of Twenty:
+            return surrealFalse
+        of TwentyOne:
+            return surrealTrue
+        else:
+            raise newException(ValueError, "Invalid simple value: " & $headArgument)
 
-    return 69'u64.toSurrealInt()
 
 proc decode*(reader: CborReader): SurrealValue =
     ## Decodes the raw CBOR data.

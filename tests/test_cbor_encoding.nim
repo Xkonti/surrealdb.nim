@@ -4,6 +4,18 @@ import surreal/private/types/[surrealValue]
 
 suite "CBOR:Encoding":
 
+    test "encode and decode true":
+        let writer = encode(%%% true)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealBool)
+        check(surrealValue.getBool == true)
+
+    test "encode and decode false":
+        let writer = encode(%%% false)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealBool)
+        check(surrealValue.getBool == false)
+
     test "Should encode and decode a single integer":
         const value1: int8 = 0
         let writer1 = encode(%%% value1)

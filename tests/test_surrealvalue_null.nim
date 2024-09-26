@@ -1,4 +1,4 @@
-import std/[sequtils, unittest]
+import std/[unittest]
 import surreal/private/types/[surrealValue, null]
 
 suite "SurrealValue:Null":

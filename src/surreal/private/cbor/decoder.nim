@@ -83,6 +83,10 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             return surrealTrue
         of TwentyTwo:
             return surrealNull
+        of TwentyThree:
+            # Log error as SurrealDB isn't supposed to send `undefined`
+            echo "WARNING: Undefined value received"
+            return surrealNone
         else:
             raise newException(ValueError, "Invalid simple value: " & $headArgument)
 

@@ -50,6 +50,7 @@ task test, "General tests":
     "test_cbor_encoder_bool.nim",
     "test_cbor_encoder_bytes.nim",
     "test_cbor_encoder_integers.nim",
+    "test_cbor_encoder_none.nim",
     "test_cbor_encoder_null.nim",
     "test_cbor_encoder_objects.nim",
     "test_cbor_encoder_strings.nim",
@@ -61,6 +62,7 @@ task test, "General tests":
     "test_surrealvalue_bool.nim",
     "test_surrealvalue_bytes.nim",
     "test_surrealvalue_integer.nim",
+    "test_surrealvalue_none.nim",
     "test_surrealvalue_null.nim",
     "test_surrealvalue_object.nim",
     "test_surrealvalue_string.nim"

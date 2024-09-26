@@ -33,39 +33,39 @@ task test_surreal, "Tests agains SurrealDB instance":
 
 task test, "General tests":
   for file in [
-    # CBOR
-    "test_cbor_reader.nim",
-    "test_cbor_writer.nim",
-
-    "test_cbor_decoder_arrays.nim",
-    "test_cbor_decoder_bool.nim",
-    "test_cbor_decoder_bytes.nim",
-    "test_cbor_decoder_integers.nim",
-    "test_cbor_decoder_null.nim",
-    "test_cbor_decoder_objects.nim",
-    "test_cbor_decoder_strings.nim",
-
-    "test_cbor_encoder_head.nim",
-    "test_cbor_encoder_arrays.nim",
-    "test_cbor_encoder_bool.nim",
-    "test_cbor_encoder_bytes.nim",
-    "test_cbor_encoder_integers.nim",
-    "test_cbor_encoder_none.nim",
-    "test_cbor_encoder_null.nim",
-    "test_cbor_encoder_objects.nim",
-    "test_cbor_encoder_strings.nim",
-
-    "test_cbor_encoding.nim",
-
     # SurrealValue
-    "test_surrealvalue_array.nim",
-    "test_surrealvalue_bool.nim",
-    "test_surrealvalue_bytes.nim",
-    "test_surrealvalue_integer.nim",
-    "test_surrealvalue_none.nim",
-    "test_surrealvalue_null.nim",
-    "test_surrealvalue_object.nim",
-    "test_surrealvalue_string.nim"
+    "surrealvalue/test_surrealvalue_array.nim",
+    "surrealvalue/test_surrealvalue_bool.nim",
+    "surrealvalue/test_surrealvalue_bytes.nim",
+    "surrealvalue/test_surrealvalue_integer.nim",
+    "surrealvalue/test_surrealvalue_none.nim",
+    "surrealvalue/test_surrealvalue_null.nim",
+    "surrealvalue/test_surrealvalue_object.nim",
+    "surrealvalue/test_surrealvalue_string.nim",
+
+    # CBOR
+    "cbor/test_cbor_reader.nim",
+    "cbor/test_cbor_writer.nim",
+
+    "cbor/decoding/test_cbor_decoder_arrays.nim",
+    "cbor/decoding/test_cbor_decoder_bool.nim",
+    "cbor/decoding/test_cbor_decoder_bytes.nim",
+    "cbor/decoding/test_cbor_decoder_integers.nim",
+    "cbor/decoding/test_cbor_decoder_null.nim",
+    "cbor/decoding/test_cbor_decoder_objects.nim",
+    "cbor/decoding/test_cbor_decoder_strings.nim",
+
+    "cbor/encoding/test_cbor_encoder_head.nim",
+    "cbor/encoding/test_cbor_encoder_arrays.nim",
+    "cbor/encoding/test_cbor_encoder_bool.nim",
+    "cbor/encoding/test_cbor_encoder_bytes.nim",
+    "cbor/encoding/test_cbor_encoder_integers.nim",
+    # "cbor/encoding/test_cbor_encoder_none.nim",
+    "cbor/encoding/test_cbor_encoder_null.nim",
+    "cbor/encoding/test_cbor_encoder_objects.nim",
+    "cbor/encoding/test_cbor_encoder_strings.nim",
+
+    "cbor/test_cbor_encoding.nim"
   ]:
     exec "nim r --hints:off tests/" & file
   

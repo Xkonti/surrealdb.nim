@@ -53,6 +53,25 @@
             }
         },
         {
+            // exec "nim r --hints:off tests/" & file
+            "label": "run current file",
+            "command": "nim",
+            "args": [
+                "r",
+                "--hints:off",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            }
+            
+        },
+        {
             "label": "nim: run tests",
             "command": "nimble",
             "args": [

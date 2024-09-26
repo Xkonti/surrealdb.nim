@@ -66,6 +66,8 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
             writer.encodePosInteger(value.getRawInt())
         else:
             writer.encodeNegInteger(value.getRawInt())
+    of SurrealNull:
+        writer.encodeHeadByte(Simple, TwentyTwo)
     of SurrealObject:
         writer.encodeHead(Map, value.len.uint64)
         for pair in value.getTable.pairs:

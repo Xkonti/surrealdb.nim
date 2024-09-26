@@ -1,6 +1,6 @@
 import std/[unittest]
 import surreal/private/cbor/[decoder, encoder, writer]
-import surreal/private/types/[surrealValue]
+import surreal/private/types/[surrealValue, null]
 
 suite "CBOR:Encoding":
 
@@ -15,6 +15,12 @@ suite "CBOR:Encoding":
         let surrealValue = decode(writer.getOutput())
         check(surrealValue.kind == SurrealBool)
         check(surrealValue.getBool == false)
+
+    test "encode and decode null":
+        let writer = encode(%%% Null)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealNull)
+        check(surrealValue == surrealNull)
 
     test "Should encode and decode a single integer":
         const value1: int8 = 0

@@ -81,6 +81,8 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             return surrealFalse
         of TwentyOne:
             return surrealTrue
+        of TwentyTwo:
+            return surrealNull
         else:
             raise newException(ValueError, "Invalid simple value: " & $headArgument)
 

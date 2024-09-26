@@ -1,4 +1,5 @@
 import std/[sequtils, strutils, tables]
+import null
 
 type
     SurrealTypes* = enum
@@ -7,6 +8,7 @@ type
         SurrealBool,
         SurrealBytes,
         SurrealInteger,
+        SurrealNull,
         SurrealObject,
         SurrealString,
 
@@ -34,6 +36,8 @@ type
         of SurrealInteger:
             intVal: uint64
             intIsNegative: bool
+        of SurrealNull:
+            nil
         of SurrealObject:
             objectVal: SurrealObjectTable
         of SurrealString:
@@ -53,6 +57,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.bytesVal == b.bytesVal
     of SurrealInteger:
         return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
+    of SurrealNull:
+        return true
     of SurrealObject:
         return a.objectVal == b.objectVal
     of SurrealString:
@@ -64,7 +70,8 @@ include values/[
     bool,
     bytes,
     integer,
-    string,
+    null,
     map,
+    string,
     shared
     ]

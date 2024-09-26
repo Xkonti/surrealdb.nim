@@ -40,6 +40,8 @@ proc `$`*(value: SurrealValue): string =
         return cast[string](value.bytesVal)
     of SurrealInteger:
         return $(value.toInt64)
+    of SurrealNull:
+        return "NULL"
     of SurrealObject:
         case value.objectVal.len:
         of 0: return "{}"

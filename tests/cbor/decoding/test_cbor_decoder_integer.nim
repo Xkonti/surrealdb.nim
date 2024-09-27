@@ -2,7 +2,7 @@ import std/unittest
 import surreal/private/cbor/[decoder, encoder, types, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Decoder:Integers":
+suite "CBOR:Decoder:Integer":
 
     test "decode positive integers":
         const numbers: seq[uint64] = @[0, 6, 23, 24, 500, 69420, uint32.high, uint32.high + 1, uint64.high]

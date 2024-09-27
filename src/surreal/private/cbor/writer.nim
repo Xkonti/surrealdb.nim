@@ -1,3 +1,4 @@
+import std/[math]
 import ../stew/[endians2, sequtils2]
 
 proc writeRawUInt*(buffer: var seq[uint8], value: uint8) =
@@ -33,6 +34,13 @@ proc writeRawUInt*(buffer: CborWriter, value: uint16 | uint32 | uint64) =
     ## Writes an integer to the CBOR writer using the appropriate number of bytes.
     ## The number of bytes is determined by the type of the value.
     writeRawUInt(buffer.data, value)
+
+proc writeFloat64*(buffer: CborWriter, value: float64) =
+    ## Writes a float64 to the CBOR writer.
+    let asInt: uint64 = if value.isNaN:
+            0xfb7ff8000000000000'u64
+        else: cast[uint64](value)
+    writeRawUInt(buffer.data, asInt)
 
 proc writeBytes*(buffer: CborWriter, value: openArray[uint8]) =
     ## Writes a sequence of bytes to the CBOR writer.

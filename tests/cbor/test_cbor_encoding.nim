@@ -22,6 +22,24 @@ suite "CBOR:Encoding":
         check(surrealValue.kind == SurrealNull)
         check(surrealValue == surrealNull)
 
+    test "encode and decode floats":
+        let writer = encode(%%% 1.1'f64)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealFloat)
+        check(surrealValue.toFloat64 == 1.1'f64)
+
+        let writer2 = encode(%%% 12.151574'f64)
+        let surrealValue2 = decode(writer2.getOutput())
+        check(surrealValue2.kind == SurrealFloat)
+        check(surrealValue2.toFloat64 == 12.151574'f64)
+
+        let writer3 = encode(%%% -12.151574'f64)
+        let surrealValue3 = decode(writer3.getOutput())
+        check(surrealValue3.kind == SurrealFloat)
+        check(surrealValue3.toFloat64 == -12.151574'f64)
+
+        # TODO: Implement more tests for various types of floats
+
     test "Should encode and decode a single integer":
         const value1: int8 = 0
         let writer1 = encode(%%% value1)

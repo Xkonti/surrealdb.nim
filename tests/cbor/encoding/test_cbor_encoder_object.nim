@@ -2,7 +2,7 @@ import std/[unittest, tables]
 import surreal/private/cbor/[encoder, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Encoder:Objects":
+suite "CBOR:Encoder:Object":
 
     test "Should encode an empty object":
         let value1 = newSurrealObject()

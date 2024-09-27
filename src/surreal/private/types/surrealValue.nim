@@ -7,6 +7,7 @@ type
         SurrealArray,
         SurrealBool,
         SurrealBytes,
+        SurrealFloat,
         SurrealInteger,
         SurrealNone,
         SurrealNull,
@@ -34,6 +35,8 @@ type
             boolVal: bool
         of SurrealBytes:
             bytesVal: seq[uint8]
+        of SurrealFloat:
+            floatVal: float64
         of SurrealInteger:
             intVal: uint64
             intIsNegative: bool
@@ -58,6 +61,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.boolVal == b.boolVal
     of SurrealBytes:
         return a.bytesVal == b.bytesVal
+    of SurrealFloat:
+        return a.floatVal == b.floatVal
     of SurrealInteger:
         return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
     of SurrealNone:
@@ -74,6 +79,7 @@ include values/[
     array,
     bool,
     bytes,
+    float,
     integer,
     none,
     null,

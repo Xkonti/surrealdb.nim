@@ -2,7 +2,7 @@ import std/[unittest]
 import surreal/private/cbor/[encoder, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Encoder:Arrays":
+suite "CBOR:Encoder:Array":
 
     test "Should encode an empty array":
         let value1: seq[SurrealValue] = @[]

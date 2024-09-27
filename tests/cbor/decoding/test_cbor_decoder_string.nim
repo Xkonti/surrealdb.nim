@@ -2,7 +2,7 @@ import std/unittest
 import surreal/private/cbor/[decoder, encoder, types, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Decoder:Strings":
+suite "CBOR:Decoder:String":
 
     test "decode text string #1":
         const data = @[

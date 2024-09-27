@@ -2,7 +2,7 @@ import std/unittest
 import surreal/private/cbor/[constants, decoder, encoder, types]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Decoder:Arrays":
+suite "CBOR:Decoder:Array":
 
     test "decode finite array #1":
         const data = @[

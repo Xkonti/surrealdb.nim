@@ -22,6 +22,20 @@ proc toBytes*(value: SurrealValue): seq[uint8] =
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a sequence of bytes" % $value.kind)
 
+proc toFloat64*(value: SurrealValue): float64 =
+    ## Converts a SurrealFloat to a float.
+    case value.kind
+    of SurrealFloat:
+        return value.floatVal
+    of SurrealInteger:
+        return value.toInt64.float64
+    else:
+        raise newException(ValueError, "Cannot convert a non-float value to a float")
+
+proc toFloat32*(value: SurrealValue): float32 =
+    ## Converts a SurrealFloat to a float.
+    return value.toFloat64.float32
+
 proc `$`*(value: SurrealValue): string =
     ## Converts a SurrealValue to a string representation - mostly for debugging purposes.
     case value.kind
@@ -38,6 +52,8 @@ proc `$`*(value: SurrealValue): string =
         return $value.boolVal
     of SurrealBytes:
         return cast[string](value.bytesVal)
+    of SurrealFloat:
+        return $value.floatVal
     of SurrealInteger:
         return $(value.toInt64)
     of SurrealNull:

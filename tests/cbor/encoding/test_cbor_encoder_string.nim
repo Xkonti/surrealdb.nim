@@ -2,7 +2,7 @@ import std/[unittest]
 import surreal/private/cbor/[encoder, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Encoder:Strings":
+suite "CBOR:Encoder:String":
 
     test "Should encode an empty string":
         const value1: string = ""

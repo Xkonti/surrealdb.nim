@@ -2,7 +2,7 @@ import std/[unittest, tables]
 import surreal/private/cbor/[constants, decoder, encoder, types]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Decoder:Objects":
+suite "CBOR:Decoder:Object":
 
     test "decode an empty object":
         const data = @[

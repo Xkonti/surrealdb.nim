@@ -61,6 +61,11 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
     of SurrealBytes:
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)
+    of SurrealFloat:
+        # TODO: Add support for encoding half and single precision floats
+        # For now let's encode everything as float64
+        writer.encodeHeadByte(Simple, EightBytes)
+        writer.writeFloat64(value.toFloat64)
     of SurrealInteger:
         if value.isPositive:
             writer.encodePosInteger(value.getRawInt())

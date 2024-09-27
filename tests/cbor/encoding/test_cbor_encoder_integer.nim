@@ -2,7 +2,7 @@ import std/[unittest]
 import surreal/private/cbor/[encoder, writer]
 import surreal/private/types/[surrealValue]
 
-suite "CBOR:Encoder:Integers":
+suite "CBOR:Encoder:Integer":
 
     test "Should encode a single integer":
         const value1 = 3'u64

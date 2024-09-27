@@ -41,6 +41,22 @@ proc readUInt64*(reader: CborReader): uint64 =
     bigEndian64(result.addr, reader.data[reader.pos].addr)
     inc reader.pos, 8
 
+proc readFloat16*(reader: CborReader): float32 =
+    ## Reads two bytes from the CBOR data as a float16.
+    # TODO: Actually implement!
+    bigEndian16(result.addr, reader.data[reader.pos].addr)
+    inc reader.pos, 2
+
+proc readFloat32*(reader: CborReader): float32 =
+    ## Reads four bytes from the CBOR data as a float32.
+    bigEndian32(result.addr, reader.data[reader.pos].addr)
+    inc reader.pos, 4
+
+proc readFloat64*(reader: CborReader): float64 =
+    ## Reads eight bytes from the CBOR data as a float64.
+    bigEndian64(result.addr, reader.data[reader.pos].addr)
+    inc reader.pos, 8
+
 proc readBytes*(reader: CborReader, numberOfBytes: uint64): seq[uint8] =
     ## Reads the specified number of bytes from the CBOR data into a new sequence.
     result = reader.data[reader.pos..<reader.pos+numberOfBytes].toSeq

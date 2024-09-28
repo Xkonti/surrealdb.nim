@@ -50,28 +50,28 @@ type
 
     CborTag* = enum
         # CBOR tag number supported by SurrealDB
-        TagDatetimeISO8601 = 0, # From the spec - https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
-        TagNone = 6,
-        TagTableName = 7,
-        TagRecordId = 8,
-        TagUuidString = 9,
-        TagDecimalString = 10,
-        # TagDecimalBinary = 11,
-        TagDateTimeCompact = 12,
-        TagDurationString = 13,
-        TagDurationCompact = 14,
-        TagFuture = 15,
-        TagUuidBinary = 37, # From the spec - https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
+        TagDatetimeISO8601 = 0'u64, # From the spec - https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
+        TagNone = 6'u64,
+        TagTableName = 7'u64,
+        TagRecordId = 8'u64,
+        TagUuidString = 9'u64,
+        TagDecimalString = 10'u64,
+        # TagDecimalBinary = 11'u64,
+        TagDateTimeCompact = 12'u64,
+        TagDurationString = 13'u64,
+        TagDurationCompact = 14'u64,
+        TagFuture = 15'u64,
+        TagUuidBinary = 37'u64, # From the spec - https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
 
         # Ranges
-        TagRange = 49,
-        TagBoundIncluded = 50,
-        TagBoundExcluded = 51,
+        TagRange = 49'u64,
+        TagBoundIncluded = 50'u64,
+        TagBoundExcluded = 51'u64,
 
-        TagGeoPoint = 88,
-        TagGeoLine = 89,
-        TagGeoPolygon = 90,
-        TagGeoMultiPoint = 91,
-        TagGeoMultiLine = 92,
-        TagGeoMultiPolygon = 93,
-        TagGeoCollection = 94,
+        TagGeoPoint = 88'u64,
+        TagGeoLine = 89'u64,
+        TagGeoPolygon = 90'u64,
+        TagGeoMultiPoint = 91'u64,
+        TagGeoMultiLine = 92'u64,
+        TagGeoMultiPolygon = 93'u64,
+        TagGeoCollection = 94'u64,

@@ -1,5 +1,5 @@
-import std/[strutils, tables]
-import writer, types
+import std/[strutils, tables, times]
+import constants, writer, types
 import ../types/[surrealValue]
 
 proc encodeHeadByte*(major: HeadMajor, argument: HeadArgument): uint8 =
@@ -61,6 +61,13 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
     of SurrealBytes:
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)
+    of SurrealDatetime:
+        writer.encodeHead(Tag, TagDatetimeISO8601.uint64)
+        let dateTime = value.getDateTime
+        let bytes = cast[seq[uint8]]($dateTime)
+        writer.encodeHead(String, bytes.len.uint64)
+        writer.writeBytes(bytes)
+
     of SurrealFloat:
         # TODO: Add support for encoding half and single precision floats
         # For now let's encode everything as float64
@@ -71,8 +78,10 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
             writer.encodePosInteger(value.getRawInt())
         else:
             writer.encodeNegInteger(value.getRawInt())
+    of SurrealNone:
+        writer.writeBytes(noneBytes)
     of SurrealNull:
-        writer.encodeHeadByte(Simple, TwentyTwo)
+        writer.writeRawUInt(nullByte)
     of SurrealObject:
         writer.encodeHead(Map, value.len.uint64)
         for pair in value.getTable.pairs:

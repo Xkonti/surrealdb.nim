@@ -1,6 +1,6 @@
-import std/[tables]
+import std/[tables, times]
 import ../types/[surrealValue]
-import reader, types
+import constants, reader, types
 
 proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArgument]): SurrealValue =
     ## Decodes the raw CBOR data.
@@ -12,22 +12,26 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         # Positive integer
         let value = reader.getFullArgument(headArgument)
         return value.toSurrealInt()
+
     of NegInt:
         # Negative integer
         let value = reader.getFullArgument(headArgument)
         return toSurrealNegativeIntRaw(value)
+
     of Bytes:
         # Byte string
         # TODO: Support indefinite length byte strings
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealBytes()
+
     of String:
         # Text string
         # TODO: Support indefinite length text strings
         let numberOfBytes = reader.getFullArgument(headArgument)
         var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
         return bytes.toSurrealString()
+
     of Array:
         # Array
         var elements: seq[SurrealValue] = @[]
@@ -47,6 +51,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 elements.add(decode(reader, head))
 
         return elements.toSurrealArray()
+
     of Map:
         var map = initOrderedTable[string, SurrealValue]()
         let isIndefinite = headArgument.isIndefinite
@@ -72,9 +77,29 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 map[key.getString] = value
 
         return map.toSurrealObject()
+
     of Tag:
-        # TODO:Tag
-        raise newException(ValueError, "Tag not implemented")
+        # TODO: Currently SurrealDB doesn't use tag numvers larger than 255 - room for optimization
+        let tag = reader.getFullArgument(headArgument).CborTag
+        case tag:
+        of TagDatetimeISO8601:
+            let (stringHead, stringArgument) = reader.readHead()
+            if stringHead != String:
+                raise newException(ValueError, "Expected a string for a ISO8601 datetime (tag 0)")
+            let numberOfBytes = reader.getFullArgument(stringArgument)
+            var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
+            let datetimeText = cast[string](bytes)
+            echo "Received datetime: ", datetimeText
+            return parse(datetimeText, "yyyy-MM-dd'T'HH:mm:sszzz").toSurrealDatetime()
+        of TagNone:
+            let shouldBeNullByte = reader.readUInt8()
+            if shouldBeNullByte != nullByte:
+                raise newException(ValueError, "Expected NULL byte for NONE (tag 6)")
+            return surrealNone
+
+        else:
+            raise newException(ValueError, "Tag not supported: " & $tag)
+
     of Simple:
         case headArgument:
         of Twenty:

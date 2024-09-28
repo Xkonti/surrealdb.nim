@@ -9,6 +9,8 @@ proc len*(value: SurrealValue): int =
         return value.stringVal.len
     of SurrealObject:
         return value.objectVal.len
+    of SurrealTable:
+        return value.tableVal.string.len
     else:
         raise newException(ValueError, "Cannot get the length of a $1 value" % $value.kind)
 
@@ -19,6 +21,8 @@ proc toBytes*(value: SurrealValue): seq[uint8] =
         return value.bytesVal
     of SurrealString:
         return cast[seq[uint8]](value.stringVal)
+    of SurrealTable:
+        return cast[seq[uint8]](value.tableVal.string)
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a sequence of bytes" % $value.kind)
 
@@ -76,5 +80,7 @@ proc `$`*(value: SurrealValue): string =
             return text & "}"
     of SurrealString:
         return value.stringVal
+    of SurrealTable:
+        return value.tableVal.string
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a string" % $value.kind)

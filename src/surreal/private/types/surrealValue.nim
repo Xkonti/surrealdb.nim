@@ -1,5 +1,5 @@
 import std/[sequtils, strutils, tables, times]
-import none, null
+import none, null, tableName
 
 type
     SurrealTypes* = enum
@@ -14,6 +14,7 @@ type
         SurrealNull,
         SurrealObject,
         SurrealString,
+        SurrealTable,
 
         # TODO: There seem to be new Future and Range tags:
         # https://github.com/surrealdb/surrealdb/pull/4862
@@ -51,6 +52,8 @@ type
             objectVal: SurrealObjectTable
         of SurrealString:
             stringVal: string
+        of SurrealTable:
+            tableVal: TableName
 
 func `==`*(a, b: SurrealValue): bool =
     ## Compares two SurrealValues for equality.
@@ -78,6 +81,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.objectVal == b.objectVal
     of SurrealString:
         return a.stringVal == b.stringVal
+    of SurrealTable:
+        return a.tableVal == b.tableVal
 
 
 include values/[
@@ -91,5 +96,6 @@ include values/[
     null,
     map,
     string,
+    table,
     shared
     ]

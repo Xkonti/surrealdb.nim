@@ -44,6 +44,7 @@ task test, "General tests":
     "surrealvalue/test_surrealvalue_null.nim",
     "surrealvalue/test_surrealvalue_object.nim",
     "surrealvalue/test_surrealvalue_string.nim",
+    "surrealvalue/test_surrealvalue_table.nim",
 
     # CBOR
     "cbor/test_cbor_reader.nim",
@@ -60,6 +61,7 @@ task test, "General tests":
     "cbor/encoding/test_cbor_encoder_null.nim",
     "cbor/encoding/test_cbor_encoder_object.nim",
     "cbor/encoding/test_cbor_encoder_string.nim",
+    "cbor/encoding/test_cbor_encoder_table.nim",
 
     "cbor/decoding/test_cbor_decoder_array.nim",
     "cbor/decoding/test_cbor_decoder_bool.nim",
@@ -71,6 +73,7 @@ task test, "General tests":
     "cbor/decoding/test_cbor_decoder_none.nim",
     "cbor/decoding/test_cbor_decoder_object.nim",
     "cbor/decoding/test_cbor_decoder_string.nim",
+    "cbor/decoding/test_cbor_decoder_table.nim",
 
     "cbor/test_cbor_encoding.nim"
   ]:

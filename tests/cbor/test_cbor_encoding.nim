@@ -1,6 +1,6 @@
 import std/[times, unittest]
 import surreal/private/cbor/[decoder, encoder, writer]
-import surreal/private/types/[surrealValue, none, null]
+import surreal/private/types/[surrealValue, none, null, tableName]
 
 suite "CBOR:Encoding":
 
@@ -215,3 +215,10 @@ suite "CBOR:Encoding":
         check(surrealValue.kind == SurrealDatetime)
         # TODO: Figure out how to properly compare DateTimes
         check($(surrealValue.getDateTime) == $datetimeValue)
+
+    test "encode and decode table name":
+        let tableName = tb"public_post_view_table_for_record_users"
+        let writer = encode(%%% tableName)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealTable)
+        check(surrealValue.getTableName == tableName)

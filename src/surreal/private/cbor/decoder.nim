@@ -83,6 +83,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         let tag = reader.getFullArgument(headArgument).CborTag
         case tag:
         of TagDatetimeISO8601:
+            # Datetime is encoded as a string
             let (stringHead, stringArgument) = reader.readHead()
             if stringHead != String:
                 raise newException(ValueError, "Expected a string for a ISO8601 datetime (tag 0)")
@@ -92,10 +93,19 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             echo "Received datetime: ", datetimeText
             return parse(datetimeText, "yyyy-MM-dd'T'HH:mm:sszzz").toSurrealDatetime()
         of TagNone:
+            # NONE need a NULL value
             let shouldBeNullByte = reader.readUInt8()
             if shouldBeNullByte != nullByte:
                 raise newException(ValueError, "Expected NULL byte for NONE (tag 6)")
             return surrealNone
+        of TagTableName:
+            # Table name is encoded as a string
+            let (stringHead, stringArgument) = reader.readHead()
+            if stringHead != String:
+                raise newException(ValueError, "Expected a string for a Table Name (tag 7)")
+            let numberOfBytes = reader.getFullArgument(stringArgument)
+            var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
+            return bytes.toSurrealTable()
 
         else:
             raise newException(ValueError, "Tag not supported: " & $tag)

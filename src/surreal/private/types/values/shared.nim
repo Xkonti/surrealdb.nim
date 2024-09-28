@@ -52,10 +52,15 @@ proc `$`*(value: SurrealValue): string =
         return $value.boolVal
     of SurrealBytes:
         return cast[string](value.bytesVal)
+    of SurrealDatetime:
+        # Print it as ISO 8601 string TODO: Check!
+        return $value.datetimeVal.utc
     of SurrealFloat:
         return $value.floatVal
     of SurrealInteger:
         return $(value.toInt64)
+    of SurrealNone:
+        return "NONE"
     of SurrealNull:
         return "NULL"
     of SurrealObject:

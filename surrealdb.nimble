@@ -37,6 +37,7 @@ task test, "General tests":
     "surrealvalue/test_surrealvalue_array.nim",
     "surrealvalue/test_surrealvalue_bool.nim",
     "surrealvalue/test_surrealvalue_bytes.nim",
+    "surrealvalue/test_surrealvalue_datetime.nim",
     "surrealvalue/test_surrealvalue_float.nim",
     "surrealvalue/test_surrealvalue_integer.nim",
     "surrealvalue/test_surrealvalue_none.nim",

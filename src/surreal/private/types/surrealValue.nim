@@ -1,4 +1,4 @@
-import std/[sequtils, strutils, tables]
+import std/[sequtils, strutils, tables, times]
 import none, null
 
 type
@@ -7,6 +7,7 @@ type
         SurrealArray,
         SurrealBool,
         SurrealBytes,
+        SurrealDatetime,
         SurrealFloat,
         SurrealInteger,
         SurrealNone,
@@ -35,6 +36,8 @@ type
             boolVal: bool
         of SurrealBytes:
             bytesVal: seq[uint8]
+        of SurrealDatetime:
+            datetimeVal: DateTime
         of SurrealFloat:
             floatVal: float64
         of SurrealInteger:
@@ -61,6 +64,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.boolVal == b.boolVal
     of SurrealBytes:
         return a.bytesVal == b.bytesVal
+    of SurrealDatetime:
+        return a.datetimeVal == b.datetimeVal
     of SurrealFloat:
         return a.floatVal == b.floatVal
     of SurrealInteger:
@@ -79,6 +84,7 @@ include values/[
     array,
     bool,
     bytes,
+    datetime,
     float,
     integer,
     none,

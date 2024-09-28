@@ -1,6 +1,6 @@
-import std/[unittest]
+import std/[times, unittest]
 import surreal/private/cbor/[decoder, encoder, writer]
-import surreal/private/types/[surrealValue, null]
+import surreal/private/types/[surrealValue, none, null]
 
 suite "CBOR:Encoding":
 
@@ -21,6 +21,12 @@ suite "CBOR:Encoding":
         let surrealValue = decode(writer.getOutput())
         check(surrealValue.kind == SurrealNull)
         check(surrealValue == surrealNull)
+
+    test "encode and decode NONE":
+        let writer = encode(%%% None)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealNone)
+        check(surrealValue == surrealNone)
 
     test "encode and decode floats":
         let writer = encode(%%% 1.1'f64)
@@ -201,3 +207,11 @@ suite "CBOR:Encoding":
         check(surrealValue2.kind == SurrealObject)
         check(surrealValue2.len == 6)
         check(surrealValue2 == value2)
+
+    test "encode and decode datetime":
+        let datetimeValue = now()
+        let writer = encode(%%% datetimeValue)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealDatetime)
+        # TODO: Figure out how to properly compare DateTimes
+        check($(surrealValue.getDateTime) == $datetimeValue)

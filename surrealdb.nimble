@@ -43,6 +43,7 @@ task test, "General tests":
     "surrealvalue/test_surrealvalue_none.nim",
     "surrealvalue/test_surrealvalue_null.nim",
     "surrealvalue/test_surrealvalue_object.nim",
+    "surrealvalue/test_surrealvalue_recordid.nim",
     "surrealvalue/test_surrealvalue_string.nim",
     "surrealvalue/test_surrealvalue_table.nim",
 

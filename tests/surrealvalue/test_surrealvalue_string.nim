@@ -8,7 +8,7 @@ suite "SurrealValue:String":
         let surrealValue = value.toSurrealString()
         check(surrealValue.kind == SurrealString)
         check(surrealValue.len == 0)
-        check($surrealValue == value)
+        check(surrealValue.getString == value)
         check(%%%value == surrealValue)
 
     test "Can create from a string":
@@ -16,7 +16,7 @@ suite "SurrealValue:String":
         let surrealValue = value.toSurrealString()
         check(surrealValue.kind == SurrealString)
         check(surrealValue.len == value.len)
-        check($surrealValue == value)
+        check(surrealValue.getString == value)
         check(%%%value == surrealValue)
 
     test "Can create from a sequence of bytes":
@@ -25,7 +25,7 @@ suite "SurrealValue:String":
         check(surrealValue.kind == SurrealString)
         check(surrealValue.len == value.len)
         check(surrealValue.toBytes == value)
-        check($surrealValue == cast[string](value))
+        check(surrealValue.getString == cast[string](value))
 
     test "Can create from an array of bytes":
         const value: array[10, uint8] = [65, 115, 32, 108, 97, 115, 101, 32, 121, 111]
@@ -33,7 +33,7 @@ suite "SurrealValue:String":
         check(surrealValue.kind == SurrealString)
         check(surrealValue.len == value.len)
         check(surrealValue.toBytes == value.toSeq)
-        check($surrealValue == cast[string](value.toSeq))
+        check(surrealValue.getString == cast[string](value.toSeq))
 
     test "Can get the length of the string":
         const value = "DON'T THINK OF IT AS DYING said DEATH, THINK OF IT AS LEAVING EARLY TO AVOID THE RUSH."
@@ -49,4 +49,4 @@ suite "SurrealValue:String":
         const value = "The truth has got its boots on. And it's going to start kicking."
         let surrealValue = value.toSurrealString()
         check(surrealValue.getString == value)
-        check($surrealValue == value)
+        check($surrealValue == "⟨" & value & "⟩")

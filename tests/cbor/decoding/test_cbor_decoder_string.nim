@@ -15,7 +15,7 @@ suite "CBOR:Decoder:String":
         check(decoded.len == 2)
         check(decoded.getString[0] == '?')
         check(decoded.getString[1] == '!')
-        check($decoded == "?!")
+        check($decoded == "⟨?!⟩")
 
     test "decode text string #2":
         const text: string = "Ginger: You know what the greatest tragedy is in the whole world?... It's all the people who never find out what it is they really want to do or what it is they're really good at. It's all the sons who become blacksmiths because their fathers were blacksmiths. It's all the people who could be really fantastic flute players who grow old and die without ever seeing a musical instrument, so they become bad plowmen instead. It's all the people with talents who never even find out. Maybe they are never even born in a time when it's even possible to find out. It's all the people who never get to know what it is that they can really be. It's all the wasted chances. -- Terry Pratchett, Moving Pictures"
@@ -26,4 +26,4 @@ suite "CBOR:Decoder:String":
         let decoded = decode(writer.getOutput())
         check(decoded.kind == SurrealString)
         check(decoded.getString == text)
-        check($decoded == text)
+        check($decoded == "⟨" & text & "⟩")

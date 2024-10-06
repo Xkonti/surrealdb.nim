@@ -1,5 +1,6 @@
 import std/[sequtils, strutils, tables, times]
 import none, null, tableName
+import ../utils
 
 type
     SurrealTypes* = enum
@@ -13,6 +14,7 @@ type
         SurrealNone,
         SurrealNull,
         SurrealObject,
+        SurrealRecordId,
         SurrealString,
         SurrealTable,
 
@@ -27,6 +29,11 @@ type
 
     SurrealObjectTable* = OrderedTable[string, SurrealValue]
         ## A table of SurrealObject entries
+
+    RecordId* = object
+        ## A Surreal record ID. Consists of a table name and a record ID data.
+        table*: TableName
+        id*: SurrealValue
 
     SurrealValue* = ref object
         ## A SurrealDB-compatible value. This can be serialized to/from CBOR.
@@ -50,10 +57,30 @@ type
             nil
         of SurrealObject:
             objectVal: SurrealObjectTable
+        of SurrealRecordId:
+            recordVal: RecordId
         of SurrealString:
             stringVal: string
         of SurrealTable:
             tableVal: TableName
+
+include values/[
+    array,
+    bool,
+    bytes,
+    datetime,
+    float,
+    integer,
+    none,
+    null,
+    map,
+    string,
+    table,
+
+    record,
+
+    shared
+    ]
 
 func `==`*(a, b: SurrealValue): bool =
     ## Compares two SurrealValues for equality.
@@ -79,23 +106,9 @@ func `==`*(a, b: SurrealValue): bool =
         return true
     of SurrealObject:
         return a.objectVal == b.objectVal
+    of SurrealRecordId:
+        return a.recordVal == b.recordVal
     of SurrealString:
         return a.stringVal == b.stringVal
     of SurrealTable:
         return a.tableVal == b.tableVal
-
-
-include values/[
-    array,
-    bool,
-    bytes,
-    datetime,
-    float,
-    integer,
-    none,
-    null,
-    map,
-    string,
-    table,
-    shared
-    ]

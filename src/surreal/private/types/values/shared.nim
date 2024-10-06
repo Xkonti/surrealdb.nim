@@ -48,9 +48,9 @@ proc `$`*(value: SurrealValue): string =
         of 0: return "[]"
         of 1: return "[" & $value.arrayVal[0] & "]"
         else:
-            var text = "["
-            for item in value.arrayVal:
-                text = text & ", " & $item
+            var text = "[" & $value.arrayVal[0]
+            for i in 1..<value.arrayVal.len:
+                text = text & "," & $value.arrayVal[i]
             return text & "]"
     of SurrealBool:
         return $value.boolVal
@@ -62,6 +62,7 @@ proc `$`*(value: SurrealValue): string =
     of SurrealFloat:
         return $value.floatVal
     of SurrealInteger:
+        # TODO: Handle large integers, including negative u64
         return $(value.toInt64)
     of SurrealNone:
         return "NONE"
@@ -72,14 +73,18 @@ proc `$`*(value: SurrealValue): string =
         of 0: return "{}"
         of 1:
             let pair = value.objectVal.pairs.toSeq[0]
-            return "{" & pair[0] & ": " & $pair[1] & "}"
+            return "{" & pair[0].escapeString & ":" & $pair[1] & "}"
         else:
-            var text = "{"
-            for pair in value.objectVal.pairs:
-                text = text & ", " & pair[0] & ": " & $pair[1]
+            let pairs = value.objectVal.pairs.toSeq
+            var text = "{" & pairs[0][0].escapeString & ":" & $pairs[0][1]
+            for i in 1..<pairs.len:
+                let pair = pairs[i]
+                text = text & "," & pair[0].escapeString & ":" & $pair[1]
             return text & "}"
+    of SurrealRecordId:
+        return $value.recordVal
     of SurrealString:
-        return value.stringVal
+        return value.stringVal.escapeString
     of SurrealTable:
         return value.tableVal.string
     else:

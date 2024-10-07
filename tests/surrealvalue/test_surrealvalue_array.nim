@@ -77,3 +77,16 @@ suite "SurrealValue:Array":
         check(surrealValue.getSeq[1] == %%% 12)
         check(surrealValue.getSeq[2] == %%% @[1'u8, 2, 3, 4, 5])
         check(%%% @[%%% "Hello", %%% 12, %%% @[1'u8, 2, 3, 4, 5]] == surrealValue)
+
+    test "Can compare arrays for equality":
+        let data1a = %%% @[%%% "Hello", %%% "There!"]
+        let data1b = %%% @[%%% "Hello", %%% "There!"]
+        check(data1a == data1b)
+
+        let data2a = %%% @[%%% "Hello", %%% -12.32'f64, %%% @[1'u8, 2, 3, 4, 5], %%% @[%%% "Oh...", %%% "Hi!"]]
+        let data2b = %%% @[%%% "Hello", %%% -12.32'f64, %%% @[1'u8, 2, 3, 4, 5], %%% @[%%% "Oh...", %%% "Hi!"]]
+        check(data2a == data2b)
+
+        let data3a = %%% @[%%% -1235243332'i64, %%% { "Hello": %%% "There!" }]
+        let data3b = %%% @[%%% -1235243332'i64, %%% { "Hello": %%% "There!" }]
+        check(data3a == data3b)

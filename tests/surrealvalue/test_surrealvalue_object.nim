@@ -82,3 +82,12 @@ suite "SurrealValue:Object":
         check(surrealValue.hasKey("Answer") == true)
         check(surrealValue.hasKey("id") == false)
         check(surrealValue.getTable["Answer"] == %%% 23)
+
+    test "Can compare objects for equality":
+        let data1a = %%% { "Hello": %%% "There!" }
+        let data1b = %%% { "Hello": %%% "There!" }
+        check(data1a == data1b)
+
+        let data2a = %%% { "Number": %%% -24, "Array": %%% @[%%% "Hey!", %%% "Ho!"], "Object": %%% { "Hello": %%% "There!" } }
+        let data2b = %%% { "Number": %%% -24, "Array": %%% @[%%% "Hey!", %%% "Ho!"], "Object": %%% { "Hello": %%% "There!" } }
+        check(data2a == data2b)

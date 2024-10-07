@@ -88,3 +88,12 @@ suite "SurrealValue:RecordId":
         check(record1.id["a"].toFloat64 == -12.5'f64)
         check(record1.id["b"].getString == "hello")
         check($record1 == "table1:{⟨a⟩:-12.5,⟨b⟩:⟨hello⟩}")
+
+    test "can compare Record IDs for equality":
+        let record1a = newRecordId(tb"table1", "abcd")
+        let record1b = newRecordId(tb"table1", "abcd")
+        check(record1a == record1b)
+
+        let record2a = newRecordId(tb"table2", %%% -123548).toSurrealRecordId
+        let record2b = newRecordId(tb"table2", %%% -123548).toSurrealRecordId
+        check(record2a == record2b)

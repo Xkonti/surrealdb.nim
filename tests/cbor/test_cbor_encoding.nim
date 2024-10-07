@@ -1,4 +1,4 @@
-import std/[times, unittest]
+import std/[times, unittest, tables]
 import surreal/private/cbor/[decoder, encoder, writer]
 import surreal/private/types/[surrealValue, none, null, tableName]
 
@@ -222,3 +222,25 @@ suite "CBOR:Encoding":
         let surrealValue = decode(writer.getOutput())
         check(surrealValue.kind == SurrealTable)
         check(surrealValue.getTableName == tableName)
+
+    test "encode and decode record id":
+        let recordId = newRecordId(tb"02c kkZó-o_5]", %%% {
+            "nio_d14-io0a*": %%% [ %%% "wo", %%% "lo", %%% "lo", %%% 9000'u16 ],
+            "deleted_at": %%% None,
+            "data": %%% @[0x6b'u8, 0x61, 0x62, 0x61, 0x6e, 0x6f, 0x73, 0x79]
+        })
+        let writer = encode(recordId.toSurrealRecordId)
+        let decodedSurrealRecordId = decode(writer.getOutput())
+        check(decodedSurrealRecordId.kind == SurrealRecordId)
+        let decodedRecord = decodedSurrealRecordId.getRecordId
+        check(decodedRecord.table == recordId.table)
+        let decodedId = decodedRecord.id
+        check(decodedId.kind == SurrealObject)
+        check(decodedId.len == 3)
+        let contents = decodedId.getTable
+        check(contents["nio_d14-io0a*"].kind == SurrealArray)
+        check(contents["nio_d14-io0a*"].getSeq == recordId.id["nio_d14-io0a*"].getSeq)
+        check(contents["deleted_at"] == None)
+        check(contents["data"].kind == SurrealBytes)
+        check(contents["data"].getBytes == recordId.id.getTable["data"].getBytes)
+        check(decodedRecord == recordId)

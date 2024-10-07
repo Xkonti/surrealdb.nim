@@ -1,5 +1,5 @@
 import std/[tables, times]
-import ../types/[surrealValue]
+import ../types/[surrealValue, tableName]
 import constants, reader, types
 
 proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArgument]): SurrealValue =
@@ -98,6 +98,21 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             if shouldBeNullByte != nullByte:
                 raise newException(ValueError, "Expected NULL byte for NONE (tag 6)")
             return surrealNone
+        of TagRecordId:
+            # Record ID is encoded as an array of two elements
+            let (arrayHead, arrayArgument) = reader.readHead()
+            if arrayHead != Array:
+                raise newException(ValueError, "Expected an array for a Record ID (tag 8)")
+            if arrayArgument != Two:
+                raise newException(ValueError, "Expected an array of two elements for a Record ID (tag 8)")
+            let (tableHead, tableArgument) = reader.readHead()
+            if tableHead != String:
+                raise newException(ValueError, "Expected a string for a table of a Record ID (tag 8)")
+            let tableNameLength = reader.getFullArgument(tableArgument)
+            var tableNameBytes: seq[uint8] = reader.readBytes(tableNameLength)
+            let tableName = (cast[string](tableNameBytes)).TableName
+            let idPart = decode(reader, reader.readHead())
+            return RecordId(table: tableName, id: idPart).toSurrealRecordId()
         of TagTableName:
             # Table name is encoded as a string
             let (stringHead, stringArgument) = reader.readHead()

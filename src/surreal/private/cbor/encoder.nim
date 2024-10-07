@@ -87,6 +87,21 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         for pair in value.getTable.pairs:
             writer.encodeString(pair[0])
             encode(writer, pair[1])
+
+    of SurrealRecordId:
+        const initialBytes = [
+            0b110_01000'u8, # Tag for RecordID
+            0b100_00010'u8, # Array with 2 elements
+        ]
+        writer.writeBytes(initialBytes)
+        # Table name (string)
+        let record = value.getRecordId
+        let bytes = cast[seq[uint8]](record.table.string)
+        writer.encodeHead(String, bytes.len.uint64)
+        writer.writeBytes(bytes)
+        # Record ID data
+        encode(writer, record.id)
+
     of SurrealString:
         let bytes = value.toBytes()
         writer.encodeHead(String, bytes.len.uint64)

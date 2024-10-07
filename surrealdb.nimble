@@ -61,6 +61,7 @@ task test, "General tests":
     "cbor/encoding/test_cbor_encoder_none.nim",
     "cbor/encoding/test_cbor_encoder_null.nim",
     "cbor/encoding/test_cbor_encoder_object.nim",
+    "cbor/encoding/test_cbor_encoder_record.nim",
     "cbor/encoding/test_cbor_encoder_string.nim",
     "cbor/encoding/test_cbor_encoder_table.nim",
 
@@ -73,6 +74,7 @@ task test, "General tests":
     "cbor/decoding/test_cbor_decoder_null.nim",
     "cbor/decoding/test_cbor_decoder_none.nim",
     "cbor/decoding/test_cbor_decoder_object.nim",
+    "cbor/decoding/test_cbor_decoder_record.nim",
     "cbor/decoding/test_cbor_decoder_string.nim",
     "cbor/decoding/test_cbor_decoder_table.nim",
 

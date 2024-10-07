@@ -56,10 +56,13 @@ proc `$`*(id: RecordId): string =
     let escapedId = escapeIdPart(id.id)
     return escapedTable & ":" & escapedId
 
+func `==`*(a, b: SurrealValue): bool # Forward declaration as RecordId's `==` needs it
 
-proc `==`*(a, b: RecordId): bool =
+func `==`*(a, b: RecordId): bool =
     ## Compares two record IDs for equality.
-    return a.table == b.table and a.id == b.id
+    if a.table != b.table:
+        return false
+    return a.id == b.id
 
 
 proc newRecordId*(table: TableName, id: string): RecordId =

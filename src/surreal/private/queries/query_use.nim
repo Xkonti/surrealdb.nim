@@ -24,35 +24,36 @@ Only `null` is supported.
 proc use*(db: SurrealDB, namespace: string, database: string): Future[SurrealResult[NoneType]] {.async.} =
     ## Use the namespace and database specified by the given parameters
     # TODO: Make sure to properly escape the namespace and database names - possibly using JSON serialization
-    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", "$2" ]""" % [ namespace, database ])
+    let params: seq[SurrealValue] = @[ %%% namespace, %%% database ]
+    let response = await db.sendRpc(RpcMethod.Use, params)
     if response.isOk:
         return surrealResponse[NoneType](None)
     else:
         return err[NoneType, SurrealError](response.error)
 
-proc use*(db: SurrealDB, namespace: string, database: NoneType): Future[SurrealResult[NoneType]] {.async.} =
-    ## Use the namespace and database specified by the given parameters.
-    ## If the database is not specified, it will be unset.
-    # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
-    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
-    if response.isOk:
-        return surrealResponse[NoneType](None)
-    else:
-        return err[NoneType, SurrealError](response.error)
+# proc use*(db: SurrealDB, namespace: string, database: NoneType): Future[SurrealResult[NoneType]] {.async.} =
+#     ## Use the namespace and database specified by the given parameters.
+#     ## If the database is not specified, it will be unset.
+#     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
+#     let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
+#     if response.isOk:
+#         return surrealResponse[NoneType](None)
+#     else:
+#         return err[NoneType, SurrealError](response.error)
 
-proc useNamespace*(db: SurrealDB, namespace: string): Future[SurrealResult[NoneType]] {.async.} =
-    ## Use the namespace specified by the given parameter. This unsets the database.
-    # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
-    let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
-    if response.isOk:
-        return surrealResponse[NoneType](None)
-    else:
-        return err[NoneType, SurrealError](response.error)
+# proc useNamespace*(db: SurrealDB, namespace: string): Future[SurrealResult[NoneType]] {.async.} =
+#     ## Use the namespace specified by the given parameter. This unsets the database.
+#     # TODO: Make sure to properly escape the namespace - possibly using JSON serialization
+#     let response = await db.sendRpc(RpcMethod.Use, """[ "$1", null ]""" % [ namespace ])
+#     if response.isOk:
+#         return surrealResponse[NoneType](None)
+#     else:
+#         return err[NoneType, SurrealError](response.error)
 
-proc useNamespace*(db: SurrealDB, namespace: NoneType): Future[SurrealResult[NoneType]] {.async.} =
-    ## Unset the namespace. This will also unset the database.
-    let response = await db.sendRpc(RpcMethod.Use, "[ null, null ]")
-    if response.isOk:
-        return surrealResponse[NoneType](None)
-    else:
-        return err[NoneType, SurrealError](response.error)
+# proc useNamespace*(db: SurrealDB, namespace: NoneType): Future[SurrealResult[NoneType]] {.async.} =
+#     ## Unset the namespace. This will also unset the database.
+#     let response = await db.sendRpc(RpcMethod.Use, "[ null, null ]")
+#     if response.isOk:
+#         return surrealResponse[NoneType](None)
+#     else:
+#         return err[NoneType, SurrealError](response.error)

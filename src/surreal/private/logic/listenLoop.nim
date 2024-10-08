@@ -1,7 +1,8 @@
-import std/[asyncdispatch, json, tables, strutils]
+import std/[asyncdispatch, strutils, tables]
 import ws
 
-import ../types/[surrealdb, surrealResult]
+import ../types/[surrealdb, surrealResult, surrealValue]
+import ../cbor/[decoder]
 
 proc startListenLoop*(db: SurrealDB) {.async.} =
     ## Initializes a loop that listens for WebSocket messagges.
@@ -10,38 +11,50 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
     echo "Starting listen loop"
     while db.isConnected:
         # Receive a message from the WebSocket
-        var resp = await db.ws.receivePacket()
-        if resp[0] != Opcode.Text:
-            # Ignore non-text messages
-            continue
+        let (opcode, message) = await db.ws.receivePacket()
+        case opcode
+        of Opcode.Text:
+            # Parse the message as JSON
+            echo "Received message: ", message
+        of Opcode.Binary:
+            # Parse the message as CBOR
+            let data = cast[seq[uint8]](message)
+            echo "Received message (raw): ", data
+            let decodedMessage = decode(cast[seq[uint8]](message))
+            echo "Received message of kind: ", decodedMessage.kind
+            echo "Message: ", decodedMessage
 
-        # Parse the message as JSON
-        let jsonObject = parseJson(resp[1])
+            # If no ID is present, we can't match it to a request future.
+            # Most likely the request was malformed and the server couldn't extract the ID from it.
+            if not decodedMessage.hasKey("id"):
+                echo "Malformed request received: ", decodedMessage
+                continue
 
-        # If no ID is present, we can't match it to a request future.
-        # Most likely the request was malformed and the server couldn't extract the ID from it.
-        if not jsonObject.hasKey("id"):
-            echo "Malformed request received: ", jsonObject
-            continue
+            # Extract the ID of the request and locate the future
+            let queryId: string = decodedMessage["id"].getString()
+            echo "Response for query ID: ", queryId, " with length of ", queryId.len
+            echo "Response for query ID: ", queryId, " with length of ", queryId.len
+            echo "Response for query ID: ", queryId, " with length of ", queryId.len
 
-        # Extract the ID of the request and locate the future
-        let queryId: int = jsonObject["id"].getInt()
-        echo "Response for query ID: ", queryId
+            # If counldn't find the future, we can't complete it, move on
+            if not (db.queryFutures.hasKey(queryId)):
+                echo "No future found for query ID: ", queryId
+                continue
 
-        # If counldn't find the future, we can't complete it, move on
-        if not db.queryFutures.hasKey(queryId):
-            echo "No future found for query ID: ", queryId
-            continue
+            # Remove the future from the table - consider it handled
+            let future = db.queryFutures[queryId]
+            db.queryFutures.del(queryId)
 
-        # Remove the future from the table - consider it handled
-        let future = db.queryFutures[queryId]
-        db.queryFutures.del(queryId)
+            # If it's an error message, complete the future with the error
+            if decodedMessage.hasKey("error"):
+                future.complete(surrealError(
+                    decodedMessage["error"]["code"].toInt32(),
+                    decodedMessage["error"]["message"].getString()))
 
-        # If it's an error message, complete the future with the error
-        if jsonObject.hasKey("error"):
-            future.complete(surrealError(
-                jsonObject["error"]["code"].getInt(),
-                jsonObject["error"]["message"].getStr()))
-        # Otherwise, complete the future with the response content
+            # Otherwise, complete the future with the response content
+            else:
+                future.complete(surrealResponseValue(decodedMessage["result"]))
+                echo "Returned result: ", decodedMessage["result"]
         else:
-            future.complete(surrealResponseJson(jsonObject["result"]))
+            # Ignore non-text and non-binary messages
+            continue

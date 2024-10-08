@@ -3,11 +3,11 @@ import types/[tableName]
 
 var nextId = 0
 
-proc getNextId*(): int =
+proc getNextId*(): string =
     ## Generates a new ID for a request.
 
     inc(nextId)
-    return nextId
+    return $nextId
 
 
 proc canParseAsInt*(text: string): bool =

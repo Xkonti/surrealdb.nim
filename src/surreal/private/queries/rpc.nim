@@ -1,27 +1,25 @@
-import std/[asyncdispatch, asyncfutures, json, strutils, tables]
-import ../types/[rpcMethod, surrealdb, surrealResult]
+import std/[asyncdispatch, asyncfutures, strutils, tables]
+import ../types/[rpcMethod, surrealdb, surrealValue, surrealResult]
+import ../cbor/[encoder, writer]
 import ../utils
 import ws
 
-proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: string | JsonNode): Future[SurrealResult[JsonNode]] {.async.} =
+proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: seq[SurrealValue]): Future[SurrealResult[SurrealValue]] {.async.} =
     # Generate a new ID for the request - this is used to match the response with the request
-    let queryId = getNextId()
-
-
-    # Prep the request string
-    # Avoid JSON errors if provided empty string
-    var paramsString = $params
-    if paramsString.len == 0:
-        paramsString = "\"\""
-    let queryString = """{"id": $1, "method": "$2", "params": $3}""" % [$queryId, $queryMethod, paramsString]
+    let queryId = getNextId() # Unique per WS connection or globally?
+    let encoded = encode(%%% {
+        "id": %%% queryId,
+        "method": %%% $queryMethod,
+        "params": %%% params
+    }).getOutput()
 
     # Create and register a new future for the request
-    let future: FutureResponse = newFuture[SurrealResult[JsonNode]]("sendQuery '" & $queryMethod & "' #" & $queryId)
+    let future: FutureResponse = newFuture[SurrealResult[SurrealValue]]("sendQuery '" & $queryMethod & "' #" & $queryId)
     db.queryFutures[queryId] = future
 
     # Attempt to send the request and return the result
     try:
-        await db.ws.send(queryString)
+        await db.ws.send(cast[string](encoded), Opcode.Binary)
         return await future
 
     # 👇 This is pure confusion 👇

@@ -6,9 +6,6 @@ import surreal/private/logic/[connection]
 # import surreal/private/cbor/[decoder]
 
 proc main() {.async.} =
-    # let ws = await newAsyncWebsocketClient("jabba.lan", Port(14831),
-    #   path = "/rpc", protocols = @["cbor"])   protocol = "alpha"
-    # echo "connected!"
 
     echo "Connecting to SurrealDB..."
     let surreal = await newSurrealDbConnection("ws://jabba.lan:14831/rpc")

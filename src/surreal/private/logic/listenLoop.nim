@@ -18,6 +18,7 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             echo "Received message: ", message
         of Opcode.Binary:
             # Parse the message as CBOR
+            echo "Received message (string): " & $message
             let data = cast[seq[uint8]](message)
             echo "Received message (raw): ", data
             let decodedMessage = decode(cast[seq[uint8]](message))
@@ -31,10 +32,16 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
                 continue
 
             # Extract the ID of the request and locate the future
+            echo "Query ID length: ", decodedMessage["id"].len
+            echo "Query ID length: ", decodedMessage["id"].getString().len
             let queryId: string = decodedMessage["id"].getString()
             echo "Response for query ID: ", queryId, " with length of ", queryId.len
-            echo "Response for query ID: ", queryId, " with length of ", queryId.len
-            echo "Response for query ID: ", queryId, " with length of ", queryId.len
+            let id1 = queryId
+            echo "Response for query ID: ", id1, " with length of ", queryId.len
+            let id2 = $queryId
+            echo "Response for query ID: ", id2, " with length of ", queryId.len
+            echo "Response for query ID: " & $queryId & " with length of " & $queryId.len
+            echo "Is it one: ", queryId == "1"
 
             # If counldn't find the future, we can't complete it, move on
             if not (db.queryFutures.hasKey(queryId)):

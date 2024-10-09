@@ -29,8 +29,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         # Text string
         # TODO: Support indefinite length text strings
         let numberOfBytes = reader.getFullArgument(headArgument)
-        var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
-        return bytes.toSurrealString()
+        return reader.readStr(numberOfBytes).toSurrealString()
 
     of Array:
         # Array
@@ -88,8 +87,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             if stringHead != String:
                 raise newException(ValueError, "Expected a string for a ISO8601 datetime (tag 0)")
             let numberOfBytes = reader.getFullArgument(stringArgument)
-            var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
-            let datetimeText = cast[string](bytes)
+            let datetimeText = reader.readStr(numberOfBytes)
             echo "Received datetime: ", datetimeText
             return parse(datetimeText, "yyyy-MM-dd'T'HH:mm:sszzz").toSurrealDatetime()
         of TagNone:
@@ -109,8 +107,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             if tableHead != String:
                 raise newException(ValueError, "Expected a string for a table of a Record ID (tag 8)")
             let tableNameLength = reader.getFullArgument(tableArgument)
-            var tableNameBytes: seq[uint8] = reader.readBytes(tableNameLength)
-            let tableName = (cast[string](tableNameBytes)).TableName
+            let tableName = reader.readStr(tableNameLength).TableName
             let idPart = decode(reader, reader.readHead())
             return RecordId(table: tableName, id: idPart).toSurrealRecordId()
         of TagTableName:
@@ -119,7 +116,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             if stringHead != String:
                 raise newException(ValueError, "Expected a string for a Table Name (tag 7)")
             let numberOfBytes = reader.getFullArgument(stringArgument)
-            var bytes: seq[uint8] = reader.readBytes(numberOfBytes)
+            var bytes = reader.readStr(numberOfBytes)
             return bytes.toSurrealTable()
 
         else:

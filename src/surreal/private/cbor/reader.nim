@@ -1,4 +1,4 @@
-import std/[bitops, endians, sequtils]
+import std/[bitops, endians, sequtils, strbasics]
 import types
 
 type
@@ -59,7 +59,13 @@ proc readFloat64*(reader: CborReader): float64 =
 
 proc readBytes*(reader: CborReader, numberOfBytes: uint64): seq[uint8] =
     ## Reads the specified number of bytes from the CBOR data into a new sequence.
-    result = reader.data[reader.pos..<reader.pos+numberOfBytes].toSeq
+    result = reader.data[reader.pos..<reader.pos+numberOfBytes]
+    reader.pos += numberOfBytes
+
+proc readStr*(reader: CborReader, numberOfBytes: uint64): string {.noinit.} =
+    ## Reads the specified number of bytes from the CBOR data into a new sequence.
+    result = newStringOfCap(numberOfBytes)
+    result.add(cast[seq[char]](reader.data).toOpenArray(reader.pos.int, (reader.pos+numberOfBytes - 1).int))
     reader.pos += numberOfBytes
 
 proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =

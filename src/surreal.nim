@@ -16,13 +16,12 @@ proc main() {.async.} =
     discard await surreal.use(ns, db)
     echo "Switched to namespace '", ns, "' and database '", db, "'"
 
-    # let signinResponse = await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
-
-    # if signinResponse.isOk:
-    #     echo "Signed in with token: ", signinResponse.ok
-    # else:
-    #     echo "Signin error: ", signinResponse.error
-    #     quit(1)
+    let signinResponse = await surreal.signin("disjoin4880", "Hangup5-Outhouse-Lucrative")
+    if signinResponse.isOk:
+        echo "Signed in with token: ", signinResponse.ok
+    else:
+        echo "Signin error: ", signinResponse.error
+        quit(1)
 
     # let createResponse = await surreal.create(rc"testitem:12345", {"name": "Ben", "state": "sleepy"})
     # if createResponse.isOk:

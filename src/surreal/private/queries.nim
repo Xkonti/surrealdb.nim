@@ -2,7 +2,7 @@ import queries/query_use
 # import queries/query_info
 # import queries/query_version
 # import queries/query_signup
-# import queries/query_signin
+import queries/query_signin
 # import queries/query_authenticate
 # import queries/query_invalidate
 # import queries/query_let
@@ -24,11 +24,11 @@ import queries/query_use
 # # TODO: queries/query_query_raw
 
 export
-    query_use
+    query_use,
     # query_info,
     # query_version,
     # query_signup,
-    # query_signin,
+    query_signin
     # query_authenticate,
     # query_invalidate,
     # query_let,

@@ -112,3 +112,100 @@ suite "CBOR:Decoder:Integer":
         const number = -69421'i64
         check(decoded.toInt32 == number.int32)
         check(decoded.toInt64 == number.int64)
+
+    test "decode CBOR reference integers":
+        # https://www.rfc-editor.org/rfc/rfc8949.html#name-examples-of-encoded-cbor-da
+
+        var writer = newCborWriter()
+        var decoded: SurrealValue
+
+        decoded = decode(@[0x00'u8])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 0)
+
+        decoded = decode(@[0x01'u8])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 1)
+
+        decoded = decode(@[0x0a'u8])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 10)
+
+        decoded = decode(@[0x17'u8])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 23)
+
+        decoded = decode(@[0x18'u8, 0x18])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 24)
+
+        decoded = decode(@[0x18'u8, 0x19])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 25)
+
+        decoded = decode(@[0x18'u8, 0x64])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt8 == 100)
+
+        decoded = decode(@[0x19'u8, 0x03, 0xe8])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt16 == 1000)
+
+        decoded = decode(@[0x1a'u8, 0x00, 0x0f, 0x42, 0x40])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt32 == 1000000)
+
+        decoded = decode(@[0x1b'u8, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toInt64 == 1000000000000'i64)
+
+        decoded = decode(@[0x1b'u8, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff])
+        check(decoded.kind == SurrealInteger)
+        check(decoded.isPositive)
+        check(decoded.toUInt64 == 18446744073709551615'u64)
+
+        # BIGINT?
+        # decoded = decode(@[0xc2'u8, 0x49, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+        # check(decoded.kind == SurrealInteger)
+        # check(decoded.isPositive)
+        # check(decoded.toUInt64 == 18446744073709551616'u64)
+
+        # decoded = decode(@[0x3b'u8, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff])
+        # check(decoded.kind == SurrealInteger)
+        # check(not decoded.isPositive)
+        # check(decoded.toInt64 == -18446744073709551616)
+
+        # decoded = decode(@[0xc3'u8, 0x49, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+        # check(decoded.kind == SurrealInteger)
+        # check(decoded.isPositive)
+        # check(decoded.toInt64 == -18446744073709551617)
+
+        decoded = decode(@[0x20'u8])
+        check(decoded.kind == SurrealInteger)
+        check(not decoded.isPositive)
+        check(decoded.toInt8 == -1)
+
+        decoded = decode(@[0x29'u8])
+        check(decoded.kind == SurrealInteger)
+        check(not decoded.isPositive)
+        check(decoded.toInt8 == -10)
+
+        decoded = decode(@[0x38'u8, 0x63])
+        check(decoded.kind == SurrealInteger)
+        check(not decoded.isPositive)
+        check(decoded.toInt8 == -100)
+
+        decoded = decode(@[0x39'u8, 0x03, 0xe7])
+        check(decoded.kind == SurrealInteger)
+        check(not decoded.isPositive)
+        check(decoded.toInt16 == -1000)

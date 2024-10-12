@@ -39,19 +39,27 @@ proc signin*(
             return err[string, SurrealError](response.error)
 
 proc signin*(
-    db: SurrealDB,
-    namespace: string, database: string, accessControl: string,
-    params: SurrealValue
-    ): Future[SurrealResult[string]] {.async.} =
-        if params.kind != SurrealObject:
-            raise newException(ValueError, "Expected SurrealObject for params")
-        ## Sign in as a record user
-        var params = params
-        params["NS"] = namespace
-        params["DB"] = database
-        params["AC"] = accessControl
-        let response = await db.sendRpc(RpcMethod.Signin, @[ params ])
-        if response.isOk:
-            return surrealResponse[string](response.ok.getString())
-        else:
-            return err[string, SurrealError](response.error)
+        db: SurrealDB,
+        namespace: string, database: string, accessControl: string,
+        params: SurrealValue
+        ): Future[SurrealResult[string]] {.async.} =
+    ## Sign in as a record user
+    if params.kind != SurrealObject:
+        raise newException(ValueError, "Expected SurrealObject for params")
+    var params = params
+    params["NS"] = namespace
+    params["DB"] = database
+    params["AC"] = accessControl
+    let response = await db.sendRpc(RpcMethod.Signin, @[ params ])
+    if response.isOk:
+        return surrealResponse[string](response.ok.getString())
+    else:
+        return err[string, SurrealError](response.error)
+
+template signin*(
+        db: SurrealDB,
+        namespace: string, database: string, accessControl: string,
+        params: untyped
+        ): untyped =
+    ## Sign in as a record user
+    db.signin(namespace, database, accessControl, %%* params)

@@ -1,8 +1,5 @@
 import std/[asyncdispatch, asyncfutures, strutils]
-import surreal/private/[queries]
-# import surreal/private/types/[record, tableName]
-import surreal/private/logic/[connection]
-import surreal/private/types/[surrealValue, tableName]
+import surrealdb
 
 # import surreal/private/cbor/[decoder]
 

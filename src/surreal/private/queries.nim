@@ -12,7 +12,7 @@ import queries/query_unset
 import queries/query_query
 import queries/query_select
 import queries/query_create
-# import queries/query_insert
+import queries/query_insert
 # import queries/query_update
 # import queries/query_upsert
 # import queries/query_relate
@@ -37,8 +37,8 @@ export
     # # TODO: query_kill
     query_query,
     query_select,
-    query_create
-    # query_insert,
+    query_create,
+    query_insert
     # query_update,
     # query_upsert,
     # query_relate,

@@ -1,4 +1,4 @@
-import std/[sequtils, strutils, tables, times]
+import std/[macros, sequtils, strutils, tables, times]
 import none, null, tableName
 import ../utils
 

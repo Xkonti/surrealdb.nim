@@ -29,22 +29,22 @@ suite "SurrealValue:RecordId":
         check(record5.id.getString == "12_001")
         check($record5 == "user:⟨12_001⟩")
 
-    # test "can create from a string representation":
-    #     let record1a = newRecordId("table1:abcd")
-    #     let record1b = rc"table1:abcd"
-    #     check(record1a.table == tb"table1")
-    #     check(record1b.table == tb"table1")
-    #     check(record1a.id.getString == "abcd")
-    #     check(record1b.id.getString == "abcd")
-    #     check($record1a == "table1:abcd")
-    #     check($record1b == "table1:abcd")
+    test "can create from a string representation":
+        let record1a = newRecordId("table1:abcd")
+        let record1b = rc"table1:abcd"
+        check(record1a.table == tb"table1")
+        check(record1b.table == tb"table1")
+        check(record1a.id.getString == "abcd")
+        check(record1b.id.getString == "abcd")
+        check($record1a == "table1:abcd")
+        check($record1b == "table1:abcd")
 
-    #     # TODO: Test cases where table is escaped
-    #     # "⟨table1⟩:abcd"
-    #     # TODO: Test cases where colon is escaped
-    #     # "⟨ab:cd:ef⟩:hello"
-    #     # TODO: Test cases where id is escaped
-    #     # "table1:⟨abcd⟩"
+        # TODO: Test cases where table is escaped
+        # "⟨table1⟩:abcd"
+        # TODO: Test cases where colon is escaped
+        # "⟨ab:cd:ef⟩:hello"
+        # TODO: Test cases where id is escaped
+        # "table1:⟨abcd⟩"
 
     test "can create from an integer":
         let record1 = newRecordId(tb"table1", 12345)

@@ -94,13 +94,16 @@ proc newRecordId*(table: TableName, id: SurrealValue): RecordId =
         raise newException(ValueError, "Cannot create a record ID from a $1 value" % $id.kind)
 
 
-# proc newRecordId*(stringRepr: string): RecordId =
-#     ## Creates a new record ID object from a string representation.
-#     ## This assumes that the ID is purely a string. It doesn't check if it's a number, array, etc.
-#     let (table, id) = extractDataFromString(stringRepr)
-#     return RecordId(table: table, id: id)
+proc newRecordId*(stringRepr: string): RecordId =
+    ## Creates a new record ID object from a string representation.
+    ## This assumes that the ID is purely a string and the table name doesn't contain a colon.
+    ## It doesn't check if it's a number, array, etc. It doesn't check for anything espaced etc.
+    let (table, id) = extractDataFromString(stringRepr)
+    return RecordId(table: table, id: id)
 
 
-# proc rc*(stringId: string): RecordId =
-#     ## A string literal that creates a new record ID
-#     return newRecordId(stringId)
+proc rc*(stringId: string): RecordId =
+    ## Creates a new record ID object from a string representation.
+    ## This assumes that the ID is purely a string and the table name doesn't contain a colon.
+    ## It doesn't check if it's a number, array, etc. It doesn't check for anything espaced etc.
+    return newRecordId(stringId)

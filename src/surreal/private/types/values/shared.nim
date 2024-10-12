@@ -89,3 +89,38 @@ proc `$`*(value: SurrealValue): string =
         return value.tableVal.string
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a string" % $value.kind)
+
+template `%%%`*(v: SurrealValue): SurrealValue = v
+
+# template `%%*`*(v: SurrealValue): SurrealValue = v
+
+proc toSurrealValueImpl(x: NimNode): NimNode =
+  case x.kind
+  of nnkBracket: # array
+    if x.len == 0: return newCall(bindSym"newSurrealArray")
+    result = newNimNode(nnkBracket)
+    for i in 0 ..< x.len:
+      result.add(toSurrealValueImpl(x[i]))
+    result = newCall(bindSym("%%%", brOpen), result)
+  of nnkTableConstr: # object
+    if x.len == 0: return newCall(bindSym"newSurrealObject")
+    result = newNimNode(nnkTableConstr)
+    for i in 0 ..< x.len:
+      x[i].expectKind nnkExprColonExpr
+      result.add newTree(nnkExprColonExpr, x[i][0], toSurrealValueImpl(x[i][1]))
+    result = newCall(bindSym("%%%", brOpen), result)
+  of nnkCurly: # empty object
+    x.expectLen(0)
+    result = newCall(bindSym"newSurrealObject")
+  of nnkNilLit:
+    result = newCall(bindSym"newSurrealNull")
+  of nnkPar:
+    if x.len == 1: result = toSurrealValueImpl(x[0])
+    else: result = newCall(bindSym("%%%", brOpen), x)
+  else:
+    result = newCall(bindSym("%%%", brOpen), x)
+
+macro `%%*`*(x: untyped): untyped =
+  ## Convert an expression to a SurrealValue directly, without having to specify
+  ## `%%%` for every element.
+  result = toSurrealValueImpl(x)

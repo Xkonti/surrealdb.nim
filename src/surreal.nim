@@ -21,14 +21,6 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    # let record = newRecordId(tb"testitem", "12345")
-    # let createResponse = await surreal.create(record, %%* {"name": "Ben", "state": "sleepy", "age": 99})
-    # if createResponse.isOk:
-    #     echo "Create response: ", createResponse.ok
-    # else:
-    #     echo "Create error: ", createResponse.error
-    #     quit(1)
-
     let selectResponse = await surreal.select(rc"testitem:12345")
     if selectResponse.isOk:
         echo "Select response: ", selectResponse.ok
@@ -36,20 +28,16 @@ proc main() {.async.} =
         echo "Select error: ", selectResponse.error
         quit(1)
 
-
-
-    # var futures: seq[Future[SurrealResult[JsonNode]]] = @[]
-    # for i in 0..<20:
-    #     futures.add(surreal.select("item"))
+    # var futures: seq[FutureResponse] = @[]
+    # for i in 0..<10:
+    #     futures.add(surreal.select(tb"item"))
 
     # let responses = await futures.all()
 
     # echo "Received ", responses.len, " responses"
 
     # for response in responses:
-    #     let itemsCount = response.ok.getElems().len()
-    #     if itemsCount != 1000:
-    #         echo "Didn't receive 1000 items in one of the responses..."
+    #     echo "Response: (", response.ok.kind , ") of ", response.ok.len, " items"
 
 
 waitFor main()

@@ -18,12 +18,12 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             echo "Received message: ", message
         of Opcode.Binary:
             # Parse the message as CBOR
-            echo "Received message (string): " & $message
+            # echo "Received message (string): " & $message
             let data = cast[seq[uint8]](message)
-            echo "Received message (raw): ", data
+            # echo "Received message (raw): ", data
             let decodedMessage = decode(cast[seq[uint8]](message)) # TODO: Handle decoding errors
-            echo "Received message of kind: ", decodedMessage.kind
-            echo "Message: ", decodedMessage
+            # echo "Received message of kind: ", decodedMessage.kind
+            # echo "Message: ", decodedMessage
 
             # If no ID is present, we can't match it to a request future.
             # Most likely the request was malformed and the server couldn't extract the ID from it.
@@ -53,7 +53,6 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             # Otherwise, complete the future with the response content
             else:
                 future.complete(surrealResponseValue(decodedMessage["result"]))
-                echo "Returned result: ", decodedMessage["result"]
         else:
             # Ignore non-text and non-binary messages
             continue

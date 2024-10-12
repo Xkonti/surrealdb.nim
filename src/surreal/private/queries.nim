@@ -6,7 +6,7 @@ import queries/query_signin
 import queries/query_authenticate
 import queries/query_invalidate
 import queries/query_let
-# import queries/query_unset
+import queries/query_unset
 # # TODO: queries/query_live
 # # TODO: queries/query_kill
 import queries/query_query
@@ -32,7 +32,7 @@ export
     query_authenticate,
     query_invalidate,
     query_let,
-    # query_unset,
+    query_unset,
     # # TODO: query_live
     # # TODO: query_kill
     query_query,

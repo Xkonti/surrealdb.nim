@@ -9,7 +9,7 @@ import queries/query_let
 # import queries/query_unset
 # # TODO: queries/query_live
 # # TODO: queries/query_kill
-# import queries/query_query
+import queries/query_query
 import queries/query_select
 import queries/query_create
 # import queries/query_insert
@@ -35,7 +35,7 @@ export
     # query_unset,
     # # TODO: query_live
     # # TODO: query_kill
-    # query_query,
+    query_query,
     query_select,
     query_create
     # query_insert,

@@ -35,12 +35,21 @@ proc writeRawUInt*(buffer: CborWriter, value: uint16 | uint32 | uint64) =
     ## The number of bytes is determined by the type of the value.
     writeRawUInt(buffer.data, value)
 
+proc writeFloat32*(buffer: CborWriter, value: float32) =
+    ## Writes a float32 to the CBOR writer.
+    # Nim encodes NaN in a way incompatible with CBOR
+    if value.isNaN:
+        buffer.data.write(@[0x7f'u8, 0xc0, 0x00, 0x00])
+    else:
+        writeRawUInt(buffer.data, cast[uint32](value))
+
 proc writeFloat64*(buffer: CborWriter, value: float64) =
     ## Writes a float64 to the CBOR writer.
-    let asInt: uint64 = if value.isNaN:
-            0xfb7ff8000000000000'u64
-        else: cast[uint64](value)
-    writeRawUInt(buffer.data, asInt)
+    # Nim encodes NaN in a way incompatible with CBOR
+    if value.isNaN:
+        buffer.data.write(@[0x7f'u8, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+    else:
+        writeRawUInt(buffer.data, cast[uint64](value))
 
 proc writeBytes*(buffer: CborWriter, value: openArray[uint8]) =
     ## Writes a sequence of bytes to the CBOR writer.

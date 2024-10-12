@@ -24,6 +24,12 @@ type
         # SurrealFuture
         # SurrealRange
 
+    SurrealFloatKind* = enum
+        ## The kind of a SurrealFloat
+        # Float16,
+        Float32,
+        Float64
+
     SurrealObjectEntry* = tuple[key: string, value: SurrealValue]
         ## A single entry in a SurrealObject
 
@@ -47,7 +53,11 @@ type
         of SurrealDatetime:
             datetimeVal: DateTime
         of SurrealFloat:
-            floatVal: float64
+            case floatKind*: SurrealFloatKind
+            of Float32:
+                float32Val: float32
+            of Float64:
+                float64Val: float64
         of SurrealInteger:
             intVal: uint64
             intIsNegative: bool
@@ -97,7 +107,11 @@ func `==`*(a, b: SurrealValue): bool =
     of SurrealDatetime:
         return a.datetimeVal == b.datetimeVal
     of SurrealFloat:
-        return a.floatVal == b.floatVal
+        if a.floatKind != b.floatKind:
+            return false
+        return case a.floatKind
+            of Float32: a.float32Val == b.float32Val
+            of Float64: a.float64Val == b.float64Val
     of SurrealInteger:
         return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
     of SurrealNone:

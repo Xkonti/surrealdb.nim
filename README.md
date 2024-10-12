@@ -115,3 +115,9 @@ The following methods will be implemented after the CBOR-based RPC is implemente
 - [ ] Automatic marshalling of SurrealDB types to/from Nim types
 - [ ] Various helpers for dealing with returned data
 - [ ] Automated testing via GitHub Actions that run SurrealDB in docker containers
+
+## Contributing
+
+We welcome contributions to SurrealDB.nim! If you're interested in helping improve this SurrealDB driver for Nim, please take a look at our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
+
+Your contributions, whether they're bug reports, feature requests, or code changes, are greatly appreciated. Together, we can make SurrealDB.nim even better!

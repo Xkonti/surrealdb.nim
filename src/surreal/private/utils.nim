@@ -1,7 +1,7 @@
 import std/[strutils]
 import types/[tableName]
 
-var nextId = 0
+var nextId = 0 # TODO: Should be thread-safe (atomic int)
 
 proc getNextId*(): string =
     ## Generates a new ID for a request.

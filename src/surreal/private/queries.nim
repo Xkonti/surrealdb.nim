@@ -7,8 +7,8 @@ import queries/query_authenticate
 import queries/query_invalidate
 import queries/query_let
 import queries/query_unset
-# TODO: queries/query_live
-# TODO: queries/query_kill
+# # TODO: queries/query_live
+# # TODO: queries/query_kill
 import queries/query_query
 import queries/query_select
 import queries/query_create
@@ -17,11 +17,11 @@ import queries/query_update
 import queries/query_upsert
 import queries/query_relate
 import queries/query_merge
-# TODO: queries/query_patch
+# # TODO: queries/query_patch
 import queries/query_delete
 import queries/query_run
-# TODO: queries/query_qraphql
-# TODO: queries/query_query_raw
+# # TODO: queries/query_qraphql
+# # TODO: queries/query_query_raw
 
 export
     query_use,
@@ -33,8 +33,8 @@ export
     query_invalidate,
     query_let,
     query_unset,
-    # TODO: query_live
-    # TODO: query_kill
+    # # TODO: query_live
+    # # TODO: query_kill
     query_query,
     query_select,
     query_create,
@@ -43,8 +43,8 @@ export
     query_upsert,
     query_relate,
     query_merge,
-    # TODO: query_patch
+    # # TODO: query_patch
     query_delete,
     query_run
-    # TODO: query_qraphql
-    # TODO: query_query_raw
+    # # TODO: query_qraphql
+    # # TODO: query_query_raw

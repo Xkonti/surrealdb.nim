@@ -7,4 +7,4 @@ const Null* : NullType = NullType()
 
 proc `$`*(n: NullType): string =
     ## Returns the string representation of the `Null` object.
-    "null"
+    "NULL"

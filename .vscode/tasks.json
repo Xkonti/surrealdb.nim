@@ -1,57 +1,92 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-      {
-          "label": "nim: run tests",
-          "command": "nimble",
-          "args": ["test"],
-          "options": {
-              "cwd": "${workspaceRoot}"
-          },
-          "type": "shell",
-          "group": {
-              "kind": "test",
-              "isDefault": true
-          }
-      },
-      {
-          "label": "nim: run",
-          "command": "nimble",
-          "args": ["run", "-o:bin/", "--verbosity:0", "--hints:off"],
-          "options": {
-              "cwd": "${workspaceRoot}"
-          },
-          "type": "shell",
-          "group": {
-              "kind": "build",
-              "isDefault": true
-          }
-      },
-      {
-          "label": "nim: run release",
-          "command": "nimble",
-          "args": ["run", "-o:bin/", "-d:release", "--hints:off"],
-          "options": {
-              "cwd": "${workspaceRoot}"
-          },
-          "type": "shell",
-          "group": {
-              "kind": "build",
-              "isDefault": true
-          }
-      },
-      {
-          "label": "nim: test",
-          "command": "nimble",
-          "args": ["test", "-o:bin/", "--verbose", "--hints:off"],
-          "options": {
-              "cwd": "${workspaceRoot}"
-          },
-          "type": "shell",
-          "group": {
-              "kind": "test",
-              "isDefault": true
-          }
-      }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "nim: run tests",
+            "command": "nimble",
+            "args": [
+                "test"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "nim: run",
+            "command": "nimble",
+            "args": [
+                "run",
+                "-o:bin/",
+                "--verbosity:0",
+                "--hints:off"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "nim: run release",
+            "command": "nimble",
+            "args": [
+                "run",
+                "-o:bin/",
+                "-d:release",
+                "--hints:off"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            // exec "nim r --hints:off tests/" & file
+            "label": "run current file",
+            "command": "nim",
+            "args": [
+                "r",
+                "--hints:off",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            }
+            
+        },
+        {
+            "label": "nim: run tests",
+            "command": "nimble",
+            "args": [
+                "test",
+                "-o:bin/",
+                "--hints:off"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+    ]
 }

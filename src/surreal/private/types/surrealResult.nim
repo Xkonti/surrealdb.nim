@@ -1,4 +1,5 @@
 import std/[asyncdispatch, json]
+import surrealValue
 import result
 
 type
@@ -10,16 +11,16 @@ type
     SurrealResult*[T] = Result[T, SurrealError]
         ## A SurrealDB result type that can either be successful or contain an error.
 
-    FutureResponse* = Future[SurrealResult[JsonNode]]
+    FutureResponse* = Future[SurrealResult[SurrealValue]]
 
 
-proc surrealError*(code: int, message: string): SurrealResult[JsonNode] =
+proc surrealError*(code: int, message: string): SurrealResult[SurrealValue] =
     ## Create a new error result with the specified error code and message.
-    err[JsonNode, SurrealError](SurrealError(code: code, message: message))
+    err[SurrealValue, SurrealError](SurrealError(code: code, message: message))
 
-proc surrealResponseJson*(value: JsonNode): SurrealResult[JsonNode] =
+proc surrealResponseValue*(value: SurrealValue): SurrealResult[SurrealValue] =
     ## Creates a new successful result with the specified JSON value.
-    ok[JsonNode, SurrealError](value)
+    ok[SurrealValue, SurrealError](value)
 
 proc surrealResponse*[T](value: T): SurrealResult[T] =
     ## Creates a new successful result with the specified value.

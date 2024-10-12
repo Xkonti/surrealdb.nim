@@ -16,7 +16,7 @@ proc newSurrealDbConnection*(url: string): Future[SurrealDB] {.async.} =
         address = address / "rpc"
 
     # Establish the WebSocket connection
-    let ws = await newWebSocket($address)
+    let ws = await newWebSocket($address, "cbor")
 
     # Setup the pings
     ws.setupPings(15)
@@ -24,7 +24,7 @@ proc newSurrealDbConnection*(url: string): Future[SurrealDB] {.async.} =
     # Create the SurrealDB object
     let surreal = SurrealDB(
         ws: ws,
-        queryFutures: newTable[int, FutureResponse](),
+        queryFutures: newTable[string, FutureResponse](),
         isConnected: true
     )
     echo "Connected!"

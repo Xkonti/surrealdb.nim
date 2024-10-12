@@ -9,5 +9,5 @@ type
 
         ws*: WebSocket
         # TODO: Add a timeout for each future in case the response is not received / can't be linked to the request
-        queryFutures*: TableRef[int, FutureResponse]
+        queryFutures*: TableRef[string, FutureResponse]
         isConnected*: bool

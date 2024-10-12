@@ -1,3 +1,3 @@
 import std/[asyncdispatch, asyncfutures, json, strutils]
-import ../types/[rpcMethod, queryParams, record, result, surrealdb, surrealResult, tableName]
+import ../types/[rpcMethod, result, queryParams, surrealdb, surrealValue, surrealResult, tableName]
 import rpc

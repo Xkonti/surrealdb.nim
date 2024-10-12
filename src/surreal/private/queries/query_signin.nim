@@ -1,16 +1,14 @@
 include shared_imports
 
-# TODO: Response always returns a token - even for system users
-
 proc signin*(
     db: SurrealDB,
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         ## Sign in as a root user
-        let params = %* [ { "user": user, "pass": pass } ]
+        let params: seq[SurrealValue] = @[ %%* { "user": user, "pass": pass } ]
         let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
-            return surrealResponse[string](response.ok.getStr())
+            return surrealResponse[string](response.ok.getString())
         else:
             return err[string, SurrealError](response.error)
 
@@ -20,10 +18,10 @@ proc signin*(
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         ## Sign in as a namespace user
-        let params = %* [ { "NS": namespace, "user": user, "pass": pass } ]
+        let params: seq[SurrealValue] = @[ %%* { "NS": namespace, "user": user, "pass": pass } ]
         let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
-            return surrealResponse[string](response.ok.getStr())
+            return surrealResponse[string](response.ok.getString())
         else:
             return err[string, SurrealError](response.error)
 
@@ -33,26 +31,35 @@ proc signin*(
     user: string, pass: string
     ): Future[SurrealResult[string]] {.async.} =
         ## Sign in as a database user
-        let params = %* [ { "NS": namespace, "DB": database, "user": user, "pass": pass } ]
+        let params: seq[SurrealValue] = @[ %%* { "NS": namespace, "DB": database, "user": user, "pass": pass } ]
         let response = await db.sendRpc(RpcMethod.Signin, params)
         if response.isOk:
-            return surrealResponse[string](response.ok.getStr())
+            return surrealResponse[string](response.ok.getString())
         else:
             return err[string, SurrealError](response.error)
 
 proc signin*(
-    db: SurrealDB,
-    namespace: string, database: string, accessControl: string,
-    params: QueryParams
-    ): Future[SurrealResult[string]] {.async.} =
-        ## Sign in as a record user
-        var params = params
-        params["NS"] = namespace
-        params["DB"] = database
-        params["AC"] = accessControl
-        echo "Params: ", params
-        let response = await db.sendRpc(RpcMethod.Signin, %* [ params ])
-        if response.isOk:
-            return surrealResponse[string](response.ok.getStr())
-        else:
-            return err[string, SurrealError](response.error)
+        db: SurrealDB,
+        namespace: string, database: string, accessControl: string,
+        params: SurrealValue
+        ): Future[SurrealResult[string]] {.async.} =
+    ## Sign in as a record user
+    if params.kind != SurrealObject:
+        raise newException(ValueError, "Expected SurrealObject for params")
+    var params = params
+    params["NS"] = namespace
+    params["DB"] = database
+    params["AC"] = accessControl
+    let response = await db.sendRpc(RpcMethod.Signin, @[ params ])
+    if response.isOk:
+        return surrealResponse[string](response.ok.getString())
+    else:
+        return err[string, SurrealError](response.error)
+
+template signin*(
+        db: SurrealDB,
+        namespace: string, database: string, accessControl: string,
+        params: untyped
+        ): untyped =
+    ## Sign in as a record user
+    db.signin(namespace, database, accessControl, %%* params)

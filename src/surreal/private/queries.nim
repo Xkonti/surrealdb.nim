@@ -1,7 +1,7 @@
 import queries/query_use
 import queries/query_info
 import queries/query_version
-# import queries/query_signup
+import queries/query_signup
 import queries/query_signin
 # import queries/query_authenticate
 # import queries/query_invalidate
@@ -27,7 +27,7 @@ export
     query_use,
     query_info,
     query_version,
-    # query_signup,
+    query_signup,
     query_signin,
     # query_authenticate,
     # query_invalidate,

@@ -53,6 +53,11 @@ proc `[]=`*(surrealObject: var SurrealValue, key: string, newValue: SurrealValue
     else:
         raise newException(ValueError, "Cannot add a value to a $1 value" % $surrealObject.kind)
 
+template `[]=`*(surrealObject: var SurrealValue, key: string, newValue: untyped) =
+    ## Adds a value to the SurrealObject value.
+    ## This is a convenience template that allows you to skip the `%%*` operator.
+    surrealObject[key] = %%* newValue
+
 proc del*(surrealObject: var SurrealValue, key: string) =
     ## Removes the value from the SurrealObject value.
     case surrealObject.kind

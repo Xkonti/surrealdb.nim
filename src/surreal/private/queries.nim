@@ -18,7 +18,7 @@ import queries/query_upsert
 import queries/query_relate
 import queries/query_merge
 # # TODO: queries/query_patch
-# import queries/query_delete
+import queries/query_delete
 # import queries/query_run
 # # TODO: queries/query_qraphql
 # # TODO: queries/query_query_raw
@@ -42,9 +42,9 @@ export
     query_update,
     query_upsert,
     query_relate,
-    query_merge
+    query_merge,
     # # TODO: query_patch
-    # query_delete,
+    query_delete
     # query_run
     # # TODO: query_qraphql
     # # TODO: query_query_raw

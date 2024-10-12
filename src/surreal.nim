@@ -21,20 +21,20 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    let record = newRecordId(tb"testitem", "12345")
-    let createResponse = await surreal.create(record, %%* {"name": "Ben", "state": "sleepy", "age": 99})
-    if createResponse.isOk:
-        echo "Create response: ", createResponse.ok
-    else:
-        echo "Create error: ", createResponse.error
-        quit(1)
-
-    # let selectResponse = await surreal.select(rc"testitem:12345")
-    # if selectResponse.isOk:
-    #     echo "Select response: ", selectResponse.ok
+    # let record = newRecordId(tb"testitem", "12345")
+    # let createResponse = await surreal.create(record, %%* {"name": "Ben", "state": "sleepy", "age": 99})
+    # if createResponse.isOk:
+    #     echo "Create response: ", createResponse.ok
     # else:
-    #     echo "Select error: ", selectResponse.error
+    #     echo "Create error: ", createResponse.error
     #     quit(1)
+
+    let selectResponse = await surreal.select(rc"testitem:12345")
+    if selectResponse.isOk:
+        echo "Select response: ", selectResponse.ok
+    else:
+        echo "Select error: ", selectResponse.error
+        quit(1)
 
 
 

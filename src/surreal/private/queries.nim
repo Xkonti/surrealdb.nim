@@ -10,7 +10,7 @@ import queries/query_signin
 # # TODO: queries/query_live
 # # TODO: queries/query_kill
 # import queries/query_query
-# import queries/query_select
+import queries/query_select
 import queries/query_create
 # import queries/query_insert
 # import queries/query_update
@@ -36,7 +36,7 @@ export
     # # TODO: query_live
     # # TODO: query_kill
     # query_query,
-    # query_select,
+    query_select,
     query_create
     # query_insert,
     # query_update,

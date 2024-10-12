@@ -1,7 +1,8 @@
-import std/[asyncdispatch, asyncfutures, strutils, tables]
+import std/[asyncdispatch, asyncfutures, strutils]
 import surreal/private/[queries]
 # import surreal/private/types/[record, tableName]
 import surreal/private/logic/[connection]
+import surreal/private/types/[surrealValue, tableName]
 
 # import surreal/private/cbor/[decoder]
 
@@ -23,12 +24,13 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    # let createResponse = await surreal.create(rc"testitem:12345", {"name": "Ben", "state": "sleepy"})
-    # if createResponse.isOk:
-    #     echo "Create response: ", createResponse.ok
-    # else:
-    #     echo "Create error: ", createResponse.error
-    #     quit(1)
+    let record = newRecordId(tb"testitem", "12345")
+    let createResponse = await surreal.create(record, %%* {"name": "Ben", "state": "sleepy", "age": 99})
+    if createResponse.isOk:
+        echo "Create response: ", createResponse.ok
+    else:
+        echo "Create error: ", createResponse.error
+        quit(1)
 
     # let selectResponse = await surreal.select(rc"testitem:12345")
     # if selectResponse.isOk:

@@ -11,7 +11,7 @@ import queries/query_signin
 # # TODO: queries/query_kill
 # import queries/query_query
 # import queries/query_select
-# import queries/query_create
+import queries/query_create
 # import queries/query_insert
 # import queries/query_update
 # import queries/query_upsert
@@ -28,7 +28,7 @@ export
     # query_info,
     # query_version,
     # query_signup,
-    query_signin
+    query_signin,
     # query_authenticate,
     # query_invalidate,
     # query_let,
@@ -37,7 +37,7 @@ export
     # # TODO: query_kill
     # query_query,
     # query_select,
-    # query_create,
+    query_create
     # query_insert,
     # query_update,
     # query_upsert,

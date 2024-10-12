@@ -7,10 +7,10 @@ import ws
 proc sendRpc*(db: SurrealDB, queryMethod: RpcMethod, params: seq[SurrealValue]): Future[SurrealResult[SurrealValue]] {.async.} =
     # Generate a new ID for the request - this is used to match the response with the request
     let queryId = getNextId() # Unique per WS connection or globally?
-    let encoded = encode(%%% {
-        "id": %%% queryId,
-        "method": %%% $queryMethod,
-        "params": %%% params
+    let encoded = encode(%%* {
+        "id": queryId,
+        "method": $queryMethod,
+        "params": params
     }).getOutput()
 
     # Create and register a new future for the request

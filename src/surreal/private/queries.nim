@@ -16,7 +16,7 @@ import queries/query_insert
 import queries/query_update
 import queries/query_upsert
 import queries/query_relate
-# import queries/query_merge
+import queries/query_merge
 # # TODO: queries/query_patch
 # import queries/query_delete
 # import queries/query_run
@@ -41,8 +41,8 @@ export
     query_insert,
     query_update,
     query_upsert,
-    query_relate
-    # query_merge,
+    query_relate,
+    query_merge
     # # TODO: query_patch
     # query_delete,
     # query_run

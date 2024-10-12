@@ -3,7 +3,7 @@ import queries/query_info
 import queries/query_version
 import queries/query_signup
 import queries/query_signin
-# import queries/query_authenticate
+import queries/query_authenticate
 # import queries/query_invalidate
 # import queries/query_let
 # import queries/query_unset
@@ -29,7 +29,7 @@ export
     query_version,
     query_signup,
     query_signin,
-    # query_authenticate,
+    query_authenticate,
     # query_invalidate,
     # query_let,
     # query_unset,

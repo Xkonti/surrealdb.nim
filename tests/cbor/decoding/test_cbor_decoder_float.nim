@@ -27,7 +27,7 @@ suite "CBOR:Decoder:Integer":
 
         decoded = decode(@[0xfb'u8, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64 == 1.1'f64)
+        check(decoded.getFloat64 == 1.1'f64)
 
         # TODO: Implement encoding half-precision
         # decoded = decode(@[0xf9'u8, 0x3e, 0x00])
@@ -39,19 +39,17 @@ suite "CBOR:Decoder:Integer":
         # check(decoded.kind == SurrealFloat)
         # check(decoded.toFloat16 == 65504.0'f16)
 
-        # TODO: Implement encoding single-precision
-        # decoded = decode(@[0xfa'u8, 0x47, 0xc3, 0x50, 0x00])
-        # check(decoded.kind == SurrealFloat)
-        # check(decoded.toFloat32 == 100_000.0'f32)
+        decoded = decode(@[0xfa'u8, 0x47, 0xc3, 0x50, 0x00])
+        check(decoded.kind == SurrealFloat)
+        check(decoded.getFloat32 == 100_000.0'f32)
 
-        # TODO: Implement encoding single-precision
-        # decoded = decode(@[0xfa'u8, 0x7f, 0x7f, 0xff, 0xff])
-        # check(decoded.kind == SurrealFloat)
-        # check(decoded.toFloat32 == 3.4028234663852886e38'f32)
+        decoded = decode(@[0xfa'u8, 0x7f, 0x7f, 0xff, 0xff])
+        check(decoded.kind == SurrealFloat)
+        check(decoded.getFloat32 == 3.4028234663852886e38'f32)
 
         decoded = decode(@[0xfb'u8, 0x7e, 0x37, 0xe4, 0x3c, 0x88, 0x00, 0x75, 0x9c])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64 == 1.0e300'f64)
+        check(decoded.getFloat64 == 1.0e300'f64)
 
         # TODO: Implement encoding half-precision
         # decoded = decode(@[0xf9'u8, 0x00, 0x01])
@@ -70,7 +68,7 @@ suite "CBOR:Decoder:Integer":
 
         decoded = decode(@[0xfb'u8, 0xc0, 0x10, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64 == -4.1'f64)
+        check(decoded.getFloat64 == -4.1'f64)
 
         # TODO: Implement encoding half-precision
         # decoded = decode(@[0xf9'u8, 0x7c, 0x00])
@@ -87,29 +85,26 @@ suite "CBOR:Decoder:Integer":
         # check(decoded.kind == SurrealFloat)
         # check(decoded.toFloat16 == NegInf'f16)
 
-        # TODO: Implement encoding single-precision
-        # decoded = decode(@[0xfa'u8, 0x7f, 0x80])
-        # check(decoded.kind == SurrealFloat)
-        # check(decoded.toFloat32 == Inf'f32)
+        decoded = decode(@[0xfa'u8, 0x7f, 0x80, 0x00, 0x00])
+        check(decoded.kind == SurrealFloat)
+        check(decoded.getFloat32 == Inf.float32)
 
-        # TODO: Implement encoding single-precision)
-        # decoded = decode(@[0xfa'u8, 0x7f, 0xc0])
-        # check(decoded.kind == SurrealFloat)
-        # check(decoded.toFloat32 == NaN'f32)
+        decoded = decode(@[0xfa'u8, 0x7f, 0xc0, 0x00, 0x00])
+        check(decoded.kind == SurrealFloat)
+        check(decoded.getFloat32.isNaN)
 
-        # TODO: Implement encoding single-precision
-        # decoded = decode(@[0xfa'u8, 0xff, 0x00])
-        # check(decoded.kind == SurrealFloat)
-        # check(decoded.toFloat32 == NegInf'f32)
+        decoded = decode(@[0xfa'u8, 0xff, 0x80, 0x00, 0x00])
+        check(decoded.kind == SurrealFloat)
+        check(decoded.getFloat32 == NegInf.float32)
 
         decoded = decode(@[0xfb'u8, 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64 == Inf)
+        check(decoded.getFloat64 == Inf)
 
         decoded = decode(@[0xfb'u8, 0x7f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64.isNaN)
+        check(decoded.getFloat64.isNaN)
 
         decoded = decode(@[0xfb'u8, 0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         check(decoded.kind == SurrealFloat)
-        check(decoded.toFloat64 == NegInf)
+        check(decoded.getFloat64 == NegInf)

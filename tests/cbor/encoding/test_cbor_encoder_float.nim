@@ -22,6 +22,7 @@ suite "CBOR:Encoder:Float":
         # check(bytes == @[0xf9'u8, 0x3c, 0x00])
 
         bytes = encode(%%% 1.1'f64).getOutput()
+        check(bytes.len == 9)
         check(bytes == @[0xfb'u8, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a])
 
         # TODO: Implement encoding half-precision
@@ -32,13 +33,11 @@ suite "CBOR:Encoder:Float":
         # bytes = encode(%%% 65504.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x7b, 0xff])
 
-        # TODO: Implement encoding single-precision
-        # bytes = encode(%%% 100_000.0'f32).getOutput()
-        # check(bytes == @[0xfa'u8, 0x47, 0xc3, 0x50, 0x00])
+        bytes = encode(%%% 100_000.0'f32).getOutput()
+        check(bytes == @[0xfa'u8, 0x47, 0xc3, 0x50, 0x00])
 
-        # TODO: Implement encoding single-precision
-        # bytes = encode(%%% 3.4028234663852886e38'f32).getOutput()
-        # check(bytes == @[0xfa'u8, 0x7f, 0x7f, 0xff, 0xff])
+        bytes = encode(%%% 3.4028234663852886e38'f32).getOutput()
+        check(bytes == @[0xfa'u8, 0x7f, 0x7f, 0xff, 0xff])
 
         bytes = encode(%%% 1.0e300'f64).getOutput()
         check(bytes == @[0xfb'u8, 0x7e, 0x37, 0xe4, 0x3c, 0x88, 0x00, 0x75, 0x9c])
@@ -70,17 +69,14 @@ suite "CBOR:Encoder:Float":
         # bytes = encode(%%% NegInf'f16).getOutput()
         # # check(bytes == @[0xf9'u8, 0xfc, 0x00])
 
-        # TODO: Implement encoding single-precision
-        # bytes = encode(%%% Inf'f32).getOutput()
-        # check(bytes == @[0xfa'u8, 0x7f, 0x80])
+        bytes = encode(%%% Inf.float32).getOutput()
+        check(bytes == @[0xfa'u8, 0x7f, 0x80, 0x00, 0x00])
 
-        # TODO: Implement encoding single-precision
-        # bytes = encode(%%% NaN'f32).getOutput()
-        # # check(bytes == @[0xfa'u8, 0x7f, 0xc0])
+        bytes = encode(%%% NaN.float32).getOutput()
+        check(bytes == @[0xfa'u8, 0x7f, 0xc0, 0x00, 0x00])
 
-        # TODO: Implement encoding single-precision
-        # bytes = encode(%%% NegInf'f32).getOutput()
-        # # check(bytes == @[0xfa'u8, 0xff, 8x00])
+        bytes = encode(%%% NegInf.float32).getOutput()
+        check(bytes == @[0xfa'u8, 0xff, 0x80, 0x00, 0x00])
 
         bytes = encode(%%% Inf).getOutput()
         check(bytes == @[0xfb'u8, 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])

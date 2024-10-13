@@ -30,7 +30,9 @@ proc toFloat64*(value: SurrealValue): float64 =
     ## Converts a SurrealFloat to a float.
     case value.kind
     of SurrealFloat:
-        return value.floatVal
+        return case value.floatKind
+            of Float32: value.float32Val.float64
+            of Float64: value.float64Val
     of SurrealInteger:
         return value.toInt64.float64
     else:
@@ -38,7 +40,15 @@ proc toFloat64*(value: SurrealValue): float64 =
 
 proc toFloat32*(value: SurrealValue): float32 =
     ## Converts a SurrealFloat to a float.
-    return value.toFloat64.float32
+    case value.kind
+    of SurrealFloat:
+        return case value.floatKind
+            of Float32: value.float32Val
+            of Float64: value.float64Val.float64
+    of SurrealInteger:
+        return value.toInt64.float32
+    else:
+        raise newException(ValueError, "Cannot convert a non-float value to a float")
 
 proc `$`*(value: SurrealValue): string =
     ## Converts a SurrealValue to a string representation - mostly for debugging purposes.
@@ -60,7 +70,9 @@ proc `$`*(value: SurrealValue): string =
         # Print it as ISO 8601 string TODO: Check!
         return $value.datetimeVal.utc
     of SurrealFloat:
-        return $value.floatVal
+        return case value.floatKind
+            of Float32: $value.float32Val
+            of Float64: $value.float64Val
     of SurrealInteger:
         # TODO: Handle large integers, including negative u64
         return $(value.toInt64)

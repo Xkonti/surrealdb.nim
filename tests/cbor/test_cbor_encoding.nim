@@ -1,4 +1,4 @@
-import std/[times, unittest, tables]
+import std/[math, times, tables, unittest]
 import surreal/private/cbor/[decoder, encoder, writer]
 import surreal/private/types/[surrealValue, none, null, tableName]
 
@@ -32,17 +32,70 @@ suite "CBOR:Encoding":
         let writer = encode(%%% 1.1'f64)
         let surrealValue = decode(writer.getOutput())
         check(surrealValue.kind == SurrealFloat)
+        check(surrealValue.floatKind == Float64)
+        check(surrealValue.getFloat64 == 1.1'f64)
         check(surrealValue.toFloat64 == 1.1'f64)
 
-        let writer2 = encode(%%% 12.151574'f64)
+        let writer2 = encode(%%% 12.151574'f32)
         let surrealValue2 = decode(writer2.getOutput())
         check(surrealValue2.kind == SurrealFloat)
-        check(surrealValue2.toFloat64 == 12.151574'f64)
+        check(surrealValue2.floatKind == Float32)
+        check(surrealValue2.getFloat32 == 12.151574'f32)
+        check(surrealValue2.toFloat32 == 12.151574'f32)
 
         let writer3 = encode(%%% -12.151574'f64)
         let surrealValue3 = decode(writer3.getOutput())
         check(surrealValue3.kind == SurrealFloat)
+        check(surrealValue3.floatKind == Float64)
+        check(surrealValue3.getFloat64 == -12.151574'f64)
         check(surrealValue3.toFloat64 == -12.151574'f64)
+
+        let writer4 = encode(%%% 99871.0025'f32)
+        let surrealValue4 = decode(writer4.getOutput())
+        check(surrealValue4.kind == SurrealFloat)
+        check(surrealValue4.floatKind == Float32)
+        check(surrealValue4.getFloat32 == 99871.0025'f32)
+        check(surrealValue4.toFloat32 == 99871.0025'f32)
+
+        let writer5 = encode(%%% Inf)
+        let surrealValue5 = decode(writer5.getOutput())
+        check(surrealValue5.kind == SurrealFloat)
+        check(surrealValue5.floatKind == Float64)
+        check(surrealValue5.getFloat64 == Inf)
+        check(surrealValue5.toFloat64 == Inf)
+
+        let writer6 = encode(%%% NegInf)
+        let surrealValue6 = decode(writer6.getOutput())
+        check(surrealValue6.kind == SurrealFloat)
+        check(surrealValue6.floatKind == Float64)
+        check(surrealValue6.getFloat64 == NegInf)
+        check(surrealValue6.toFloat64 == NegInf)
+
+        let writer7 = encode(%%% NaN)
+        let surrealValue7 = decode(writer7.getOutput())
+        check(surrealValue7.kind == SurrealFloat)
+        check(surrealValue7.floatKind == Float64)
+        check(surrealValue7.getFloat64.isNaN)
+
+        let writer8 = encode(%%% Inf.float32)
+        let surrealValue8 = decode(writer8.getOutput())
+        check(surrealValue8.kind == SurrealFloat)
+        check(surrealValue8.floatKind == Float32)
+        check(surrealValue8.getFloat32 == Inf.float32)
+        check(surrealValue8.toFloat32 == Inf.float32)
+
+        let writer9 = encode(%%% NegInf.float32)
+        let surrealValue9 = decode(writer9.getOutput())
+        check(surrealValue9.kind == SurrealFloat)
+        check(surrealValue9.floatKind == Float32)
+        check(surrealValue9.getFloat32 == NegInf.float32)
+        check(surrealValue9.toFloat32 == NegInf.float32)
+
+        let writer10 = encode(%%% NaN.float32)
+        let surrealValue10 = decode(writer10.getOutput())
+        check(surrealValue10.kind == SurrealFloat)
+        check(surrealValue10.floatKind == Float32)
+        check(surrealValue10.getFloat32.isNaN)
 
         # TODO: Implement more tests for various types of floats
 
@@ -197,8 +250,8 @@ suite "CBOR:Encoding":
             "approved": %%% true,
             "likes": %%% {
                 "user:10223547": %%% 1,
-                "user:10223548": %%% 2,
-                "user:10223549": %%% 30
+                "user:10223548": %%% 2.25'f32,
+                "user:10223549": %%% 30.124500121'f64
             },
             "secretFlags": %%% @[1'u8, 2, 4, 50]
         }

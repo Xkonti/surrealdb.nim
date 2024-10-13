@@ -21,6 +21,9 @@ suite "CBOR:Encoder:Bool":
         writer = encode(not false.toSurrealBool())
         check(writer.getOutput() == @[trueByte])
 
+        writer = encode(%%% true)
+        check(writer.getOutput() == @[0xf5'u8])
+
     test "encode false":
         const falseByte = 0b111_10100'u8
         var writer = encode(%%% false)
@@ -36,3 +39,6 @@ suite "CBOR:Encoder:Bool":
         check(writer.getOutput() == @[falseByte])
         writer = encode(not true.toSurrealBool())
         check(writer.getOutput() == @[falseByte])
+
+        writer = encode(%%% false)
+        check(writer.getOutput() == @[0xf4'u8])

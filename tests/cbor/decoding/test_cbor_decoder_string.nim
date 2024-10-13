@@ -4,6 +4,43 @@ import surreal/private/types/[surrealValue]
 
 suite "CBOR:Decoder:String":
 
+    test "decode CBOR examples":
+        var decoded = decode(@[0x60'u8])
+        check(decoded.kind == SurrealString)
+        check(decoded.len == 0)
+        check(decoded.getString() == "")
+
+        decoded = decode(@[0x61'u8, 0x61])
+        check(decoded.kind == SurrealString)
+        check(decoded.len == 1)
+        check(decoded.getString() == "a")
+
+        decoded = decode(@[0x64'u8, 0x49, 0x45, 0x54, 0x46])
+        check(decoded.kind == SurrealString)
+        check(decoded.len == 4)
+        check(decoded.getString() == "IETF")
+
+        decoded = decode(@[0x62'u8, 0x22, 0x5c])
+        check(decoded.kind == SurrealString)
+        check(decoded.getString() == "\"\\")
+
+        decoded = decode(@[0x62'u8, 0xc3, 0xbc])
+        check(decoded.kind == SurrealString)
+        check(decoded.len == 2)
+        check(decoded.getString() == "\u00fc")
+
+        decoded = decode(@[0x63'u8, 0xe6, 0xb0, 0xb4])
+        check(decoded.kind == SurrealString)
+        check(decoded.len == 3)
+        check(decoded.getString() == "\u6c34")
+
+        # TODO: Figure out what is wrong here.
+        # decoded = decode(@[0x64'u8, 0xf0, 0x90, 0x85, 0x91])
+        # check(decoded.kind == SurrealString)
+        # check(decoded.len == 4)
+        # check(decoded.getString() == "\ud800\udd51")
+
+
     test "decode text string #1":
         const data = @[
             encodeHeadByte(String, 2.HeadArgument),

@@ -11,7 +11,15 @@ suite "CBOR:Decoder:Bool":
         check(decoded.kind == SurrealBool)
         check(decoded.getBool == true)
 
+        let decoded2 = decode(@[0xf5'u8])
+        check(decoded2.kind == SurrealBool)
+        check(decoded2.getBool == true)
+
     test "decode false":
         let decoded = decode(@[falseByte])
         check(decoded.kind == SurrealBool)
         check(decoded.getBool == false)
+
+        let decoded2 = decode(@[0xf4'u8])
+        check(decoded2.kind == SurrealBool)
+        check(decoded2.getBool == false)

@@ -9,3 +9,7 @@ suite "CBOR:Decoder:Null":
         let decoded = decode(@[nullByte])
         check(decoded.kind == SurrealNull)
         check(decoded == surrealNull)
+
+        let decoded2 = decode(@[0xf6'u8])
+        check(decoded.kind == SurrealNull)
+        check(decoded == surrealNull)

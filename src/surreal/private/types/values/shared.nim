@@ -67,8 +67,8 @@ proc `$`*(value: SurrealValue): string =
     of SurrealBytes:
         return cast[string](value.bytesVal)
     of SurrealDatetime:
-        # Print it as ISO 8601 string TODO: Check!
-        return $value.datetimeVal.utc
+        # Print it as ISO 8601 string
+        return $value.getDateTime()
     of SurrealFloat:
         return case value.floatKind
             of Float32: $value.float32Val

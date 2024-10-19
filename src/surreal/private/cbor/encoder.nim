@@ -62,11 +62,19 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)
     of SurrealDatetime:
-        writer.encodeHead(Tag, TagDatetimeISO8601.uint64)
-        let dateTime = value.getDateTime
-        let bytes = cast[seq[uint8]]($dateTime)
-        writer.encodeHead(String, bytes.len.uint64)
-        writer.writeBytes(bytes)
+        # Dates are always encoded in the compact style
+        const initialBytes = [
+            0b110_01100'u8, # Tag for compact datetime
+            0b100_00010'u8, # Array with 2 elements
+        ]
+        writer.writeBytes(initialBytes)
+        let time = value.getTime
+        # Seconds
+        let seconds = time.toUnix.uint64
+        writer.encodePosInteger(seconds)
+        # Nanoseconds
+        let nanoseconds = time.nanosecond.uint64
+        writer.encodePosInteger(nanoseconds)
 
     of SurrealFloat:
         # TODO: Add support for encoding half and single precision floats

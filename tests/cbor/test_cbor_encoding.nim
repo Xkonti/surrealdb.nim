@@ -261,13 +261,13 @@ suite "CBOR:Encoding":
         check(surrealValue2.len == 6)
         check(surrealValue2 == value2)
 
-    test "encode and decode datetime":
-        let datetimeValue = now()
-        let writer = encode(%%% datetimeValue)
-        let surrealValue = decode(writer.getOutput())
-        check(surrealValue.kind == SurrealDatetime)
-        # TODO: Figure out how to properly compare DateTimes
-        check($(surrealValue.getDateTime) == $datetimeValue)
+    # test "encode and decode datetime":
+    # let datetimeValue = now()
+    #   let writer = encode(%%% datetimeValue)
+    #   let surrealValue = decode(writer.getOutput())
+    #   check(surrealValue.kind == SurrealDatetime)
+    #   # TODO: Figure out how to properly compare DateTimes
+    #   check($(surrealValue.getDateTime) == $datetimeValue)
 
     test "encode and decode table name":
         let tableName = tb"public_post_view_table_for_record_users"
@@ -297,3 +297,10 @@ suite "CBOR:Encoding":
         check(contents["data"].kind == SurrealBytes)
         check(contents["data"].getBytes == recordId.id.getTable["data"].getBytes)
         check(decodedRecord == recordId)
+
+    test "encode and decode datetime":
+        let datetime = %%% dateTime(1999, mDec, 31, 23, 59, 59, nanosecond = 999_999_999)
+        let writer = encode(datetime)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealDatetime)
+        check(surrealValue == datetime)

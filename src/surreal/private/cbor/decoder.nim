@@ -1,4 +1,4 @@
-import std/[tables, times]
+import std/[strutils, tables, times]
 import ../types/[surrealValue, tableName]
 import constants, reader, types
 
@@ -78,7 +78,8 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
         return map.toSurrealObject()
 
     of Tag:
-        # TODO: Currently SurrealDB doesn't use tag numvers larger than 255 - room for optimization
+        # TODO: Currently SurrealDB doesn't use tag numbers larger than 255 - room for optimization
+        #       as potentially we don't have to have logic for reading 2, 4, or 8 byte-long values.
         let tag = reader.getFullArgument(headArgument).CborTag
         case tag:
         of TagDatetimeISO8601:
@@ -88,14 +89,24 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 raise newException(ValueError, "Expected a string for a ISO8601 datetime (tag 0)")
             let numberOfBytes = reader.getFullArgument(stringArgument)
             let datetimeText = reader.readStr(numberOfBytes)
-            echo "Received datetime: ", datetimeText
-            return parse(datetimeText, "yyyy-MM-dd'T'HH:mm:sszzz").toSurrealDatetime()
+            return datetimeText.toSurrealDatetime()
+
         of TagNone:
             # NONE need a NULL value
             let shouldBeNullByte = reader.readUInt8()
             if shouldBeNullByte != nullByte:
                 raise newException(ValueError, "Expected NULL byte for NONE (tag 6)")
             return surrealNone
+
+        of TagTableName:
+            # Table name is encoded as a string
+            let (stringHead, stringArgument) = reader.readHead()
+            if stringHead != String:
+                raise newException(ValueError, "Expected a string for a Table Name (tag 7)")
+            let numberOfBytes = reader.getFullArgument(stringArgument)
+            var bytes = reader.readStr(numberOfBytes)
+            return bytes.toSurrealTable()
+
         of TagRecordId:
             # Record ID is encoded as an array of two elements
             let (arrayHead, arrayArgument) = reader.readHead()
@@ -110,14 +121,27 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             let tableName = reader.readStr(tableNameLength).TableName
             let idPart = decode(reader, reader.readHead())
             return RecordId(table: tableName, id: idPart).toSurrealRecordId()
-        of TagTableName:
-            # Table name is encoded as a string
-            let (stringHead, stringArgument) = reader.readHead()
-            if stringHead != String:
-                raise newException(ValueError, "Expected a string for a Table Name (tag 7)")
-            let numberOfBytes = reader.getFullArgument(stringArgument)
-            var bytes = reader.readStr(numberOfBytes)
-            return bytes.toSurrealTable()
+        
+        # TODO: Tag 9 - UUID (string)
+        # TODO: Tag 10 - Decimal (string)
+        
+        of TagDatetimeCompact:
+            # Datetime is encoded as an array of two numbers: seconds since epoch and nanoseconds
+            let (arrayHead, arrayArgument) = reader.readHead()
+            if arrayHead != Array:
+                raise newException(ValueError, "Expected an array for a compact datetime (tag 12)")
+            let arrayLength = reader.getFullArgument(arrayArgument)
+            if arrayLength != 2:
+                raise newException(ValueError, "Expected an array of two elements for a compact datetime (tag 12)")
+            let (secondsHead, secondsArgument) = reader.readHead()
+            if secondsHead != PosInt:
+                raise newException(ValueError, "Expected a positive integer for the seconds part of a compact datetime (tag 12)")
+            let seconds = reader.getFullArgument(secondsArgument)
+            let (nanosecondsHead, nanosecondsArgument) = reader.readHead()
+            if nanosecondsHead != PosInt:
+                raise newException(ValueError, "Expected a positive integer for the nanoseconds part of a compact datetime (tag 12)")
+            let nanoseconds = reader.getFullArgument(nanosecondsArgument)
+            return newSurrealDatetime(seconds, nanoseconds.uint32)
 
         else:
             raise newException(ValueError, "Tag not supported: " & $tag)

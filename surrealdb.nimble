@@ -12,6 +12,7 @@ bin           = @["surrealdb"]
 
 requires "nim >= 2.0.0"
 requires "ws"
+requires "tinyre"
 
 # Test dependencies
 
@@ -55,7 +56,7 @@ task test, "General tests":
     "cbor/encoding/test_cbor_encoder_array.nim",
     "cbor/encoding/test_cbor_encoder_bool.nim",
     "cbor/encoding/test_cbor_encoder_bytes.nim",
-    "cbor/encoding/test_cbor_encoder_datetime.nim", # TODO: Needs more work
+    "cbor/encoding/test_cbor_encoder_datetime.nim",
     "cbor/encoding/test_cbor_encoder_float.nim",
     "cbor/encoding/test_cbor_encoder_integer.nim",
     "cbor/encoding/test_cbor_encoder_none.nim",
@@ -68,7 +69,7 @@ task test, "General tests":
     "cbor/decoding/test_cbor_decoder_array.nim",
     "cbor/decoding/test_cbor_decoder_bool.nim",
     "cbor/decoding/test_cbor_decoder_bytes.nim",
-    # "cbor/decoding/test_cbor_decoder_datetime.nim", # TODO: Needs implementation
+    "cbor/decoding/test_cbor_decoder_datetime.nim", 
     "cbor/decoding/test_cbor_decoder_float.nim",
     "cbor/decoding/test_cbor_decoder_integer.nim",
     "cbor/decoding/test_cbor_decoder_null.nim",
@@ -77,6 +78,7 @@ task test, "General tests":
     "cbor/decoding/test_cbor_decoder_record.nim",
     "cbor/decoding/test_cbor_decoder_string.nim",
     "cbor/decoding/test_cbor_decoder_table.nim",
+    "cbor/decoding/test_cbor_decoder_surrealdb_responses.nim",
 
     "cbor/test_cbor_encoding.nim"
   ]:

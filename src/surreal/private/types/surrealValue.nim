@@ -2,6 +2,8 @@ import std/[macros, sequtils, strutils, tables, times]
 import none, null, tableName
 import ../utils
 
+import tinyre
+
 type
     SurrealTypes* = enum
         ## Supported Surreal types
@@ -51,7 +53,7 @@ type
         of SurrealBytes:
             bytesVal: seq[uint8]
         of SurrealDatetime:
-            datetimeVal: DateTime
+            datetimeVal: Time
         of SurrealFloat:
             case floatKind*: SurrealFloatKind
             of Float32:

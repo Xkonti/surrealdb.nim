@@ -69,7 +69,7 @@ proc readStr*(reader: CborReader, numberOfBytes: uint64): string {.noinit.} =
     reader.pos += numberOfBytes
 
 proc readHead*(reader: CborReader): (HeadMajor, HeadArgument) =
-    ## Reads the head of the CBOR data: the Major type and the argument (or additional bytes if necessary).
+    ## Reads the head of the CBOR data: the Major type and the argument (and no additional bytes).
     let firstByte = reader.readUInt8()
     let majorType = (firstByte shr 5).HeadMajor
     let argument = firstByte.masked(0b00011111'u8).HeadArgument

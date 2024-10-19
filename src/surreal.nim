@@ -39,5 +39,7 @@ proc main() {.async.} =
     # for response in responses:
     #     echo "Response: (", response.ok.kind , ") of ", response.ok.len, " items"
 
-
-waitFor main()
+try:
+    waitFor main()
+except CatchableError as e:
+    echo "Error: ", e.msg

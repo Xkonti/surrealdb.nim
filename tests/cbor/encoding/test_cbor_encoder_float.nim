@@ -9,15 +9,15 @@ suite "CBOR:Encoder:Float":
 
         var bytes: seq[uint8] = @[]
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 0.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x00, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% -0.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x80, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 1.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x3c, 0x00])
 
@@ -25,11 +25,11 @@ suite "CBOR:Encoder:Float":
         check(bytes.len == 9)
         check(bytes == @[0xfb'u8, 0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 1.5'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x3e, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 65504.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x7b, 0xff])
 
@@ -42,30 +42,30 @@ suite "CBOR:Encoder:Float":
         bytes = encode(%%% 1.0e300'f64).getOutput()
         check(bytes == @[0xfb'u8, 0x7e, 0x37, 0xe4, 0x3c, 0x88, 0x00, 0x75, 0x9c])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 5.960464477539063e-8'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x00, 0x01])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% 0.00006103515625'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x04, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% -4.0'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0xc4, 0x00])
 
         bytes = encode(%%% -4.1'f64).getOutput()
         check(bytes == @[0xfb'u8, 0xc0, 0x10, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% Inf'f16).getOutput()
         # check(bytes == @[0xf9'u8, 0x7c, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% NaN'f16).getOutput()
         # # check(bytes == @[0xf9'u8, 0x7e, 0x00])
 
-        # TODO: Implement encoding half-precision
+        # Encoding half-precision floats might not be necessary
         # bytes = encode(%%% NegInf'f16).getOutput()
         # # check(bytes == @[0xf9'u8, 0xfc, 0x00])
 

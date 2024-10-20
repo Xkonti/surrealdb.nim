@@ -159,13 +159,11 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             echo "WARNING: Undefined value received"
             return surrealNone
         of TwoBytes:
-            # TODO: Support half-precision floats
+            # Read half-precision float as a float32
             return reader.readFloat16().toSurrealFloat()
         of FourBytes:
-            # TODO: Read 32-bit float
             return reader.readFloat32().toSurrealFloat()
         of EightBytes:
-            # TODO: Read 64-bit float
             return reader.readFloat64().toSurrealFloat()
         else:
             raise newException(ValueError, "Invalid simple value: " & $headArgument)

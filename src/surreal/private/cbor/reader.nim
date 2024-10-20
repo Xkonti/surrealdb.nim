@@ -42,10 +42,43 @@ proc readUInt64*(reader: CborReader): uint64 =
     inc reader.pos, 8
 
 proc readFloat16*(reader: CborReader): float32 =
-    ## Reads two bytes from the CBOR data as a float16.
-    # TODO: Actually implement!
-    bigEndian16(result.addr, reader.data[reader.pos].addr)
+    ## Reads two bytes from the CBOR data representing a half-precision float (f16).
+    ## As Nim doesn't support half-precision floats, the float16 is converted to float32.
+    let half: uint16 = uint16(reader.data[reader.pos]) shl 8 or uint16(reader.data[reader.pos+1])
     inc reader.pos, 2
+    let sign = (half shr 15) and 0x1'u16
+    let exp = (half shr 10) and 0x1f'u16
+    let mant = half and 0x3ff'u16
+    var f: uint32
+    if exp == 0:
+        if mant == 0:
+            # Zero
+            f = uint32(sign) shl 31
+        else:
+            # Subnormal numbers
+            var mantissa = mant
+            var exponent = int16(exp)
+            while (mantissa and 0x400'u16) == 0:
+                mantissa = mantissa shl 1
+                exponent -= 1
+            exponent += 1
+            mantissa = mantissa and 0x3ff'u16
+            var float_exp = uint32(exponent + (127 - 15))
+            var float_mant = uint32(mantissa) shl 13
+            f = (uint32(sign) shl 31) or (float_exp shl 23) or float_mant
+    elif exp == 31:
+        if mant == 0:
+            # Infinity
+            f = (uint32(sign) shl 31) or 0x7f800000'u32
+        else:
+            # NaN
+            f = (uint32(sign) shl 31) or 0x7f800000'u32 or (uint32(mant) shl 13)
+    else:
+        # Normalized number
+        var float_exp = uint32(exp + (127 - 15))
+        var float_mant = uint32(mant) shl 13
+        f = (uint32(sign) shl 31) or (float_exp shl 23) or float_mant
+    return cast[float32](f)
 
 proc readFloat32*(reader: CborReader): float32 =
     ## Reads four bytes from the CBOR data as a float32.
@@ -92,3 +125,4 @@ proc isBreak*(head: tuple[major: HeadMajor, argument: HeadArgument]): bool =
 proc isIndefinite*(argument: HeadArgument): bool =
     ## Checks if the argument suggests an indefinite sequence.
     return argument == Indefinite
+

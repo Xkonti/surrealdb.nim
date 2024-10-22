@@ -99,6 +99,16 @@ proc `$`*(value: SurrealValue): string =
         return value.stringVal.escapeString
     of SurrealTable:
         return value.tableVal.string
+    of SurrealUuid:
+        let v = value.uuidVal
+        return "u\"" &
+          v[0].toHex & v[1].toHex & v[2].toHex & v[3].toHex &
+            "-" & v[4].toHex & v[5].toHex &
+            "-" & v[6].toHex & v[7].toHex &
+            "-" & v[8].toHex & v[9].toHex &
+            "-" & v[10].toHex & v[11].toHex & v[12].toHex & v[13].toHex & v[14].toHex & v[15].toHex &
+          "\""
+
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a string" % $value.kind)
 

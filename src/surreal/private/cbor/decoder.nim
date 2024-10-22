@@ -122,7 +122,13 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             let idPart = decode(reader, reader.readHead())
             return RecordId(table: tableName, id: idPart).toSurrealRecordId()
         
-        # TODO: Tag 9 - UUID (string)
+        of TagUuidString:
+            # UUID encoded as a string
+            let (stringHead, stringArgument) = reader.readHead()
+            let numberOfBytes = reader.getFullArgument(stringArgument)
+            # toSurrealUuid should oarse the string as a UUID
+            return reader.readStr(numberOfBytes).toSurrealUuid()
+
         # TODO: Tag 10 - Decimal (string)
         
         of TagDatetimeCompact:
@@ -142,6 +148,14 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 raise newException(ValueError, "Expected a positive integer for the nanoseconds part of a compact datetime (tag 12)")
             let nanoseconds = reader.getFullArgument(nanosecondsArgument)
             return newSurrealDatetime(seconds, nanoseconds.uint32)
+
+        of TagUuidBinary:
+            # UUID encoded as a sequence of 16 bytes
+            let (bytesHead, bytesArgument) = reader.readHead()
+            if bytesHead != Bytes or bytesArgument != Sixteen:
+                raise newException(ValueError, "Expected a sequence of 16 bytes for a UUID (tag 37)")
+            let bytes = reader.readBytes(16)
+            return bytes.toSurrealUuid()
 
         else:
             raise newException(ValueError, "Tag not supported: " & $tag)

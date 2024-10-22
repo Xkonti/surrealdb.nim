@@ -119,11 +119,19 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         let bytes = value.toBytes()
         writer.encodeHead(String, bytes.len.uint64)
         writer.writeBytes(bytes)
+
     of SurrealTable:
         writer.encodeHead(Tag, TagTableName.uint64)
         let bytes = value.toBytes()
         writer.encodeHead(String, bytes.len.uint64)
         writer.writeBytes(bytes)
+
+    of SurrealUuid:
+        let bytes = value.getUuid
+        writer.encodeHead(Tag, TagUuidBinary.uint64)
+        writer.encodeHeadByte(Bytes, Sixteen)
+        writer.writeBytes(bytes)
+
     else:
         raise newException(ValueError, "Cannot encode a $1 value" % $value.kind)
 

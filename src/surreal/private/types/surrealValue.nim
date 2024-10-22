@@ -19,6 +19,7 @@ type
         SurrealRecordId,
         SurrealString,
         SurrealTable,
+        SurrealUuid,
 
         # TODO: There seem to be new Future and Range tags:
         # https://github.com/surrealdb/surrealdb/pull/4862
@@ -75,6 +76,8 @@ type
             stringVal: string
         of SurrealTable:
             tableVal: TableName
+        of SurrealUuid:
+            uuidVal: array[16, uint8]
 
 include values/[
     array,
@@ -88,6 +91,7 @@ include values/[
     map,
     string,
     table,
+    uuid,
 
     record,
 
@@ -128,3 +132,5 @@ func `==`*(a, b: SurrealValue): bool =
         return a.stringVal == b.stringVal
     of SurrealTable:
         return a.tableVal == b.tableVal
+    of SurrealUuid:
+        return a.uuidVal == b.uuidVal

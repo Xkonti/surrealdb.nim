@@ -304,3 +304,18 @@ suite "CBOR:Encoding":
         let surrealValue = decode(writer.getOutput())
         check(surrealValue.kind == SurrealDatetime)
         check(surrealValue == datetime)
+
+    test "encode and decode UUID":
+        let uuid1 = "25FF15F4-0E8D-4EA7-8E0B-BFF976264AC5"
+        let surrealValue = uuid1.toSurrealUuid()
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded.kind == SurrealUuid)
+        check(decoded.getUuid == uuid1.toSurrealUuid.getUuid)
+        
+        let uuid2 = "5C5E7A6C-B582-4A87-A209-30FE73ADD92C"
+        let surrealValue2 = uuid2.toSurrealUuid()
+        let writer2 = encode(surrealValue2)
+        let decoded2 = decode(writer2.getOutput())
+        check(decoded2.kind == SurrealUuid)
+        check(decoded2.getUuid == uuid2.toSurrealUuid.getUuid)

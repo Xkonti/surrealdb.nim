@@ -69,6 +69,8 @@ proc `$`*(value: SurrealValue): string =
     of SurrealDatetime:
         # Print it as ISO 8601 string
         return $value.getDateTime()
+    of SurrealDuration:
+        return $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns"
     of SurrealFloat:
         return case value.floatKind
             of Float32: $value.float32Val

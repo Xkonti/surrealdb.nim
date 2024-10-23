@@ -319,3 +319,16 @@ suite "CBOR:Encoding":
         let decoded2 = decode(writer2.getOutput())
         check(decoded2.kind == SurrealUuid)
         check(decoded2.getUuid == uuid2.toSurrealUuid.getUuid)
+
+    test "encode and decode duration":
+        let duration1 = "30d5m30ms".toSurrealValueDuration()
+        let writer1 = encode(duration1)
+        let decoded1 = decode(writer1.getOutput())
+        check(decoded1.kind == SurrealDuration)
+        check(decoded1 == duration1)
+
+        let duration2 = "45ns128s52m8us4w".toSurrealValueDuration()
+        let writer2 = encode(duration2)
+        let decoded2 = decode(writer2.getOutput())
+        check(decoded2.kind == SurrealDuration)
+        check(decoded2 == duration2)

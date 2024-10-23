@@ -1,5 +1,5 @@
 import std/[macros, sequtils, strutils, tables, times]
-import none, null, tableName
+import none, null, duration, tableName
 import ../utils
 
 import tinyre
@@ -11,6 +11,7 @@ type
         SurrealBool,
         SurrealBytes,
         SurrealDatetime,
+        SurrealDuration,
         SurrealFloat,
         SurrealInteger,
         SurrealNone,
@@ -55,6 +56,8 @@ type
             bytesVal: seq[uint8]
         of SurrealDatetime:
             datetimeVal: Time
+        of SurrealDuration:
+            durationVal: SurrealDuration
         of SurrealFloat:
             case floatKind*: SurrealFloatKind
             of Float32:
@@ -84,6 +87,7 @@ include values/[
     bool,
     bytes,
     datetime,
+    duration,
     float,
     integer,
     none,
@@ -112,6 +116,8 @@ func `==`*(a, b: SurrealValue): bool =
         return a.bytesVal == b.bytesVal
     of SurrealDatetime:
         return a.datetimeVal == b.datetimeVal
+    of SurrealDuration:
+        return a.durationVal == b.durationVal
     of SurrealFloat:
         if a.floatKind != b.floatKind:
             return false

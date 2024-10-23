@@ -1,6 +1,6 @@
 import std/[strutils, tables, times]
 import constants, writer, types
-import ../types/[surrealValue]
+import ../types/[surrealValue, duration]
 
 proc encodeHeadByte*(major: HeadMajor, argument: HeadArgument): uint8 =
     ## Encodes the first byte of the head of the CBOR data.
@@ -56,11 +56,14 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         writer.encodeHead(Array, value.len.uint64)
         for item in value.getSeq:
             encode(writer, item)
+
     of SurrealBool:
         writer.encodeBool(value.getBool)
+
     of SurrealBytes:
         writer.encodeHead(Bytes, value.getBytes.len.uint64)
         writer.writeBytes(value.getBytes)
+
     of SurrealDatetime:
         # Dates are always encoded in the compact style
         const initialBytes = [
@@ -69,12 +72,19 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         ]
         writer.writeBytes(initialBytes)
         let time = value.getTime
-        # Seconds
-        let seconds = time.toUnix.uint64
-        writer.encodePosInteger(seconds)
-        # Nanoseconds
-        let nanoseconds = time.nanosecond.uint64
-        writer.encodePosInteger(nanoseconds)
+        writer.encodePosInteger(time.toUnix.uint64)
+        writer.encodePosInteger(time.nanosecond.uint64)
+
+    of SurrealDuration:
+        # Duration is always encoded in the compact style (tag 14)
+        const initialBytes = [
+            0b110_01110'u8, # Tag for compact duration
+            0b100_00010'u8, # Array with 2 elements
+        ]
+        writer.writeBytes(initialBytes)
+        let duration = value.getDuration
+        writer.encodePosInteger(duration.seconds)
+        writer.encodePosInteger(duration.nanoseconds)
 
     of SurrealFloat:
         # TODO: Add support for encoding half and single precision floats
@@ -86,15 +96,19 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         of Float64:
             writer.encodeHeadByte(Simple, EightBytes)
             writer.writeFloat64(value.getFloat64)
+
     of SurrealInteger:
         if value.isPositive:
             writer.encodePosInteger(value.getRawInt())
         else:
             writer.encodeNegInteger(value.getRawInt())
+
     of SurrealNone:
         writer.writeBytes(noneBytes)
+
     of SurrealNull:
         writer.writeRawUInt(nullByte)
+
     of SurrealObject:
         writer.encodeHead(Map, value.len.uint64)
         for pair in value.getTable.pairs:

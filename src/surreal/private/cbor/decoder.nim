@@ -1,5 +1,5 @@
-import std/[strutils, tables, times]
-import ../types/[surrealValue, tableName]
+import std/[tables]
+import ../types/[duration, surrealValue, tableName]
 import constants, reader, types
 
 proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArgument]): SurrealValue =
@@ -148,6 +148,32 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 raise newException(ValueError, "Expected a positive integer for the nanoseconds part of a compact datetime (tag 12)")
             let nanoseconds = reader.getFullArgument(nanosecondsArgument)
             return newSurrealDatetime(seconds, nanoseconds.uint32)
+
+        of TagDurationString:
+            # Duration encoded as a string - needs to be parsed
+            let (stringHead, stringArgument) = reader.readHead()
+            if stringHead != String:
+                raise newException(ValueError, "Expected a string for a duration (tag 13)")
+            let numberOfBytes = reader.getFullArgument(stringArgument)
+            let durationText = reader.readStr(numberOfBytes)
+            return durationText.toSurrealValueDuration()
+
+        of TagDurationCompact:
+            # Duration encoded as an array of 2 numbers: seconds and nanoseconds
+            let (arrayHead, arrayArgument) = reader.readHead()
+            if arrayHead != Array:
+                raise newException(ValueError, "Expected an array for a compact duration (tag 14)")
+            if arrayArgument != Two:
+                raise newException(ValueError, "Expected an array of two elements for a compact duration (tag 14)")
+            let (secondsHead, secondsArgument) = reader.readHead()
+            if secondsHead != PosInt:
+                raise newException(ValueError, "Expected a positive integer for the seconds part of a compact duration (tag 14)")
+            let seconds = reader.getFullArgument(secondsArgument)
+            let (nanosecondsHead, nanosecondsArgument) = reader.readHead()
+            if nanosecondsHead != PosInt:
+                raise newException(ValueError, "Expected a positive integer for the nanoseconds part of a compact duration (tag 14)")
+            let nanoseconds = reader.getFullArgument(nanosecondsArgument)
+            return newSurrealDuration(seconds, nanoseconds.uint32).toSurrealValueDuration()
 
         of TagUuidBinary:
             # UUID encoded as a sequence of 16 bytes

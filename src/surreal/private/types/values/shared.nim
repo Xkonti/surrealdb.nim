@@ -75,6 +75,8 @@ proc `$`*(value: SurrealValue): string =
         return case value.floatKind
             of Float32: $value.float32Val
             of Float64: $value.float64Val
+    of SurrealFuture:
+        return "<future> { " & $value.futureVal & " }"
     of SurrealInteger:
         # TODO: Handle large integers, including negative u64
         return $(value.toInt64)

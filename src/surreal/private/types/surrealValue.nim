@@ -13,6 +13,7 @@ type
         SurrealDatetime,
         SurrealDuration,
         SurrealFloat,
+        SurrealFuture,
         SurrealInteger,
         SurrealNone,
         SurrealNull,
@@ -64,6 +65,8 @@ type
                 float32Val: float32
             of Float64:
                 float64Val: float64
+        of SurrealFuture:
+            futureVal: SurrealValue
         of SurrealInteger:
             intVal: uint64
             intIsNegative: bool
@@ -89,6 +92,7 @@ include values/[
     datetime,
     duration,
     float,
+    future,
     integer,
     none,
     null,
@@ -124,6 +128,8 @@ func `==`*(a, b: SurrealValue): bool =
         return case a.floatKind
             of Float32: a.float32Val == b.float32Val
             of Float64: a.float64Val == b.float64Val
+    of SurrealFuture:
+        return a.futureVal == b.futureVal
     of SurrealInteger:
         return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
     of SurrealNone:

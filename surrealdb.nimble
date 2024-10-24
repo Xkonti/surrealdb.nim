@@ -41,6 +41,7 @@ task test, "General tests":
     "surrealvalue/test_surrealvalue_datetime.nim",
     "surrealvalue/test_surrealvalue_duration.nim",
     "surrealvalue/test_surrealvalue_float.nim",
+    "surrealvalue/test_surrealvalue_future.nim",
     "surrealvalue/test_surrealvalue_integer.nim",
     "surrealvalue/test_surrealvalue_none.nim",
     "surrealvalue/test_surrealvalue_null.nim",

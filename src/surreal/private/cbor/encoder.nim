@@ -97,6 +97,11 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
             writer.encodeHeadByte(Simple, EightBytes)
             writer.writeFloat64(value.getFloat64)
 
+    of SurrealFuture:
+        # Future tag simply wraps the inner value
+        writer.writeBytes([0b110_01111'u8])
+        encode(writer, value.unwrap())
+
     of SurrealInteger:
         if value.isPositive:
             writer.encodePosInteger(value.getRawInt())

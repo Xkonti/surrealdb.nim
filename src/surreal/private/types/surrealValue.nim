@@ -18,6 +18,7 @@ type
         SurrealNone,
         SurrealNull,
         SurrealObject,
+        SurrealRange,
         SurrealRecordId,
         SurrealString,
         SurrealTable,
@@ -76,6 +77,11 @@ type
             nil
         of SurrealObject:
             objectVal: SurrealObjectTable
+        of SurrealRange:
+            rangeStartVal: SurrealValue
+            rangeEndVal: SurrealValue
+            isRangeStartInclusive: bool
+            isRangeEndInclusive: bool
         of SurrealRecordId:
             recordVal: RecordId
         of SurrealString:
@@ -97,6 +103,7 @@ include values/[
     none,
     null,
     map,
+    range,
     string,
     table,
     uuid,
@@ -138,6 +145,12 @@ func `==`*(a, b: SurrealValue): bool =
         return true
     of SurrealObject:
         return a.objectVal == b.objectVal
+    of SurrealRange:
+        return
+            a.isRangeStartInclusive == b.isRangeStartInclusive and
+            a.isRangeEndInclusive == b.isRangeEndInclusive and
+            a.rangeStartVal == b.rangeStartVal and
+            a.rangeEndVal == b.rangeEndVal
     of SurrealRecordId:
         return a.recordVal == b.recordVal
     of SurrealString:

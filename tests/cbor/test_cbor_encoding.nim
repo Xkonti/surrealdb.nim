@@ -243,17 +243,17 @@ suite "CBOR:Encoding":
         check(surrealValue1.len == 3)
         check(surrealValue1 == value1)
 
-        let value2 = %%% {
-            "id": %%% "comment:abc123",
-            "author": %%% 10223547,
-            "content": %%% "Happy thoughts",
-            "approved": %%% true,
-            "likes": %%% {
-                "user:10223547": %%% 1,
-                "user:10223548": %%% 2.25'f32,
-                "user:10223549": %%% 30.124500121'f64
+        let value2 = %%* {
+            "id": "comment:abc123",
+            "author": 10223547,
+            "content": "Happy thoughts",
+            "approved": true,
+            "likes": {
+                "user:10223547": 1,
+                "user:10223548": 2.25'f32,
+                "user:10223549": 30.124500121'f64
             },
-            "secretFlags": %%% @[1'u8, 2, 4, 50]
+            "secretFlags": @[1'u8, 2, 4, 50]
         }
         let writer2 = encode(value2)
         let surrealValue2 = decode(writer2.getOutput())
@@ -332,3 +332,15 @@ suite "CBOR:Encoding":
         let decoded2 = decode(writer2.getOutput())
         check(decoded2.kind == SurrealDuration)
         check(decoded2 == duration2)
+
+    test "encode and decode future":
+        let surrealValue = %%* {
+            "id": rc"product:sadphone300",
+            "price": 100.99,
+            "buyers": newFutureWrapper(%%* { "count": 530, "names": ["John", "Jane"] })
+        }
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded.kind == SurrealObject)
+        check(decoded.len == 3)
+        check(decoded == surrealValue)

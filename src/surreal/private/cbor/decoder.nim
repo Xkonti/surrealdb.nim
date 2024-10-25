@@ -175,6 +175,12 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             let nanoseconds = reader.getFullArgument(nanosecondsArgument)
             return newSurrealDuration(seconds, nanoseconds.uint32).toSurrealValueDuration()
 
+        of TagFuture:
+            # Future encoded as a SurrealValue
+            let innerHead = reader.readHead()
+            let inner = decode(reader, innerHead)
+            return newFutureWrapper(inner)
+
         of TagUuidBinary:
             # UUID encoded as a sequence of 16 bytes
             let (bytesHead, bytesArgument) = reader.readHead()

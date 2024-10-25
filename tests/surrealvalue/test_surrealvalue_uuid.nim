@@ -77,7 +77,7 @@ suite "SurrealValue:Uuid":
 
     test "Can print out UUIDs":
         let uuid1 = uuid"00000000-0000-0000-0000-000000000000"
-        check($uuid1 == "u\"00000000-0000-0000-0000-000000000000\"")
+        check($uuid1 == "<uuid> \"00000000-0000-0000-0000-000000000000\"")
 
         let uuid2 = uuid"ABCDEF01-2345-6789-ABCD-EF0123456789"
-        check($uuid2 == "u\"ABCDEF01-2345-6789-ABCD-EF0123456789\"")
+        check($uuid2 == "<uuid> \"ABCDEF01-2345-6789-ABCD-EF0123456789\"")

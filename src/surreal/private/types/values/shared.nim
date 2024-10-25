@@ -68,13 +68,15 @@ proc `$`*(value: SurrealValue): string =
         return cast[string](value.bytesVal)
     of SurrealDatetime:
         # Print it as ISO 8601 string
-        return $value.getDateTime()
+        return "<datetime> \"" & $value.getDateTime() & "\""
     of SurrealDuration:
-        return $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns"
+        return "<duration> \"" & $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns\""
     of SurrealFloat:
         return case value.floatKind
             of Float32: $value.float32Val
             of Float64: $value.float64Val
+    of SurrealFuture:
+        return "<future> { " & $value.futureVal & " }"
     of SurrealInteger:
         # TODO: Handle large integers, including negative u64
         return $(value.toInt64)
@@ -96,14 +98,14 @@ proc `$`*(value: SurrealValue): string =
                 text = text & "," & pair[0].escapeString & ":" & $pair[1]
             return text & "}"
     of SurrealRecordId:
-        return $value.recordVal
+        return "<record> " & $value.recordVal
     of SurrealString:
         return value.stringVal.escapeString
     of SurrealTable:
-        return value.tableVal.string
+        return "<table> \"" & value.tableVal.string & "\""
     of SurrealUuid:
         let v = value.uuidVal
-        return "u\"" &
+        return "<uuid> \"" &
           v[0].toHex & v[1].toHex & v[2].toHex & v[3].toHex &
             "-" & v[4].toHex & v[5].toHex &
             "-" & v[6].toHex & v[7].toHex &

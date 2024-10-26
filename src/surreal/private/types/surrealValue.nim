@@ -36,6 +36,12 @@ type
         Float32,
         Float64
 
+    SurrealBoundKind* = enum
+        ## The kind of a SurrealBound (ranges)
+        Unbounded,
+        Inclusive,
+        Exclusive,
+
     SurrealObjectEntry* = tuple[key: string, value: SurrealValue]
         ## A single entry in a SurrealObject
 
@@ -78,10 +84,16 @@ type
         of SurrealObject:
             objectVal: SurrealObjectTable
         of SurrealRange:
-            rangeStartVal: SurrealValue
-            rangeEndVal: SurrealValue
-            isRangeStartInclusive: bool
-            isRangeEndInclusive: bool
+            case rangeStartBound*: SurrealBoundKind
+            of Unbounded:
+                discard
+            of Inclusive, Exclusive:
+                rangeStartVal: SurrealValue
+            case rangeEndBound*: SurrealBoundKind
+            of Unbounded:
+                discard
+            of Inclusive, Exclusive:
+                rangeEndVal: SurrealValue
         of SurrealRecordId:
             recordVal: RecordId
         of SurrealString:
@@ -146,11 +158,14 @@ func `==`*(a, b: SurrealValue): bool =
     of SurrealObject:
         return a.objectVal == b.objectVal
     of SurrealRange:
-        return
-            a.isRangeStartInclusive == b.isRangeStartInclusive and
-            a.isRangeEndInclusive == b.isRangeEndInclusive and
-            a.rangeStartVal == b.rangeStartVal and
-            a.rangeEndVal == b.rangeEndVal
+        if a.rangeStartBound != b.rangeStartBound or a.rangeEndBound != b.rangeEndBound:
+            return false
+        if a.rangeStartBound != Unbounded:
+            return a.rangeStartVal == b.rangeStartVal
+        if a.rangeEndBound != Unbounded:
+            return a.rangeEndVal == b.rangeEndVal
+        assert false, "SurrealRange has to have at least one bound"
+        return false
     of SurrealRecordId:
         return a.recordVal == b.recordVal
     of SurrealString:

@@ -114,7 +114,19 @@ proc `$`*(value: SurrealValue): string =
                     ">.."
                 of Inclusive:
                     ">..="
-        return $value.rangeStartVal & operator & $value.rangeEndVal
+        case startBound:
+        of Inclusive, Exclusive:
+            case endBound:
+            of Inclusive, Exclusive:
+                return "(" & $value.rangeStartVal & operator & $value.rangeEndVal & ")"
+            of Unbounded:
+                return "(" & $value.rangeStartVal & operator & ")"
+        of Unbounded:
+            case endBound:
+            of Inclusive, Exclusive:
+                return "(" & operator & $value.rangeEndVal & ")"
+            of Unbounded:
+                return "(" & operator & ")"
     of SurrealRecordId:
         return "<record> " & $value.recordVal
     of SurrealString:
@@ -198,7 +210,19 @@ proc debugPrintSurrealValue*(value: SurrealValue): string =
                     ">.."
                 of Inclusive:
                     ">..="
-        return "<<SurrealRange>>(" & value.rangeStartVal.debugPrintSurrealValue & ")" & operator & "(" & value.rangeEndVal.debugPrintSurrealValue & ")"
+        case startBound:
+        of Inclusive, Exclusive:
+            case endBound:
+            of Inclusive, Exclusive:
+                return "<<SurrealRange>>(" & value.rangeStartVal.debugPrintSurrealValue & operator & value.rangeEndVal.debugPrintSurrealValue & ")"
+            of Unbounded:
+                return "<<SurrealRange>>(" & value.rangeStartVal.debugPrintSurrealValue & operator & "UNBOUNDED)"
+        of Unbounded:
+            case endBound:
+            of Inclusive, Exclusive:
+                return "<<SurrealRange>>(UNBOUNDED" & operator & value.rangeEndVal.debugPrintSurrealValue & ")"
+            of Unbounded:
+                return "<<SurrealRange>>(UNBOUNDED" & operator & "UNBOUNDED)"
     of SurrealRecordId:
         return "<<SurrealRecordId>>(" & $value.recordVal & ")"
     of SurrealString:

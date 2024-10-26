@@ -130,7 +130,7 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         # Start value
         case value.getStartBound:
         of Unbounded:
-            writer.writeBytes(noneBytes)
+            writer.writeRawUInt(nullByte)
         of Inclusive:
             writer.writeBytes([0b110_11000'u8, TagBoundIncluded.uint8])
             writer.encode(value.getRangeStart())
@@ -140,7 +140,7 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         # End value
         case value.getEndBound:
         of Unbounded:
-            writer.writeBytes(noneBytes)
+            writer.writeRawUInt(nullByte)
         of Inclusive:
             writer.writeBytes([0b110_11000'u8, TagBoundIncluded.uint8])
             writer.encode(value.getRangeEnd())

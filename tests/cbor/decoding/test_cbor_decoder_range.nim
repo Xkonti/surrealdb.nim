@@ -22,7 +22,7 @@ suite "CBOR:Decoder:Range":
         check(decoded == newSurrealRange(%%% "Hi", %%% None, true, false))
 
     test "can decode range with only start bound":
-        var decoded = decode(@[0b110_11000'u8, 49, 0b100_00010'u8, 0b110_11000, 51, 0b000_00000, 0b110_00110, 0b111_10110])
+        var decoded = decode(@[0b110_11000'u8, 49, 0b100_00010'u8, 0b110_11000, 51, 0b000_00000, 0b111_10110])
         check(decoded.kind == SurrealRange)
         check(decoded.getRangeStart() == %%% 0)
         check(decoded.getRangeEnd() == surrealNone)
@@ -31,7 +31,7 @@ suite "CBOR:Decoder:Range":
         check(decoded == newSurrealStartOnlyRange(%%% 0, false))
 
     test "can decode range with only end bound":
-        var decoded = decode(@[0b110_11000'u8, 49, 0b100_00010'u8, 0b110_00110, 0b111_10110, 0b110_11000, 51, 0b110_00110, 0b111_10110])
+        var decoded = decode(@[0b110_11000'u8, 49, 0b100_00010'u8, 0b111_10110, 0b110_11000, 51, 0b110_00110, 0b111_10110])
         check(decoded.kind == SurrealRange)
         check(decoded.getRangeStart() == surrealNone)
         check(decoded.getRangeEnd() == surrealNone)

@@ -191,47 +191,49 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
 
             # Extract the start element inclusivity tag
             let (startTagHead, startTagArgument) = reader.readHead()
-            if startTagHead != Tag:
-                raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive (tag 49), but got (major): " & $startTagHead & "(arg)" & $startTagArgument)
             var startBound: SurrealBoundKind = Unbounded
             var startValue = surrealNone
-            let startTagArg = reader.getFullArgument(startTagArgument)
-            case startTagArg:
-            of TagBoundIncluded.uint64:
-                startBound = Inclusive
-                startValue = decode(reader, reader.readHead())
-            of TagBoundExcluded.uint64:
-                startBound = Exclusive
-                startValue = decode(reader, reader.readHead())
-            of TagNone.uint64:
+            case startTagHead:
+            of Tag:
+                let startTagArg = reader.getFullArgument(startTagArgument)
+                case startTagArg:
+                of TagBoundIncluded.uint64:
+                    startBound = Inclusive
+                    startValue = decode(reader, reader.readHead())
+                of TagBoundExcluded.uint64:
+                    startBound = Exclusive
+                    startValue = decode(reader, reader.readHead())
+                else:
+                    raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive, but got (major)" & $startTagHead & "(arg)" & $startTagArg)
+            of Simple:
+                if startTagArgument != TwentyTwo:
+                    raise newException(ValueError, "Expected a range start to be NULL, but got (major)" & $startTagHead & "(arg)" & $startTagArgument)
                 startBound = Unbounded
-                let noneValue = reader.readBytes(1)[0]
-                if noneValue != nullByte:
-                    raise newException(ValueError, "None tag for range start contains non-none value")
             else:
-                raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive (tag 49), but got (major): " & $startTagHead & "(arg)" & $startTagArgument)
+                raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive (tag 49), but got (major)" & $startTagHead & "(arg)" & $startTagArgument)
             
             # Extract the end element inclusivity tag
             let (endTagHead, endTagArgument) = reader.readHead()
-            if endTagHead != Tag:
-                raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive (tag 49), but got (major): " & $endTagHead & "(arg)" & $endTagArgument)
             var endBound: SurrealBoundKind = Unbounded
             var endValue = surrealNone
-            let endTagArg = reader.getFullArgument(endTagArgument)
-            case endTagArg:
-            of TagBoundIncluded.uint64:
-                endBound = Inclusive
-                endValue = decode(reader, reader.readHead())
-            of TagBoundExcluded.uint64:
-                endBound = Exclusive
-                endValue = decode(reader, reader.readHead())
-            of TagNone.uint64:
+            case endTagHead:
+            of Tag:
+                let endTagArg = reader.getFullArgument(endTagArgument)
+                case endTagArg:
+                of TagBoundIncluded.uint64:
+                    endBound = Inclusive
+                    endValue = decode(reader, reader.readHead())
+                of TagBoundExcluded.uint64:
+                    endBound = Exclusive
+                    endValue = decode(reader, reader.readHead())
+                else:
+                    raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive, but got (major)" & $endTagHead & "(arg)" & $endTagArg)
+            of Simple:
+                if endTagArgument != TwentyTwo:
+                    raise newException(ValueError, "Expected a range end to be NULL, but got (major)" & $endTagHead & "(arg)" & $endTagArgument)
                 endBound = Unbounded
-                let noneValue = reader.readBytes(1)[0]
-                if noneValue != nullByte:
-                    raise newException(ValueError, "None tag for range end contains non-none value")
             else:
-                raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive (tag 49), but got (major): " & $endTagHead & "(arg)" & $endTagArgument)
+                raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive (tag 49), but got (major)" & $endTagHead & "(arg)" & $endTagArgument)
 
             case startBound:
             of Unbounded:

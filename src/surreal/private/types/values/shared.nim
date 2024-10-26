@@ -98,11 +98,22 @@ proc `$`*(value: SurrealValue): string =
                 text = text & "," & pair[0].escapeString & ":" & $pair[1]
             return text & "}"
     of SurrealRange:
+        let startBound = value.getStartBound
+        let endBound = value.getEndBound
         let operator =
-            if value.isRangeStartInclusive:
-                if value.isRangeEndInclusive: "..=" else: ".."
-            else:
-                if value.isRangeEndInclusive: ">..=" else: ">.."
+            case startBound:
+            of Unbounded, Inclusive:
+                case endBound:
+                of Unbounded, Exclusive:
+                    ".."
+                of Inclusive:
+                    "..="
+            of Exclusive:
+                case endBound:
+                of Unbounded, Exclusive:
+                    ">.."
+                of Inclusive:
+                    ">..="
         return $value.rangeStartVal & operator & $value.rangeEndVal
     of SurrealRecordId:
         return "<record> " & $value.recordVal
@@ -119,9 +130,93 @@ proc `$`*(value: SurrealValue): string =
             "-" & v[8].toHex & v[9].toHex &
             "-" & v[10].toHex & v[11].toHex & v[12].toHex & v[13].toHex & v[14].toHex & v[15].toHex &
           "\""
-
     else:
         raise newException(ValueError, "Cannot convert a $1 value to a string" % $value.kind)
+
+
+proc debugPrintSurrealValue*(value: SurrealValue): string =
+    # Prints the provided SurrealValue to the console with verbose formatting
+    case value.kind
+    of SurrealArray:
+        case value.arrayVal.len:
+        of 0: return "<<SurrealArray>>[]"
+        of 1: return "<<SurrealArray>>[" & value.arrayVal[0].debugPrintSurrealValue & "]"
+        else:
+            var text = "<<SurrealArray>>[" & value.arrayVal[0].debugPrintSurrealValue
+            for i in 1..<value.arrayVal.len:
+                text = text & "," & value.arrayVal[i].debugPrintSurrealValue
+            return text & "]"
+    of SurrealBool:
+        return "<<SurrealBool>>" & $value.boolVal
+    of SurrealBytes:
+        return "<<SurrealBool>>" & cast[string](value.bytesVal)
+    of SurrealDatetime:
+        # Print it as ISO 8601 string
+        return "<<SurrealDatatetime>>" & $value.getDateTime() & "\""
+    of SurrealDuration:
+        return "<<SurrealDuration>>" & $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns\""
+    of SurrealFloat:
+        return case value.floatKind
+            of Float32: "<<SurrealFloat32>>" & $value.float32Val
+            of Float64: "<<SurrealFloat64>>" & $value.float64Val
+    of SurrealFuture:
+        return "<<SurrealFuture>>{ " & value.futureVal.debugPrintSurrealValue & " }"
+    of SurrealInteger:
+        # TODO: Handle large integers, including negative u64
+        return "<<SurrealInteger>>" & $(value.toInt64)
+    of SurrealNone:
+        return "<<SurrealNone>>NONE"
+    of SurrealNull:
+        return "<<SurrealNull>>NULL"
+    of SurrealObject:
+        case value.objectVal.len:
+        of 0: return "<<SurrealObject>>{}"
+        of 1:
+            let pair = value.objectVal.pairs.toSeq[0]
+            return "<<SurrealObject>>{" & pair[0].escapeString & ":" & pair[1].debugPrintSurrealValue & "}"
+        else:
+            let pairs = value.objectVal.pairs.toSeq
+            var text = "<<SurrealObject>>{" & pairs[0][0].escapeString & ":" & pairs[0][1].debugPrintSurrealValue
+            for i in 1..<pairs.len:
+                let pair = pairs[i]
+                text = text & "," & pair[0].escapeString & ":" & pair[1].debugPrintSurrealValue
+            return text & "}"
+    of SurrealRange:
+        let startBound = value.getStartBound
+        let endBound = value.getEndBound
+        let operator =
+            case startBound:
+            of Unbounded, Inclusive:
+                case endBound:
+                of Unbounded, Exclusive:
+                    ".."
+                of Inclusive:
+                    "..="
+            of Exclusive:
+                case endBound:
+                of Unbounded, Exclusive:
+                    ">.."
+                of Inclusive:
+                    ">..="
+        return "<<SurrealRange>>(" & value.rangeStartVal.debugPrintSurrealValue & ")" & operator & "(" & value.rangeEndVal.debugPrintSurrealValue & ")"
+    of SurrealRecordId:
+        return "<<SurrealRecordId>>(" & $value.recordVal & ")"
+    of SurrealString:
+        return "<<SurrealString>>" & value.stringVal.escapeString
+    of SurrealTable:
+        return "<<SurrealTable>>\"" & value.tableVal.string & "\""
+    of SurrealUuid:
+        let v = value.uuidVal
+        return "<<SurrealUuid>>\"" &
+          v[0].toHex & v[1].toHex & v[2].toHex & v[3].toHex &
+            "-" & v[4].toHex & v[5].toHex &
+            "-" & v[6].toHex & v[7].toHex &
+            "-" & v[8].toHex & v[9].toHex &
+            "-" & v[10].toHex & v[11].toHex & v[12].toHex & v[13].toHex & v[14].toHex & v[15].toHex &
+          "\""
+    else:
+        raise newException(ValueError, "Cannot convert a $1 value to a string debug representation" % $value.kind)
+
 
 template `%%%`*(v: SurrealValue): SurrealValue = v
 

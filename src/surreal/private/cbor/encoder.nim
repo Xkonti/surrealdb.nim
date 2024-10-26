@@ -128,11 +128,25 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
         ]
         writer.writeBytes(initialBytes)
         # Start value
-        writer.encodeHead(Tag, if value.isRangeStartInclusive: TagBoundIncluded.uint64 else: TagBoundExcluded.uint64)
-        writer.encode(value.getRangeStart())
+        case value.getStartBound:
+        of Unbounded:
+            writer.writeBytes(noneBytes)
+        of Inclusive:
+            writer.writeBytes([0b110_11000'u8, TagBoundIncluded.uint8])
+            writer.encode(value.getRangeStart())
+        of Exclusive:
+            writer.writeBytes([0b110_11000'u8, TagBoundExcluded.uint8])
+            writer.encode(value.getRangeStart())
         # End value
-        writer.encodeHead(Tag, if value.isRangeEndInclusive: TagBoundIncluded.uint64 else: TagBoundExcluded.uint64)
-        writer.encode(value.getRangeEnd())
+        case value.getEndBound:
+        of Unbounded:
+            writer.writeBytes(noneBytes)
+        of Inclusive:
+            writer.writeBytes([0b110_11000'u8, TagBoundIncluded.uint8])
+            writer.encode(value.getRangeEnd())
+        of Exclusive:
+            writer.writeBytes([0b110_11000'u8, TagBoundExcluded.uint8])
+            writer.encode(value.getRangeEnd())
 
     of SurrealRecordId:
         const initialBytes = [

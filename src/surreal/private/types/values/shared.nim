@@ -65,18 +65,18 @@ proc `$`*(value: SurrealValue): string =
     of SurrealBool:
         return $value.boolVal
     of SurrealBytes:
-        return cast[string](value.bytesVal)
+        return "<bytes>" & (cast[string](value.bytesVal)).escapeString
     of SurrealDatetime:
         # Print it as ISO 8601 string
-        return "<datetime> \"" & $value.getDateTime() & "\""
+        return "<datetime>\"" & $value.getDateTime() & "\""
     of SurrealDuration:
-        return "<duration> \"" & $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns\""
+        return "<duration>\"" & $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns\""
     of SurrealFloat:
         return case value.floatKind
             of Float32: $value.float32Val
             of Float64: $value.float64Val
     of SurrealFuture:
-        return "<future> { " & $value.futureVal & " }"
+        return "<future>{" & $value.futureVal & "}"
     of SurrealInteger:
         # TODO: Handle large integers, including negative u64
         return $(value.toInt64)
@@ -128,14 +128,14 @@ proc `$`*(value: SurrealValue): string =
             of Unbounded:
                 return "(" & operator & ")"
     of SurrealRecordId:
-        return "<record> " & $value.recordVal
+        return "<record>" & $value.recordVal
     of SurrealString:
         return value.stringVal.escapeString
     of SurrealTable:
-        return "<table> \"" & value.tableVal.string & "\""
+        return "<table>\"" & value.tableVal.string & "\""
     of SurrealUuid:
         let v = value.uuidVal
-        return "<uuid> \"" &
+        return "<uuid>\"" &
           v[0].toHex & v[1].toHex & v[2].toHex & v[3].toHex &
             "-" & v[4].toHex & v[5].toHex &
             "-" & v[6].toHex & v[7].toHex &
@@ -161,10 +161,10 @@ proc debugPrintSurrealValue*(value: SurrealValue): string =
     of SurrealBool:
         return "<<SurrealBool>>" & $value.boolVal
     of SurrealBytes:
-        return "<<SurrealBool>>" & cast[string](value.bytesVal)
+        return "<<SurrealBytes>>[" & cast[string](value.bytesVal) & "]"
     of SurrealDatetime:
         # Print it as ISO 8601 string
-        return "<<SurrealDatatetime>>" & $value.getDateTime() & "\""
+        return "<<SurrealDatatetime>>\"" & $value.getDateTime() & "\""
     of SurrealDuration:
         return "<<SurrealDuration>>" & $value.durationVal.seconds & "s" & $value.durationVal.nanoseconds & "ns\""
     of SurrealFloat:

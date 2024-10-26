@@ -181,6 +181,40 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             let inner = decode(reader, innerHead)
             return newFutureWrapper(inner)
 
+        of TagRange:
+            # Range is encoded as an array of two values wrapped in inclusive/exclusive tags
+            # Check if next byte is an array of 2 elements
+            let (arrayHead, arrayArgument) = reader.readHead()
+            if arrayHead != Array or arrayArgument != Two:
+                raise newException(ValueError, "Expected an array of two elements for a range (tag 49)")
+            # Extract the start element inclusivity tag
+            let (startTagHead, startTagArgument) = reader.readHead()
+            if startTagHead != Tag:
+                raise newException(ValueError, "Expected a tag for the start value of a range (tag 49)")
+            let startTagArg = reader.getFullArgument(startTagArgument)
+            let startInclusive = case startTagArg:
+                of TagBoundIncluded.uint64:
+                    true
+                of TagBoundExcluded.uint64:
+                    false
+                else:
+                    raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive (tag 49)")
+            let startValue = decode(reader, reader.readHead())
+            # Extract the end element inclusivity tag
+            let (endTagHead, endTagArgument) = reader.readHead()
+            if endTagHead != Tag:
+                raise newException(ValueError, "Expected a tag for the end value of a range (tag 49)")
+            let endTagArg = reader.getFullArgument(endTagArgument)
+            let endInclusive = case endTagArg:
+                of TagBoundIncluded.uint64:
+                    true
+                of TagBoundExcluded.uint64:
+                    false
+                else:
+                    raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive (tag 49)")
+            let endValue = decode(reader, reader.readHead())
+            return newSurrealRange(startValue, endValue, startInclusive, endInclusive)
+
         of TagUuidBinary:
             # UUID encoded as a sequence of 16 bytes
             let (bytesHead, bytesArgument) = reader.readHead()

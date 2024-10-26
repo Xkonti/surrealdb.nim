@@ -97,6 +97,13 @@ proc `$`*(value: SurrealValue): string =
                 let pair = pairs[i]
                 text = text & "," & pair[0].escapeString & ":" & $pair[1]
             return text & "}"
+    of SurrealRange:
+        let operator =
+            if value.isRangeStartInclusive:
+                if value.isRangeEndInclusive: "..=" else: ".."
+            else:
+                if value.isRangeEndInclusive: ">..=" else: ">.."
+        return $value.rangeStartVal & operator & $value.rangeEndVal
     of SurrealRecordId:
         return "<record> " & $value.recordVal
     of SurrealString:

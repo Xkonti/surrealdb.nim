@@ -44,9 +44,11 @@ proc escapeIdPart*(id: SurrealValue): string =
     # TODO: Support decimals (bigint)
     # of SurrealDecimal:
     #     return escapeDecimal(id.getDecimal)
-    # TODO: Support UUIDs
-    # of SurrealUuid:
-    #     return "`u\"" & id.getUuid & "\"`"
+    of SurrealRange:
+        return $id
+    of SurrealUuid:
+        return $id
+
     else:
         raise newException(ValueError, "Cannot escape the ID part of a record ID from a $1 value" % $id.kind)
 

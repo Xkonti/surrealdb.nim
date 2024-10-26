@@ -19,7 +19,7 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
         of Opcode.Binary:
             # Parse the message as CBOR
             # echo "Received message (string): " & $message
-            let data = cast[seq[uint8]](message)
+            # let data = cast[seq[uint8]](message)
             # echo "Received message (raw): ", data
             let decodedMessage = decode(cast[seq[uint8]](message)) # TODO: Handle decoding errors
             # echo "Received message of kind: ", decodedMessage.kind
@@ -53,6 +53,10 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             # Otherwise, complete the future with the response content
             else:
                 future.complete(surrealResponseValue(decodedMessage["result"]))
+        of Opcode.Ping, Opcode.Pong:
+            # Ignore ping and pong messages
+            continue
         else:
-            # Ignore non-text and non-binary messages
+            # Log unexpected messages
+            echo "Received non-text and non-binary message: (", opcode, ") ", message
             continue

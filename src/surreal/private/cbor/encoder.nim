@@ -120,6 +120,20 @@ proc encode*(writer: CborWriter, value: SurrealValue) =
             writer.encodeString(pair[0])
             encode(writer, pair[1])
 
+    of SurrealRange:
+        const initialBytes = [
+            0b110_11000'u8, # Tag for range with 1 byte to encode the tag
+            TagRange.uint8,
+            0b100_00010'u8, # Array with 2 elements
+        ]
+        writer.writeBytes(initialBytes)
+        # Start value
+        writer.encodeHead(Tag, if value.isRangeStartInclusive: TagBoundIncluded.uint64 else: TagBoundExcluded.uint64)
+        writer.encode(value.getRangeStart())
+        # End value
+        writer.encodeHead(Tag, if value.isRangeEndInclusive: TagBoundIncluded.uint64 else: TagBoundExcluded.uint64)
+        writer.encode(value.getRangeEnd())
+
     of SurrealRecordId:
         const initialBytes = [
             0b110_01000'u8, # Tag for RecordID

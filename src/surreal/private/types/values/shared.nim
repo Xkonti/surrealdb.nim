@@ -103,7 +103,7 @@ proc `$`*(value: SurrealValue): string =
                 if value.isRangeEndInclusive: "..=" else: ".."
             else:
                 if value.isRangeEndInclusive: ">..=" else: ">.."
-        return &value.rangeStartVal & operator & &value.rangeEndVal
+        return $value.rangeStartVal & operator & $value.rangeEndVal
     of SurrealRecordId:
         return "<record> " & $value.recordVal
     of SurrealString:

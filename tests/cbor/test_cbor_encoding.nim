@@ -344,3 +344,9 @@ suite "CBOR:Encoding":
         check(decoded.kind == SurrealObject)
         check(decoded.len == 3)
         check(decoded == surrealValue)
+
+    test "encode and decode range":
+        let surrealValue = newSurrealRange(%%* { "hello": "there"}, "5d30ms".toSurrealValueDuration(), true, true)
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded == surrealValue)

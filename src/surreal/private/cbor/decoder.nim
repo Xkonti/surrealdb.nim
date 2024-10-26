@@ -213,7 +213,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 else:
                     raise newException(ValueError, "Expected a range end tag to be inclusive or exclusive (tag 49)")
             let endValue = decode(reader, reader.readHead())
-            return toSurrealRange(startValue, endValue, startInclusive, endInclusive)
+            return newSurrealRange(startValue, endValue, startInclusive, endInclusive)
 
         of TagUuidBinary:
             # UUID encoded as a sequence of 16 bytes

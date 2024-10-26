@@ -1,5 +1,5 @@
 
-proc toSurrealRange*(startValue: SurrealValue, endValue: SurrealValue, isStartInclusive: bool, isEndInclusive: bool): SurrealValue =
+proc newSurrealRange*(startValue: SurrealValue, endValue: SurrealValue, isStartInclusive: bool, isEndInclusive: bool): SurrealValue =
     ## Converts a tuple of SurrealValues to a SurrealRange
     return SurrealValue(kind: SurrealRange, rangeStartVal: startValue, rangeEndVal: endValue,
         isRangeStartInclusive: isStartInclusive, isRangeEndInclusive: isEndInclusive)

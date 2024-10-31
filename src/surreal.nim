@@ -21,12 +21,17 @@ proc main() {.async.} =
         echo "Signin error: ", signinResponse.error
         quit(1)
 
-    let selectResponse = await surreal.select(rc"testitem:12345")
-    if selectResponse.isOk:
-        echo "Select response: ", selectResponse.ok
-    else:
-        echo "Select error: ", selectResponse.error
-        quit(1)
+    try:
+      let queryRes = await surreal.query(surql"""RETURN [(SELECT * FROM testproduct), (SELECT * FROM testproduct2)]""")
+      if queryRes.isOk:
+          # echo "Query response: ", queryRes.ok.getSeq[0]["result"].debugPrintSurrealValue
+          #echo "Query response: ", queryRes.ok.getSeq[0]["result"]
+          echo "Received total of ", queryRes.ok.getSeq[0]["result"].getSeq[0].len + queryRes.ok.getSeq[0]["result"].getSeq[1].len
+      else:
+          echo "Query error: ", queryRes.error
+          quit(1)
+    except CatchableError as e:
+        echo "Error: ", e.msg
 
     # var futures: seq[FutureResponse] = @[]
     # for i in 0..<10:

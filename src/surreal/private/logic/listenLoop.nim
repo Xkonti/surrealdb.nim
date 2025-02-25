@@ -21,7 +21,7 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             # echo "Received message (string): " & $message
             let data = cast[seq[uint8]](message)
             # echo "Received message (raw): ", data
-            let decodedMessage = decode(cast[seq[uint8]](message)) # TODO: Handle decoding errors
+            let decodedMessage = decode(data) # TODO: Handle decoding errors
             # echo "Received message of kind: ", decodedMessage.kind
             # echo "Message: ", decodedMessage
 

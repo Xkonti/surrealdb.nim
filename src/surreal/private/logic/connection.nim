@@ -39,5 +39,5 @@ proc disconnect*(db: SurrealDB) =
     ## Disconnects the SurrealDB connection.
     ## It closes the WebSocket connection and invalidates all pending futures.
 
-    db.ws.close()
     db.isConnected = false
+    db.ws.close()

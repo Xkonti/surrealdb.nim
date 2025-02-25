@@ -57,7 +57,9 @@ proc storeMacroResult*(callSite: LineInfo,
     writeMacroResultsNow()
 
 proc storeMacroResult*(macroResult: NimNode, writeOutputImmediately = false) {.raises: [IOError].} =
+  {.push warning[Deprecated]: off.}
   let usageSite = callsite().lineInfoObj
+  {.pop.}
   storeMacroResult(usageSite, macroResult, writeOutputImmediately)
 
 macro dumpMacroResults*: untyped =

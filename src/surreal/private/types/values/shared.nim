@@ -135,7 +135,7 @@ proc `$`*(value: SurrealValue): string =
         return "<table>\"" & value.tableVal.string & "\""
     of SurrealUuid:
         let v = value.uuidVal
-        return "<uuid>\"" &
+        return "<uuid> \"" &
           v[0].toHex & v[1].toHex & v[2].toHex & v[3].toHex &
             "-" & v[4].toHex & v[5].toHex &
             "-" & v[6].toHex & v[7].toHex &

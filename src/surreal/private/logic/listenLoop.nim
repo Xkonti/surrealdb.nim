@@ -19,7 +19,7 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
         of Opcode.Binary:
             # Parse the message as CBOR
             # echo "Received message (string): " & $message
-            # let data = cast[seq[uint8]](message)
+            let data = cast[seq[uint8]](message)
             # echo "Received message (raw): ", data
             let decodedMessage = decode(data) # TODO: Handle decoding errors
             # echo "Received message of kind: ", decodedMessage.kind

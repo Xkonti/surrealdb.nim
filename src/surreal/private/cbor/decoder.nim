@@ -2,6 +2,33 @@ import std/[tables]
 import ../types/[duration, surrealValue, tableName]
 import constants, reader, types
 
+proc toCborTag(value: uint64): CborTag =
+    case value:
+    of TagDatetimeISO8601.uint64: TagDatetimeISO8601
+    of TagNone.uint64: TagNone
+    of TagTableName.uint64: TagTableName
+    of TagRecordId.uint64: TagRecordId
+    of TagUuidString.uint64: TagUuidString
+    of TagDecimalString.uint64: TagDecimalString
+    of TagDateTimeCompact.uint64: TagDateTimeCompact
+    of TagDurationString.uint64: TagDurationString
+    of TagDurationCompact.uint64: TagDurationCompact
+    of TagFuture.uint64: TagFuture
+    of TagUuidBinary.uint64: TagUuidBinary
+    of TagRange.uint64: TagRange
+    of TagBoundIncluded.uint64: TagBoundIncluded
+    of TagBoundExcluded.uint64: TagBoundExcluded
+    of TagGeoPoint.uint64: TagGeoPoint
+    of TagGeoLine.uint64: TagGeoLine
+    of TagGeoPolygon.uint64: TagGeoPolygon
+    of TagGeoMultiPoint.uint64: TagGeoMultiPoint
+    of TagGeoMultiLine.uint64: TagGeoMultiLine
+    of TagGeoMultiPolygon.uint64: TagGeoMultiPolygon
+    of TagGeoCollection.uint64: TagGeoCollection
+    else:
+        raise newException(ValueError, "Unsupported CBOR tag: " & $value)
+
+
 proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArgument]): SurrealValue =
     ## Decodes the raw CBOR data.
 
@@ -80,7 +107,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
     of Tag:
         # TODO: Currently SurrealDB doesn't use tag numbers larger than 255 - room for optimization
         #       as potentially we don't have to have logic for reading 2, 4, or 8 byte-long values.
-        let tag = reader.getFullArgument(headArgument).CborTag
+        let tag = reader.getFullArgument(headArgument).toCborTag
         case tag:
         of TagDatetimeISO8601:
             # Datetime is encoded as a string
@@ -121,7 +148,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             let tableName = reader.readStr(tableNameLength).TableName
             let idPart = decode(reader, reader.readHead())
             return RecordId(table: tableName, id: idPart).toSurrealRecordId()
-        
+
         of TagUuidString:
             # UUID encoded as a string
             let (stringHead, stringArgument) = reader.readHead()
@@ -130,7 +157,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
             return reader.readStr(numberOfBytes).toSurrealUuid()
 
         # TODO: Tag 10 - Decimal (string)
-        
+
         of TagDatetimeCompact:
             # Datetime is encoded as an array of two numbers: seconds since epoch and nanoseconds
             let (arrayHead, arrayArgument) = reader.readHead()
@@ -211,7 +238,7 @@ proc decode*(reader: CborReader, head: tuple[major: HeadMajor, argument: HeadArg
                 startBound = Unbounded
             else:
                 raise newException(ValueError, "Expected a range start tag to be inclusive or exclusive (tag 49), but got (major)" & $startTagHead & "(arg)" & $startTagArgument)
-            
+
             # Extract the end element inclusivity tag
             let (endTagHead, endTagArgument) = reader.readHead()
             var endBound: SurrealBoundKind = Unbounded

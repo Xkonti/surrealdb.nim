@@ -1,6 +1,8 @@
 import std/[macros, sequtils, strutils, tables, times]
-import none, null, tableName
+import none, null, duration, tableName
 import ../utils
+
+import tinyre
 
 type
     SurrealTypes* = enum
@@ -9,14 +11,18 @@ type
         SurrealBool,
         SurrealBytes,
         SurrealDatetime,
+        SurrealDuration,
         SurrealFloat,
+        SurrealFuture,
         SurrealInteger,
         SurrealNone,
         SurrealNull,
         SurrealObject,
+        SurrealRange,
         SurrealRecordId,
         SurrealString,
         SurrealTable,
+        SurrealUuid,
 
         # TODO: There seem to be new Future and Range tags:
         # https://github.com/surrealdb/surrealdb/pull/4862
@@ -29,6 +35,12 @@ type
         # Float16,
         Float32,
         Float64
+
+    SurrealBoundKind* = enum
+        ## The kind of a SurrealBound (ranges)
+        Unbounded,
+        Inclusive,
+        Exclusive,
 
     SurrealObjectEntry* = tuple[key: string, value: SurrealValue]
         ## A single entry in a SurrealObject
@@ -51,13 +63,17 @@ type
         of SurrealBytes:
             bytesVal: seq[uint8]
         of SurrealDatetime:
-            datetimeVal: DateTime
+            datetimeVal: Time
+        of SurrealDuration:
+            durationVal: SurrealDuration
         of SurrealFloat:
             case floatKind*: SurrealFloatKind
             of Float32:
                 float32Val: float32
             of Float64:
                 float64Val: float64
+        of SurrealFuture:
+            futureVal: SurrealValue
         of SurrealInteger:
             intVal: uint64
             intIsNegative: bool
@@ -67,25 +83,42 @@ type
             nil
         of SurrealObject:
             objectVal: SurrealObjectTable
+        of SurrealRange:
+            case rangeStartBound*: SurrealBoundKind
+            of Unbounded:
+                discard
+            of Inclusive, Exclusive:
+                rangeStartVal: SurrealValue
+            case rangeEndBound*: SurrealBoundKind
+            of Unbounded:
+                discard
+            of Inclusive, Exclusive:
+                rangeEndVal: SurrealValue
         of SurrealRecordId:
             recordVal: RecordId
         of SurrealString:
             stringVal: string
         of SurrealTable:
             tableVal: TableName
+        of SurrealUuid:
+            uuidVal: array[16, uint8]
 
 include values/[
     array,
     bool,
     bytes,
     datetime,
+    duration,
     float,
+    future,
     integer,
     none,
     null,
     map,
+    range,
     string,
     table,
+    uuid,
 
     record,
 
@@ -106,12 +139,16 @@ func `==`*(a, b: SurrealValue): bool =
         return a.bytesVal == b.bytesVal
     of SurrealDatetime:
         return a.datetimeVal == b.datetimeVal
+    of SurrealDuration:
+        return a.durationVal == b.durationVal
     of SurrealFloat:
         if a.floatKind != b.floatKind:
             return false
         return case a.floatKind
             of Float32: a.float32Val == b.float32Val
             of Float64: a.float64Val == b.float64Val
+    of SurrealFuture:
+        return a.futureVal == b.futureVal
     of SurrealInteger:
         return a.intVal == b.intVal and a.intIsNegative == b.intIsNegative
     of SurrealNone:
@@ -120,9 +157,20 @@ func `==`*(a, b: SurrealValue): bool =
         return true
     of SurrealObject:
         return a.objectVal == b.objectVal
+    of SurrealRange:
+        if a.rangeStartBound != b.rangeStartBound or a.rangeEndBound != b.rangeEndBound:
+            return false
+        if a.rangeStartBound != Unbounded:
+            return a.rangeStartVal == b.rangeStartVal
+        if a.rangeEndBound != Unbounded:
+            return a.rangeEndVal == b.rangeEndVal
+        assert false, "SurrealRange has to have at least one bound"
+        return false
     of SurrealRecordId:
         return a.recordVal == b.recordVal
     of SurrealString:
         return a.stringVal == b.stringVal
     of SurrealTable:
         return a.tableVal == b.tableVal
+    of SurrealUuid:
+        return a.uuidVal == b.uuidVal

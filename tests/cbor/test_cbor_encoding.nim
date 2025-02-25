@@ -243,17 +243,17 @@ suite "CBOR:Encoding":
         check(surrealValue1.len == 3)
         check(surrealValue1 == value1)
 
-        let value2 = %%% {
-            "id": %%% "comment:abc123",
-            "author": %%% 10223547,
-            "content": %%% "Happy thoughts",
-            "approved": %%% true,
-            "likes": %%% {
-                "user:10223547": %%% 1,
-                "user:10223548": %%% 2.25'f32,
-                "user:10223549": %%% 30.124500121'f64
+        let value2 = %%* {
+            "id": "comment:abc123",
+            "author": 10223547,
+            "content": "Happy thoughts",
+            "approved": true,
+            "likes": {
+                "user:10223547": 1,
+                "user:10223548": 2.25'f32,
+                "user:10223549": 30.124500121'f64
             },
-            "secretFlags": %%% @[1'u8, 2, 4, 50]
+            "secretFlags": @[1'u8, 2, 4, 50]
         }
         let writer2 = encode(value2)
         let surrealValue2 = decode(writer2.getOutput())
@@ -261,13 +261,13 @@ suite "CBOR:Encoding":
         check(surrealValue2.len == 6)
         check(surrealValue2 == value2)
 
-    test "encode and decode datetime":
-        let datetimeValue = now()
-        let writer = encode(%%% datetimeValue)
-        let surrealValue = decode(writer.getOutput())
-        check(surrealValue.kind == SurrealDatetime)
-        # TODO: Figure out how to properly compare DateTimes
-        check($(surrealValue.getDateTime) == $datetimeValue)
+    # test "encode and decode datetime":
+    # let datetimeValue = now()
+    #   let writer = encode(%%% datetimeValue)
+    #   let surrealValue = decode(writer.getOutput())
+    #   check(surrealValue.kind == SurrealDatetime)
+    #   # TODO: Figure out how to properly compare DateTimes
+    #   check($(surrealValue.getDateTime) == $datetimeValue)
 
     test "encode and decode table name":
         let tableName = tb"public_post_view_table_for_record_users"
@@ -297,3 +297,56 @@ suite "CBOR:Encoding":
         check(contents["data"].kind == SurrealBytes)
         check(contents["data"].getBytes == recordId.id.getTable["data"].getBytes)
         check(decodedRecord == recordId)
+
+    test "encode and decode datetime":
+        let datetime = %%% dateTime(1999, mDec, 31, 23, 59, 59, nanosecond = 999_999_999)
+        let writer = encode(datetime)
+        let surrealValue = decode(writer.getOutput())
+        check(surrealValue.kind == SurrealDatetime)
+        check(surrealValue == datetime)
+
+    test "encode and decode UUID":
+        let uuid1 = "25FF15F4-0E8D-4EA7-8E0B-BFF976264AC5"
+        let surrealValue = uuid1.toSurrealUuid()
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded.kind == SurrealUuid)
+        check(decoded.getUuid == uuid1.toSurrealUuid.getUuid)
+        
+        let uuid2 = "5C5E7A6C-B582-4A87-A209-30FE73ADD92C"
+        let surrealValue2 = uuid2.toSurrealUuid()
+        let writer2 = encode(surrealValue2)
+        let decoded2 = decode(writer2.getOutput())
+        check(decoded2.kind == SurrealUuid)
+        check(decoded2.getUuid == uuid2.toSurrealUuid.getUuid)
+
+    test "encode and decode duration":
+        let duration1 = "30d5m30ms".toSurrealValueDuration()
+        let writer1 = encode(duration1)
+        let decoded1 = decode(writer1.getOutput())
+        check(decoded1.kind == SurrealDuration)
+        check(decoded1 == duration1)
+
+        let duration2 = "45ns128s52m8us4w".toSurrealValueDuration()
+        let writer2 = encode(duration2)
+        let decoded2 = decode(writer2.getOutput())
+        check(decoded2.kind == SurrealDuration)
+        check(decoded2 == duration2)
+
+    test "encode and decode future":
+        let surrealValue = %%* {
+            "id": rc"product:sadphone300",
+            "price": 100.99,
+            "buyers": newFutureWrapper(%%* { "count": 530, "names": ["John", "Jane"] })
+        }
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded.kind == SurrealObject)
+        check(decoded.len == 3)
+        check(decoded == surrealValue)
+
+    test "encode and decode range":
+        let surrealValue = newSurrealRange(%%* { "hello": "there"}, "5d30ms".toSurrealValueDuration(), true, true)
+        let writer = encode(surrealValue)
+        let decoded = decode(writer.getOutput())
+        check(decoded == surrealValue)

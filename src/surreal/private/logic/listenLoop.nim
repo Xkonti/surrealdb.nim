@@ -9,6 +9,8 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
     ## It matches received messages with the futures for sent queries and
     ## completes the futures with response contents.
     echo "Starting listen loop"
+
+    # TODO: Add a configuration option to either ignore errors or stop the loop
     while db.isConnected:
         # Receive a message from the WebSocket
         let (opcode, message) = await db.ws.receivePacket()
@@ -21,7 +23,12 @@ proc startListenLoop*(db: SurrealDB) {.async.} =
             # echo "Received message (string): " & $message
             let data = cast[seq[uint8]](message)
             # echo "Received message (raw): ", data
-            let decodedMessage = decode(data) # TODO: Handle decoding errors
+            var decodedMessage: SurrealValue
+            try:
+                decodedMessage = decode(data)
+            except CatchableError as e:
+                echo "Error decoding message: ", e.msg
+                continue
             # echo "Received message of kind: ", decodedMessage.kind
             # echo "Message: ", decodedMessage
 

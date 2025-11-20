@@ -7,9 +7,14 @@ An unofficial SurrealDB driver for Nim.
 
 ## ⚒️ Current development status
 
-Gathering documentation on gRPC protocol - the library will be rewritten to use gRPC instead of CBOR and then the goal is to implement full SurrealDB 3.0 support.
+The library has been refactored to support multiple RPC protocols through an engine abstraction layer. This allows the library to support both the current WebSocket+CBOR protocol and the upcoming gRPC protocol (Protobuf/FlatBuffers) without breaking the public API.
 
-This will change the API of the library drastically.
+**Current status:**
+- ✅ Engine abstraction layer implemented
+- ✅ WebSocket+CBOR engine (current protocol)
+- ⏳ gRPC+Protobuf engine (waiting for protocol stabilization)
+
+The public API will remain stable during this transition - users will be able to switch between protocols simply by changing the connection URL scheme (e.g., `ws://` for WebSocket or `grpc://` for gRPC).
 
 You can follow the development of this library on:
 - [YouTube livestreams](https://www.youtube.com/playlist?list=PL5AVzKSngnt-vUzv1ykgY8mToNWsMYdcG)
@@ -108,7 +113,8 @@ The following methods are still not implemented:
 
 ## ⏳ Next steps
 
-- [ ] **gRPC protocol implementation** (in progress)
+- [x] **Engine abstraction layer** (completed)
+- [ ] **gRPC protocol implementation** (waiting for protocol stabilization)
 - [ ] Automatic marshalling of SurrealDB types to/from Nim types
 - [ ] Various helpers for dealing with returned data
 - [ ] Automated testing via GitHub Actions that run SurrealDB in docker containers

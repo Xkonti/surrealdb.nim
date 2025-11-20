@@ -7,10 +7,7 @@ An unofficial SurrealDB driver for Nim.
 
 ## ⚒️ Current development status
 
-Currently, the CBOR protocol is being implemented, which will lead to:
-- Improved performance
-- Support for easier ways to specify query parameters with specific types of values
-- Support for receiving responses that contain type information
+Gathering documentation on gRPC protocol - the library will be rewritten to use gRPC instead of CBOR and then the goal is to implement full SurrealDB 3.0 support.
 
 This will change the API of the library drastically.
 
@@ -101,7 +98,7 @@ This is a list of methods implemented methods that take `JsonNode` or strings as
 - [x] `delete` method
 - [x] `run` method
 
-The following methods will be implemented after the CBOR-based RPC is implemented:
+The following methods are still not implemented:
 
 - [ ] `live` method
 - [ ] `kill` method
@@ -111,7 +108,7 @@ The following methods will be implemented after the CBOR-based RPC is implemente
 
 ## ⏳ Next steps
 
-- [ ] **Use CBOR instead of JSON for RPC requests** (in progress)
+- [ ] **gRPC protocol implementation** (in progress)
 - [ ] Automatic marshalling of SurrealDB types to/from Nim types
 - [ ] Various helpers for dealing with returned data
 - [ ] Automated testing via GitHub Actions that run SurrealDB in docker containers

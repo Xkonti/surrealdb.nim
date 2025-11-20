@@ -1,13 +1,17 @@
-import std/[tables]
-import ws
-
-import surrealResult
+import ../engines/engine
 
 type
     SurrealDB* = ref object
-        ## The SurrealDB connection object. It handles the WebSocket connection and gives access to the query methods.
+        ## The SurrealDB connection object.
+        ##
+        ## This object provides access to all SurrealDB RPC methods (select, signin, create, etc.).
+        ## The actual transport and protocol implementation is abstracted into the engine field,
+        ## allowing support for multiple backends (WebSocket+CBOR, gRPC+Protobuf, etc.).
 
-        ws*: WebSocket
-        # TODO: Add a timeout for each future in case the response is not received / can't be linked to the request
-        queryFutures*: TableRef[string, FutureResponse]
-        isConnected*: bool
+        engine*: RpcEngine
+            ## The RPC engine that handles transport and serialization.
+            ## Current implementations:
+            ## - WebSocketCborEngine: WebSocket + CBOR (current protocol)
+            ## Future implementations:
+            ## - GrpcProtobufEngine: gRPC + Protobuf
+            ## - GrpcFlatbuffersEngine: gRPC + FlatBuffers

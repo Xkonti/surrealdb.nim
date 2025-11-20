@@ -1,43 +1,46 @@
-import std/[asyncdispatch, tables, strutils, uri]
-import ws
+import std/[asyncdispatch, uri]
 
-import ../types/[surrealdb, surrealResult]
-import listenLoop
+import ../types/surrealdb
+import ../engines/[engine, websocket_cbor]
 
 proc newSurrealDbConnection*(url: string): Future[SurrealDB] {.async.} =
-    ## Creates a new SurrealDB connection object.
-    ## It establishes a WebSocket connection to the SurrealDB server and starts listening for responses.
+    ## Creates a new SurrealDB connection using the appropriate engine based on URL scheme.
+    ##
+    ## Supported URL schemes:
+    ## - ws://, wss://  -> WebSocketCborEngine (current protocol)
+    ## - grpc://, grpcs:// -> GrpcProtobufEngine (future, when implemented)
+    ##
+    ## Parameters:
+    ## - url: Connection URL with appropriate scheme
+    ##
+    ## Returns:
+    ## - Connected SurrealDB instance ready to execute queries
+    ##
+    ## Raises:
+    ## - ValueError: if URL scheme is not supported
+    ## - Connection errors from the underlying engine
 
-    # Verify that the URL is valid and adjust it if necessary
-    var address = parseUri(url)
-    if address.scheme notin ["ws", "wss"]:
-        raise newException(ValueError, "Invalid scheme: " & address.scheme)
-    if not address.path.endsWith("rpc"):
-        address = address / "rpc"
+    let uri = parseUri(url)
 
-    # Establish the WebSocket connection
-    let ws = await newWebSocket($address, "cbor")
+    # Select and create the appropriate engine based on URL scheme
+    let engine: RpcEngine = case uri.scheme
+        of "ws", "wss":
+            await newWebSocketCborEngine(url)
+        # Future engine types:
+        # of "grpc", "grpcs":
+        #     await newGrpcProtobufEngine(url)
+        else:
+            raise newException(ValueError,
+                "Unsupported URL scheme: " & uri.scheme &
+                " (supported: ws, wss)")
 
-    # Setup the pings
-    ws.setupPings(15)
-
-    # Create the SurrealDB object
-    let surreal = SurrealDB(
-        ws: ws,
-        queryFutures: newTable[string, FutureResponse](),
-        isConnected: true
-    )
-    echo "Connected!"
-
-    # Start loop that listens for responses from the database
-    asyncCheck surreal.startListenLoop()
-
-    return surreal
+    return SurrealDB(engine: engine)
 
 
 proc disconnect*(db: SurrealDB) =
     ## Disconnects the SurrealDB connection.
-    ## It closes the WebSocket connection and invalidates all pending futures.
+    ##
+    ## This closes the underlying engine connection and cleans up all resources,
+    ## including failing any pending request futures.
 
-    db.isConnected = false
-    db.ws.close()
+    db.engine.close()
